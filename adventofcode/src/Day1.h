@@ -3,5 +3,5 @@
 #include <string>
 
 namespace Day1 {
-	std::string Hello();
+	int Sum(std::string path);
 }
