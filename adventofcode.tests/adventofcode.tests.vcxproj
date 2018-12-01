@@ -71,6 +71,12 @@
       <Project>{aca17e8d-77fb-4225-ad69-9e6620aaa71b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\input\day1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\input\day1_fixture.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
