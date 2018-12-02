@@ -1,5 +1,4 @@
 #include <string>
-#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -10,34 +9,14 @@
 
 namespace Day1 {
 
-	std::vector<std::string> parse(std::string path)
-	{
-		std::vector<std::string> tokens;
-		std::string line;
-		std::ifstream stream;
-		stream.open(path, std::iostream::in);
-		while (std::getline(stream, line))
-		{
-			tokens.push_back(line);
-		}
-
-		if (stream.is_open())
-		{
-			stream.close();
-		}
-
-		return tokens;
-	}
-
 	int convert(std::string token)
 	{
 		return std::stoi(token);
 	}
 
-	int Part1(std::string path) {
-		auto lines = parse(path);
-		auto numbers = std::vector<int>(lines.size());
-		std::transform(std::begin(lines), std::end(lines), std::begin(numbers), convert);
+	int Part1(std::vector<std::string> tokens) {
+		auto numbers = std::vector<int>(tokens.size());
+		std::transform(std::begin(tokens), std::end(tokens), std::begin(numbers), convert);
 		return std::accumulate(std::begin(numbers), std::end(numbers), 0);
 	}
 
@@ -53,11 +32,10 @@ namespace Day1 {
 		return add(sum, numbers, intermediates);
 	}
 
-	int Part2(std::string path) {
-		auto lines = parse(path);
-		auto numbers = std::vector<int>(lines.size());
+	int Part2(std::vector<std::string> tokens) {
+		auto numbers = std::vector<int>(tokens.size());
 		std::map<int, int> intermediates { std::make_pair(0, 0) };
-		std::transform(std::begin(lines), std::end(lines), std::begin(numbers), convert);
+		std::transform(std::begin(tokens), std::end(tokens), std::begin(numbers), convert);
 		return add(0, numbers, intermediates);
 	}
 }
