@@ -23,9 +23,16 @@ namespace Day2 {
 					threes = threes + 1;
 					three = true;
 				}
+				if (two && three) {
+					break;
+				}
 			}
 		}
 
 		return twos * threes;
+	}
+
+	std::string Part2(std::vector<std::string> tokens) {
+		return "";
 	}
 }
