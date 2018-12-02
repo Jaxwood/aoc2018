@@ -3,7 +3,8 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include <iterator>
+#include <tuple>
+#include <map>
 
 #include "Day1.h"
 
@@ -33,10 +34,30 @@ namespace Day1 {
 		return std::stoi(token);
 	}
 
-	int Sum(std::string path) {
+	int Part1(std::string path) {
 		auto lines = parse(path);
-		std::vector<int> target = std::vector<int>(lines.size());
-		 std::transform(std::begin(lines), std::end(lines), std::begin(target), convert);
-		return std::accumulate(std::begin(target), std::end(target), 0);
+		auto numbers = std::vector<int>(lines.size());
+		std::transform(std::begin(lines), std::end(lines), std::begin(numbers), convert);
+		return std::accumulate(std::begin(numbers), std::end(numbers), 0);
+	}
+
+	int add(int sum, std::vector<int> &numbers, std::map<int, int> &intermediates)
+	{
+		for (auto a = 0; a < numbers.size(); a++) {
+			sum += numbers[a];
+			if (intermediates.count(sum)) {
+				return sum;
+			}
+			intermediates[sum] = sum;
+		}
+		return add(sum, numbers, intermediates);
+	}
+
+	int Part2(std::string path) {
+		auto lines = parse(path);
+		auto numbers = std::vector<int>(lines.size());
+		std::map<int, int> intermediates { std::make_pair(0, 0) };
+		std::transform(std::begin(lines), std::end(lines), std::begin(numbers), convert);
+		return add(0, numbers, intermediates);
 	}
 }
