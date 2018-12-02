@@ -75,7 +75,11 @@
     <CopyFileToFolders Include="test\input\day1.txt" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="test\input\day1_fixture.txt" />
+    <CopyFileToFolders Include="test\input\day1_fixture_1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\input\day1_fixture_2.txt" />
+    <CopyFileToFolders Include="test\input\day1_fixture_3.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
