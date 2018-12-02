@@ -40,7 +40,7 @@ TEST_F(day2Fixture, Part1) {
 }
 
 TEST_F(day2Fixture, Part2) {
-	SetUp("day2_fixture_1.txt");
+	SetUp("day2_fixture_2.txt");
 	auto actual = Day2::Part2(getTokens());
-	EXPECT_EQ("fgij", actual);
+	EXPECT_EQ("abcdef", actual);
 }
