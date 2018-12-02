@@ -33,8 +33,14 @@ public:
 	}
 };
 
-TEST_F(day2Fixture, Example1) {
+TEST_F(day2Fixture, Part1) {
 	SetUp("day2_fixture_1.txt");
 	auto actual = Day2::Part1(getTokens());
 	EXPECT_EQ(12, actual);
+}
+
+TEST_F(day2Fixture, Part2) {
+	SetUp("day2_fixture_1.txt");
+	auto actual = Day2::Part2(getTokens());
+	EXPECT_EQ("fgij", actual);
 }
