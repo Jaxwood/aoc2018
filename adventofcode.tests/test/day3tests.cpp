@@ -28,13 +28,13 @@ public:
 		_tokens = tokens;
 	}
 
-	std::vector<std::string> getTokens() {
-		return _tokens;
+	std::vector<Day3::Fabric> getTokens() {
+		return std::vector<Day3::Fabric>();
 	}
 };
 
 TEST_F(day3Fixture, Part1) {
 	SetUp("day3_fixture.txt");
-	auto actual = Day3::Part1();
+	auto actual = Day3::Part1(getTokens());
 	EXPECT_EQ(4, actual);
 }
