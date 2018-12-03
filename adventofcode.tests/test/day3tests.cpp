@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <fstream>
+#include <regex>
 
 #include "Day3.h"
 
@@ -29,7 +30,20 @@ public:
 	}
 
 	std::vector<Day3::Fabric> getTokens() {
-		return std::vector<Day3::Fabric>();
+		std::vector<Day3::Fabric> fabrics;
+		auto reg = std::regex("#\\d+\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)", std::regex_constants::ECMAScript);
+		for(int i = 0; i < _tokens.size(); i++) {
+			std::smatch match;
+			if (std::regex_match(_tokens[i], match, reg)) {
+				fabrics.push_back(Day3::Fabric(
+					std::stoi(match[1]),
+					std::stoi(match[2]),
+					std::stoi(match[3]),
+					std::stoi(match[4])));
+			}
+		}
+
+		return fabrics;
 	}
 };
 
