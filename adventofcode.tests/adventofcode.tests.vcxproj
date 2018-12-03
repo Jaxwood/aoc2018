@@ -60,6 +60,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="test\day2tests.cpp" />
+    <ClCompile Include="test\day3tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -96,6 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="test\day2_input\day2_fixture_2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day3_input\day3_fixture.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
