@@ -131,11 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Day4.h" />
     <ClInclude Include="src\Day3.h" />
     <ClInclude Include="src\Day2.h" />
     <ClInclude Include="src\Day1.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Day4.cpp" />
     <ClCompile Include="src\Day3.cpp" />
     <ClCompile Include="src\Day2.cpp" />
     <ClCompile Include="src\Day1.cpp" />
