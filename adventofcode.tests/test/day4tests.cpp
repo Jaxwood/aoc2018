@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <fstream>
+#include <regex>
 
 #include "Day4.h"
 
@@ -28,8 +29,25 @@ public:
 		_tokens = tokens;
 	}
 
-	std::vector<std::string> getTokens() {
-		return _tokens;
+	std::vector<Day4::Record> getTokens() {
+
+		std::vector<Day4::Record> records;
+		auto reg = std::regex("\\[(\\d+)-(\\d+)-(\\d+)\\s(\\d+):(\\d+)\\]\\s(.*)", std::regex_constants::ECMAScript);
+		for (int i = 0; i < _tokens.size(); i++) {
+			std::smatch match;
+			if (std::regex_match(_tokens[i], match, reg)) {
+				records.push_back(Day4::Record(
+					std::stoi(match[1]),
+					std::stoi(match[2]),
+					std::stoi(match[3]),
+					std::stoi(match[4]),
+					std::stoi(match[5]),
+					match[6]
+				));
+			}
+		}
+
+		return records;
 	}
 };
 

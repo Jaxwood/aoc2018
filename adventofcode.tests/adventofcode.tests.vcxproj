@@ -108,6 +108,9 @@
   <ItemGroup>
     <CopyFileToFolders Include="test\day4_input\day4_fixture.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day4_input\day4.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
