@@ -31,7 +31,7 @@ public:
 
 	std::vector<Day3::Fabric> getTokens() {
 		std::vector<Day3::Fabric> fabrics;
-		auto reg = std::regex("#\\d+\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)", std::regex_constants::ECMAScript);
+		auto reg = std::regex("#(\\d+)\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)", std::regex_constants::ECMAScript);
 		for(int i = 0; i < _tokens.size(); i++) {
 			std::smatch match;
 			if (std::regex_match(_tokens[i], match, reg)) {
@@ -39,7 +39,8 @@ public:
 					std::stoi(match[1]),
 					std::stoi(match[2]),
 					std::stoi(match[3]),
-					std::stoi(match[4])));
+					std::stoi(match[4]),
+					std::stoi(match[5])));
 			}
 		}
 
@@ -51,4 +52,10 @@ TEST_F(day3Fixture, Part1) {
 	SetUp("day3_fixture.txt");
 	auto actual = Day3::Part1(getTokens());
 	EXPECT_EQ(4, actual);
+}
+
+TEST_F(day3Fixture, Part2) {
+	SetUp("day3_fixture.txt");
+	auto actual = Day3::Part2(getTokens());
+	EXPECT_EQ(3, actual);
 }
