@@ -20,20 +20,20 @@ namespace Day3 {
 			_left = left;
 		};
 
-		int getWidth() {
-			return _width;
-		}
-
-		int getHeight() {
-			return _height;
-		}
-
-		int getTop() {
+		int top() {
 			return _top;
 		}
 
-		int getLeft() {
+		int bottom() {
+			return _top + _height;
+		}
+
+		int left() {
 			return _left;
+		}
+
+		int right() {
+			return _left + _width;
 		}
 	};
 
