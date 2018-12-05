@@ -65,6 +65,10 @@ namespace Day4 {
 		bool awake() {
 			return _awake;
 		}
+
+		int getTime() {
+			return _minute;
+		}
 	};
 
 	int Part1(std::vector<Record> tokens);
