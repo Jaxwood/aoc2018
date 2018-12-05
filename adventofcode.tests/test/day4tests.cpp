@@ -33,16 +33,31 @@ public:
 
 		std::vector<Day4::Record> records;
 		auto reg = std::regex("\\[(\\d+)-(\\d+)-(\\d+)\\s(\\d+):(\\d+)\\]\\s(.*)", std::regex_constants::ECMAScript);
+		auto grd = std::regex("\\w+\\s\\#(\\d+).*");
+		auto slp = std::regex("falls asleep");
+		auto awk = std::regex("wakes up");
 		for (int i = 0; i < _tokens.size(); i++) {
 			std::smatch match;
 			if (std::regex_match(_tokens[i], match, reg)) {
+				int id = 0;
+				std::string instruction = match[6];
+				std::smatch guard;
+				std::smatch sleep;
+				std::smatch awake;
+
+				if (std::regex_match(instruction, guard, grd))
+				{
+					id = std::stoi(guard[1]);
+				}
 				records.push_back(Day4::Record(
 					std::stoi(match[1]),
 					std::stoi(match[2]),
 					std::stoi(match[3]),
 					std::stoi(match[4]),
 					std::stoi(match[5]),
-					match[6]
+					id,	
+					std::regex_match(instruction, sleep, slp),
+					std::regex_match(instruction, awake, awk)
 				));
 			}
 		}

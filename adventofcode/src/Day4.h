@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <regex>
 
 namespace Day4 {
 
@@ -13,16 +14,21 @@ namespace Day4 {
 		int _day;
 		int _hour;
 		int _minute;
-		std::string _instruction;
+		int _id;
+		bool _sleep;
+		bool _awake;
+
 	public:
-		Record(int year, int month, int day, int hour, int minute, std::string instruction)
+		Record(int year, int month, int day, int hour, int minute, int id, bool sleep, bool awake)
 		{
 			this->_year = year;
 			this->_month = month;
 			this->_day = day;
 			this->_hour = hour;
 			this->_minute = minute;
-			_instruction = instruction;
+			this->_id = id;
+			this->_sleep = sleep;
+			this->_awake = awake;
 		}
 
 		bool operator<(const Record r2) {
@@ -44,6 +50,21 @@ namespace Day4 {
 			return false;
 		}
 
+		bool isGuard() {
+			return this->_id != 0;
+		}
+
+		int id() {
+			return this->_id;
+		}
+
+		bool sleeps() {
+			return _sleep;
+		}
+
+		bool awake() {
+			return _awake;
+		}
 	};
 
 	int Part1(std::vector<Record> tokens);
