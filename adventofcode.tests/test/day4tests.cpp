@@ -71,3 +71,9 @@ TEST_F(day4Fixture, Part1) {
 	auto actual = Day4::Part1(getTokens());
 	EXPECT_EQ(240, actual);
 }
+
+TEST_F(day4Fixture, Part2) {
+	SetUp("day4_fixture.txt");
+	auto actual = Day4::Part2(getTokens());
+	EXPECT_EQ(4455, actual);
+}
