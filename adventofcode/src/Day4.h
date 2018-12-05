@@ -72,4 +72,5 @@ namespace Day4 {
 	};
 
 	int Part1(std::vector<Record> tokens);
+	int Part2(std::vector<Record> tokens);
 }
