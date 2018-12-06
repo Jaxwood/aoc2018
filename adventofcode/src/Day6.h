@@ -23,12 +23,22 @@ namespace Day6 {
 			this->y = y;
 		}
 
-		int getX() {
+		int getX() const {
 			return this->x;
 		}
 
-		int getY() {
+		int getY() const {
 			return this->y;
+		}
+
+		bool operator<(const Coord& coord) const {
+			if (this->x != coord.getX()) {
+				return this->x < coord.getX();
+			}
+			if (this->y != coord.getY()) {
+				return this->y < coord.getY();
+			}
+			return false;
 		}
 
 	};
