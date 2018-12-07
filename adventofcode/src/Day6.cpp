@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <tuple>
 #include <map>
+#include <set>
 #include <iterator>
 
 namespace Day6 {
@@ -37,9 +38,18 @@ namespace Day6 {
 
 	int getFinite(std::vector<Coord> coords) {
 
-		auto it = std::max_element(std::begin(coords), std::end(coords), [](Coord a, Coord b) {
-			return (a.getX() + a.getY()) < (b.getX() + b.getY());
-		});
+		// get size of grid
+		int maxX = 0;
+		int maxY = 0;
+		for (int i = 0; i < coords.size(); i++) {
+			auto next = coords[i];
+			if (next.getX() > maxX) {
+				maxX = next.getX();
+			}
+			if (next.getY() > maxY) {
+				maxY = next.getY();
+			}
+		}
 
 		// initialize
 		std::map<Coord, int> closest;
@@ -47,11 +57,46 @@ namespace Day6 {
 			closest[coords[i]] = 0;
 		}
 
-		// loop coordinates
+		// exclude infinites
 		bool result = false;
 		Coord candidate;
-		for (int x = 0; x <= it->getX(); x++) {
-			for (int y = 0; y <= it->getY(); y++) {
+		std::set<Coord> excluded;
+		for (int x = 0; x < maxX; x++) {
+				std::tie (result, candidate) = getDistance(coords, x, 0);
+				if (result) {
+					excluded.insert(candidate);
+				}
+		}
+		for (int x = 0; x < maxX; x++) {
+				std::tie (result, candidate) = getDistance(coords, x, maxY);
+				if (result) {
+					excluded.insert(candidate);
+				}
+		}
+		for (int y = 0; y < maxY; y++) {
+				std::tie (result, candidate) = getDistance(coords, 0, y);
+				if (result) {
+					excluded.insert(candidate);
+				}
+		}
+		for (int y = 0; y < maxY; y++) {
+				std::tie (result, candidate) = getDistance(coords, maxX, y);
+				if (result) {
+					excluded.insert(candidate);
+				}
+		}
+
+		// find the finites
+		std::vector<Coord> finites;
+		for (auto &inf : coords) {
+			if (excluded.count(inf) == 0) {
+				finites.push_back(inf);
+			}
+		}
+
+		// loop coordinates
+		for (int x = 0; x <= maxX; x++) {
+			for (int y = 0; y <= maxY; y++) {
 				// find closest
 				std::tie (result, candidate) = getDistance(coords, x, y);
 				if (result) {
@@ -62,9 +107,10 @@ namespace Day6 {
 
 		int max = INT_MIN;
 		for (auto &c : closest) {
-			if (c.second > max) {
-				max = c.second;
-			}
+			if (excluded.count(c.first) == 0)
+				if (c.second > max) {
+					max = c.second;
+				}
 		}
 		return max;
 	}
