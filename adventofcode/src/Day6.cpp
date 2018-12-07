@@ -120,7 +120,6 @@ namespace Day6 {
 	}
 
 	int sumDistance(std::vector<Coord> coords, int x, int y) {
-		std::map<Coord, int> distances;
 		int sum = 0;
 		for (int i = 0; i < coords.size(); i++) {
 			auto candidate = coords[i];
@@ -128,18 +127,6 @@ namespace Day6 {
 		}
 
 		return sum;
-	}
-
-	bool isSafe(int x, int y, std::vector<std::tuple<int,int>> coords) {
-		int xx, yy;
-		for (auto &it : coords) {
-			std::tie(xx, yy) = it;
-			if (x == xx && y == yy)
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	int Part2(std::vector<Coord> coords, int target) {
@@ -153,46 +140,6 @@ namespace Day6 {
 			}
 			if (next.getY() > maxY) {
 				maxY = next.getY();
-			}
-		}
-
-		// exclude infinites
-		bool result = false;
-		Coord candidate;
-		std::set<Coord> excluded;
-		for (int x = 0; x < maxX; x++) {
-				std::tie (result, candidate) = getDistance(coords, x, 0);
-				if (result) {
-					excluded.insert(candidate);
-				}
-		}
-		for (int x = 0; x < maxX; x++) {
-				std::tie (result, candidate) = getDistance(coords, x, maxY);
-				if (result) {
-					excluded.insert(candidate);
-				}
-		}
-		for (int y = 0; y < maxY; y++) {
-				std::tie (result, candidate) = getDistance(coords, 0, y);
-				if (result) {
-					excluded.insert(candidate);
-				}
-		}
-		for (int y = 0; y < maxY; y++) {
-				std::tie (result, candidate) = getDistance(coords, maxX, y);
-				if (result) {
-					excluded.insert(candidate);
-				}
-		}
-		// loop coordinates
-		std::vector<std::tuple<int, int>> safeCoords;
-		for (int x = 0; x <= maxX; x++) {
-			for (int y = 0; y <= maxY; y++) {
-				// find closest
-				std::tie (result, candidate) = getDistance(coords, x, y);
-				if (result && excluded.count(candidate) == 0) {
-					safeCoords.push_back(std::make_tuple(x, y));
-				}
 			}
 		}
 
