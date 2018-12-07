@@ -6,6 +6,7 @@
 #include <set>
 #include <algorithm>
 #include <iterator>
+#include <queue>
 
 using namespace std;
 
@@ -22,6 +23,10 @@ namespace Day7 {
 
 		void addChild(Node node) {
 			nodes.push_back(node);
+		}
+
+		vector<Node> children() {
+			return this->nodes;
 		}
 
 		string getName() {
