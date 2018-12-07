@@ -43,4 +43,5 @@ namespace Day6 {
 
 	};
 	int Part1(std::vector<Coord> coords);
+	int Part2(std::vector<Coord> coords, int target);
 }
