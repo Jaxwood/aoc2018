@@ -64,6 +64,7 @@
     <ClCompile Include="test\day4tests.cpp" />
     <ClCompile Include="test\day5tests.cpp" />
     <ClCompile Include="test\day6tests.cpp" />
+    <ClCompile Include="test\day7tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -121,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="test\day6_input\day6.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="test\day7_input\day7_fixture.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
