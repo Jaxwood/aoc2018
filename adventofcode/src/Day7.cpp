@@ -1,7 +1,10 @@
 #include "Day7.h"
 
+using namespace std;
+
 namespace Day7 {
-	std::string Part1(std::vector<std::tuple<std::string, std::string>> tokens) {
+
+	string Part1(vector<tuple<string, string>> tokens) {
 		return "";
 	}
 }
