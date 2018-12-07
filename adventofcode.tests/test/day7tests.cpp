@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <algorithm>
+#include <regex>
+#include <tuple>
 
 #include "Day7.h"
 
@@ -29,8 +31,16 @@ public:
 		_tokens = tokens;
 	}
 
-	std::vector<std::string> getTokens() {
-		return this->_tokens;
+	std::vector<std::tuple<std::string, std::string>> getTokens() {
+		std::vector<std::tuple<std::string, std::string>> records;
+		auto reg = std::regex("Step\\s(\\w+)\\smust be finished before step\\s(\\w+)\\scan begin.", std::regex_constants::ECMAScript);
+		for (int i = 0; i < this->_tokens.size(); i++) {
+			std::smatch match;
+			if (std::regex_match(this->_tokens[i], match, reg)) {
+				records.push_back(std::make_tuple(match[1], match[2]));
+			}
+		}
+		return records;
 	}
 };
 
