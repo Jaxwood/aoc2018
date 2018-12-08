@@ -163,6 +163,8 @@ namespace Day7 {
 			}
 
 			sort(begin(choices), end(choices));
+			auto it = unique(begin(choices), end(choices));
+			choices.resize(distance(begin(choices), it));
 			return choices;
 		}
 

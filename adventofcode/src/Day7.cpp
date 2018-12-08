@@ -27,6 +27,7 @@ namespace Day7 {
 			pool.tick();
 		}
 		pool.wait();
+		auto path = sleigh.path();
 		return pool.time();
 	}
 }
