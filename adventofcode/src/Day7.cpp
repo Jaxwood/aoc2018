@@ -4,53 +4,96 @@ using namespace std;
 
 namespace Day7 {
 
-	Node getRootNode(vector<tuple<string, string>> tokens) {
-		set<string> from;
-		set<string> to;
-		string stepFrom;
-		string stepTo;
-
-		for (int i = 0; i < tokens.size(); i++) {
-			tie (stepFrom, stepTo) = tokens[i];
-			from.insert(stepFrom);
-			to.insert(stepTo);
-		}
-		set<string> difference;
-		set_difference(begin(from), end(from), begin(to), end(to), inserter(difference, end(difference)));
-
-		string result;
-		for (auto &it : difference) {
-			result = it;
-		}
-		return Node(result);
-	}
-
-	Node populate(Node n, vector<tuple<string, string>> tokens) {
-		auto parent = n.getName();
-		string from, to;
-		for (int i = 0; i < tokens.size(); i++) {
-			tie (from, to) = tokens[i];
-			if (from == parent) {
-				auto child = Node(to);
-				child = populate(child, tokens);
-				n.addChild(child);
+	// check if requirements are fulfilled
+	bool valid(vector<string> requirements, vector<string> fulfilled) {
+		for (auto r : requirements) {
+			if (count(begin(fulfilled), end(fulfilled), r) == 0) {
+				return false;
 			}
 		}
-		return n;
+		return true;
 	}
 
-	string sum(Node n) {
-		string result = n.getName();
-		for (auto c : n.children())
-		{
-			result += c.getName();
+	// choice based on alphabetical order
+	string bestChoice(vector<string> choices) {
+		sort(begin(choices), end(choices));
+		return choices[0];
+	}
+
+	// do not add already added steps
+	bool canBeAdded(string n, vector<string> result) {
+		return count(begin(result), end(result), n) == 0;
+	}
+
+	vector<string> noRequirements(map<string, vector<string>> required, map<string, vector<string>> next) {
+		vector<string> result;
+		for (auto nxt : next) {
+			if (required.count(nxt.first) == 0) {
+					result.push_back(nxt.first);
+			}
 		}
 		return result;
 	}
 
+	// calculate the next step
+	vector<string> nextStep(map<string, vector<string>> required, map<string, vector<string>> next, vector<string> result, int length)
+	{
+		if (result.size() == length) return result;
+
+		vector<string> choice;
+		for (auto res : result) {
+			for (auto n : next[res]) {
+				if (valid(required[n], result)) {
+					if (canBeAdded(n, result)) {
+						choice.push_back(n);
+					}
+				}
+			}
+		}
+		// add the steps that does not have any requirements
+		auto noReq = noRequirements(required, next);
+		for (auto r : noReq) {
+			if (canBeAdded(r, result)) {
+				choice.push_back(r);
+			}
+		}
+		// find the best match
+		result.push_back(bestChoice(choice));
+		return nextStep(required, next, result, length);
+	}
+
 	string Part1(vector<tuple<string, string>> tokens) {
-		auto root = getRootNode(tokens);
-		auto tree = populate(root, tokens);
-		return sum(tree);
+		string from, to;
+		map<string, vector<string>> required, next;
+		set<string> uniques;
+
+		// find traversal and requirements
+		for (auto token : tokens) {
+			tie(from, to) = token;
+			required[to].push_back(from);
+			next[from].push_back(to);
+		}
+
+		for (auto n : next) {
+			uniques.insert(n.first);
+		}
+		for (auto n : required) {
+			uniques.insert(n.first);
+		}
+
+		// get the root
+		auto result = noRequirements(required, next);
+
+		auto start = bestChoice(result);
+		result.clear();
+		result.push_back(start);
+
+		result = nextStep(required, next, result, uniques.size());
+		string token = "";
+		for (auto r : result) {
+			token += r;
+		}
+
+		return token;
 	}
 }
