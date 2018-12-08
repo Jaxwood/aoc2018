@@ -62,23 +62,26 @@ namespace Day7 {
 		return nextStep(required, next, result, length);
 	}
 
+	int uniques(map<string, vector<string>> required, map<string, vector<string>> next) {
+		set<string> letters;
+		for (auto n : next) {
+			letters.insert(n.first);
+		}
+		for (auto n : required) {
+			letters.insert(n.first);
+		}
+		return letters.size();
+	}
+
 	string Part1(vector<tuple<string, string>> tokens) {
 		string from, to;
 		map<string, vector<string>> required, next;
-		set<string> uniques;
 
 		// find traversal and requirements
 		for (auto token : tokens) {
 			tie(from, to) = token;
 			required[to].push_back(from);
 			next[from].push_back(to);
-		}
-
-		for (auto n : next) {
-			uniques.insert(n.first);
-		}
-		for (auto n : required) {
-			uniques.insert(n.first);
 		}
 
 		// get the root
@@ -88,12 +91,28 @@ namespace Day7 {
 		result.clear();
 		result.push_back(start);
 
-		result = nextStep(required, next, result, uniques.size());
+		result = nextStep(required, next, result, uniques(required, next));
 		string token = "";
 		for (auto r : result) {
 			token += r;
 		}
 
 		return token;
+	}
+
+	int Part2(vector<tuple<string, string>> tokens, int elves) {
+		WorkerPool pool = WorkerPool(tokens, elves);
+		Sleigh sleigh = Sleigh(tokens);
+		while (sleigh.moreMoves())
+		{
+			auto moves = sleigh.move();
+			auto accepted = pool.assignWork(moves);
+			for(auto &accept : accepted) {
+				sleigh.accept(accept);
+			}
+			pool.tick();
+		}
+		pool.wait();
+		return pool.time();
 	}
 }
