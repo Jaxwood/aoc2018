@@ -170,6 +170,14 @@ namespace Day7 {
 			this->moves.push_back(move);
 		}
 
+		string path() {
+			string result = "";
+			for (auto &move : moves) {
+				result += move;
+			}
+			return result;
+		}
+
 		bool moreMoves() {
 			return this->moves.size() < this->steps;
 		}
