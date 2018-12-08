@@ -131,7 +131,7 @@ namespace Day7 {
 			return true;
 		}
 
-		bool isDone(string move) {
+		bool isAvailable(string move) {
 			return count(begin(this->moves), end(this->moves), move) == 0;
 		}
 
@@ -150,14 +150,14 @@ namespace Day7 {
 			vector<string> choices;
 			for (auto &from : this->moves) {
 				for (auto &next : this->allowedMoves[from]) {
-					if (isAllowed(next) && isDone(next)) {
+					if (isAllowed(next) && isAvailable(next)) {
 						choices.push_back(next);
 					}
 				}
 			}
 			auto moves = initialMoves();
 			for (auto &move : moves) {
-				if (isDone(move)) {
+				if (isAvailable(move)) {
 					choices.push_back(move);
 				}
 			}
