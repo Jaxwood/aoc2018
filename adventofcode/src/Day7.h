@@ -155,6 +155,8 @@ namespace Day7 {
 					}
 				}
 			}
+			// since initial moves doesn't show up based on requirements
+			// re-add them here
 			auto moves = initialMoves();
 			for (auto &move : moves) {
 				if (isAvailable(move)) {
@@ -162,9 +164,11 @@ namespace Day7 {
 				}
 			}
 
+			// sort and remove duplicates
 			sort(begin(choices), end(choices));
 			auto it = unique(begin(choices), end(choices));
 			choices.resize(distance(begin(choices), it));
+
 			return choices;
 		}
 
