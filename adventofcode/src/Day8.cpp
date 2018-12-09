@@ -42,11 +42,11 @@ namespace Day8 {
 		}
 	}
 
-	int sumMetadata(int sum, Node tree) {
-		for (auto &node : tree.nodes()) {
+	int sumMetadata(int sum, Node node) {
+		for (auto &node : node.nodes()) {
 			sum = sumMetadata(sum, node);
 		}
-		auto metadata = tree.meta();
+		auto metadata = node.meta();
 		sum += accumulate(begin(metadata), end(metadata), 0);
 
 		return sum;
@@ -61,5 +61,32 @@ namespace Day8 {
 		auto tree = build(Node(metadata), licenseFile, childCount);
 
 		return sumMetadata(0, tree);
+	}
+
+	int sumChildNodes(int sum, Node node) {
+		auto metadata = node.meta();
+		if (node.hasNodes()) {
+			for (int i = 0; i < metadata.size(); i++) {
+				auto childIdx = metadata[i] - 1;
+				if (node.hasChild(childIdx)) {
+					sum = sumChildNodes(sum, node.nodes()[childIdx]);
+				}
+			}
+		}
+		else {
+			sum += accumulate(begin(metadata), end(metadata), 0);
+		}
+		return sum;
+	}
+
+	int Part2(vector<int> licenseFile) {
+		vector<int> metadata;
+		vector<Node> children;
+		// get the first child count
+		int childCount = licenseFile.back();
+		licenseFile.pop_back();
+		auto tree = build(Node(metadata), licenseFile, childCount);
+
+		return sumChildNodes(0, tree);
 	}
 }
