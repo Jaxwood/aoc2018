@@ -13,10 +13,6 @@ namespace Day8 {
 		vector<Node> children;
 		vector<int> metadata;
 	public:
-		Node(vector<Node> children, vector<int> metadata) {
-			this->metadata = metadata;
-			this->children = children;
-		}
 		Node(vector<int> metadata) {
 			this->metadata = metadata;
 		}
@@ -38,5 +34,6 @@ namespace Day8 {
 	};
 
 	int Part1(vector<int> licenseFile);
+
 	int Part2(vector<int> licenseFile);
 }
