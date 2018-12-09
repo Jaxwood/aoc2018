@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 
@@ -20,6 +22,15 @@ namespace Day8 {
 		}
 		void addChild(Node node) {
 			this->children.push_back(node);
+		}
+		vector<Node> nodes() {
+			return this->children;
+		}
+		vector<int> meta() {
+			return this->metadata;
+		}
+		bool hasNodes() {
+			return this->children.size() > 0;
 		}
 	};
 

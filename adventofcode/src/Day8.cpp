@@ -42,6 +42,16 @@ namespace Day8 {
 		}
 	}
 
+	int sumMetadata(int sum, Node tree) {
+		for (auto &node : tree.nodes()) {
+			sum = sumMetadata(sum, node);
+		}
+		auto metadata = tree.meta();
+		sum += accumulate(begin(metadata), end(metadata), 0);
+
+		return sum;
+	}
+
 	int Part1(vector<int> licenseFile) {
 		vector<int> metadata;
 		vector<Node> children;
@@ -50,6 +60,6 @@ namespace Day8 {
 		licenseFile.pop_back();
 		auto tree = build(Node(metadata), licenseFile, childCount);
 
-		return 0;
+		return sumMetadata(0, tree);
 	}
 }
