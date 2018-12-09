@@ -32,7 +32,11 @@ namespace Day8 {
 		bool hasNodes() {
 			return this->children.size() > 0;
 		}
+		bool hasChild(int idx) {
+			return this->children.size() > idx;
+		}
 	};
 
 	int Part1(vector<int> licenseFile);
+	int Part2(vector<int> licenseFile);
 }
