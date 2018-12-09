@@ -36,6 +36,7 @@ public:
 		transform(begin(this->_tokens), end(this->_tokens), back_inserter(records), [](auto str) {
 			return stoi(str);
 		});
+		reverse(begin(records), end(records));
 		return records;
 	}
 };
