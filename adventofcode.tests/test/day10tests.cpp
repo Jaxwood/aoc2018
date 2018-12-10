@@ -49,6 +49,6 @@ public:
 
 TEST_F(day10Fixture, Part1) {
 	SetUp("day10_fixture.txt");
-	auto actual = Day10::Part1(getTokens());
-	EXPECT_EQ("", actual);
+	auto actual = Day10::Part1(getTokens(), 3);
+	EXPECT_EQ(vector<string>(), actual);
 }
