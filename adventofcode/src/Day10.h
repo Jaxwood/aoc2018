@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
+#include <algorithm>
 
 using namespace std;
 
@@ -16,6 +18,19 @@ namespace Day10 {
 			this->incX = incX;
 			this->incY = incY;
 		}
+
+		void tick() {
+			this->x += incX;
+			this->y += incY;
+		}
+
+		int xCoord() {
+			return this->x;
+		}
+
+		int yCoord() {
+			return this->y;
+		}
 	};
-	string Part1(vector<Point> points);
+	vector<string> Part1(vector<Point> points, int seconds);
 }
