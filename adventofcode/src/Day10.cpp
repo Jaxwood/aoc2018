@@ -23,17 +23,27 @@ namespace Day10 {
 		vector<string> result;
 
 		for (int y = minY; y <= maxY; y++) {
-			string target = "";
-			for (int x = minX; x <= maxX; x++) {
-				if (count_if(begin(points), end(points), [x, y](Point p1) { return p1.xCoord() == x && p1.yCoord() == y; }) > 0)
-				{
-					target.push_back('#');
+			vector<Point> xs;
+			int prevX;
+			string line;
+			copy_if(begin(points), end(points), back_inserter(xs), [y](Point x) { return x.yCoord() == y; });
+			sort(begin(xs), end(xs));
+			for (int x = 0; x < xs.size(); x++) {
+				int diff = 0;
+				Point item = xs[x];
+				if (x == 0) {
+					diff = item.xCoord() - minX;
 				}
 				else {
-					target.push_back('.');
+					diff = item.xCoord() - prevX;
 				}
+				prevX = item.xCoord();
+				if (diff > 1) {
+					line += string(diff, '.');
+				}
+				line += '#';
 			}
-			result.push_back(target);
+			result.push_back(line);
 		}
 
 		return result;
