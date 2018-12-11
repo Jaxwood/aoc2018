@@ -12,6 +12,7 @@ namespace Day10 {
 	private:
 		int x, y, incX, incY;
 	public:
+		Point() {}
 		Point(int x, int y, int incX, int incY) {
 			this->x = x;
 			this->y = y;
@@ -30,6 +31,9 @@ namespace Day10 {
 
 		int yCoord() {
 			return this->y;
+		}
+		bool operator<(Point &p2) {
+			return this->xCoord() < p2.xCoord();
 		}
 	};
 	vector<string> Part1(vector<Point> points, int seconds);
