@@ -73,3 +73,10 @@ TEST_F(day9Fixture, Part1e) {
 	auto actual = Day9::Part1(30, 5807);
 	EXPECT_EQ(37305, actual);
 }
+TEST_F(day9Fixture, Part2) {
+	SetUp("day9.txt");
+	int players, lastMable;
+	tie(players, lastMable) = getTokens()[0];
+	auto actual = Day9::Part2(players, lastMable);
+	EXPECT_EQ(0, actual);
+}

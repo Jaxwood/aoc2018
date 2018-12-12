@@ -62,4 +62,8 @@ namespace Day9 {
 
 		return highscore;
 	}
+
+	int Part2(int players, int lastMable) {
+		return Part1(players, lastMable * 100);
+	}
 }
