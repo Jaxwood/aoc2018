@@ -1,66 +1,66 @@
 #include "Day9.h"
 
-#include <numeric>
-#include <vector>
 #include <map>
+#include <vector>
 
 using namespace std;
 
 namespace Day9 {
+
+	int scorePosition(int position, int size) {
+		if (position - 7 < 0) {
+			return size - position - 7;
+		}
+		else {
+			return position - 7;
+		}
+	}
+
 	int Part1(int participants, int lastMable) {
 		// setup game
-		int currentMable = 0;
-		vector<int> game;
-		game.push_back(0);
-		int player = 1;
-		map<int, int> players;
+		map<int, int> score;
+		size_t player = 1;
+		int position = 0;
+		vector<int> mables;
+		mables.push_back(0);
 
-		// turns
-		for (int i = 1; i <= lastMable; i++) {
+		for (size_t i = 1; i < lastMable; i++) {
+			auto size = mables.size();
+			// update score
 			if (i % 23 == 0) {
-				players[player] += i;
-				if (currentMable > 7) {
-					currentMable -= 7;
-				}
-				else {
-					int diff = 7 - currentMable;
-					currentMable = game.size() - diff;
-				}
-				players[player] += game.at(currentMable);
-				game.erase(begin(game) + currentMable);
+				position = scorePosition(position, size);
+				score[player] = i;
+				score[player] += mables.at(position);
+				mables.erase(begin(mables) + position);
+			}
+
+			// update position
+			mables.push_back(i);
+
+			if (position + 2 >= size) {
+				position = 1;
 			}
 			else {
-				if (i == 1) {
-					game.push_back(i);
-					currentMable = i;
-				}
-				// are we at the end?
-				else if (currentMable == game.size() - 1) {
-					currentMable = 1;
-					game.insert(begin(game) + currentMable, currentMable, i);
-				}
-				else {
-					currentMable += 2;
-					game.insert(begin(game) + currentMable, 1, i);
-				}
+				position += 2;
 			}
 
-			// update active player
+			// next turn
 			if (player == participants) {
 				player = 1;
 			}
 			else {
-				++player;
-			}
-		}
-		int highscore = 0;
-		for (auto &p : players) {
-			if (p.second > highscore) {
-				highscore = p.second;
+				player++;
 			}
 		}
 
-		return highscore;
+		// get the highest score
+		int total = 0;
+		for (auto &p : score) {
+			if (p.second > total) {
+				total = p.second;
+			}
+		}
+		return total;
 	}
 
 	int Part2(int players, int lastMable) {
