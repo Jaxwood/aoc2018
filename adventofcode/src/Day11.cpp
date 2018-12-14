@@ -32,10 +32,10 @@ namespace Day11 {
 		return hundredDigit(powerlevel) - 5;
 	}
 
-	vector<tuple<int, int>> getCoords(int x, int y) {
+	vector<tuple<int, int>> getCoords(int x, int y, int sizeX, int sizeY) {
 		vector<tuple<int, int>> result;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < sizeX; i++) {
+			for (int j = 0; j < sizeY; j++) {
 				result.push_back(make_tuple(x+i, y+j));
 			}
 		}
@@ -52,13 +52,13 @@ namespace Day11 {
 		return total;
 	}
 
-	tuple<int, int> Part1(int serialNumber) {
+	tuple<int, int> Part1(int sizeX, int sizeY, int serialNumber) {
 		map<tuple<int, int>, int> totals;
 		// loop x
-		for (int i = 1; i <= 300 - 3; i++) {
+		for (int i = 1; i <= 300 - sizeX; i++) {
 			// loop y
-			for (int j = 1; j <= 300 - 3; j++) {
-				auto coords = getCoords(i, j);
+			for (int j = 1; j <= 300 - sizeY; j++) {
+				auto coords = getCoords(i, j, sizeX, sizeY);
 				totals[make_tuple(i,j)] = calculateTotalPowers(coords, serialNumber);
 			}
 		}
