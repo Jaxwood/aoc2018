@@ -13,6 +13,7 @@ namespace Day11 {
 	class Grid {
 	private:
 		int serialNumber;
+		int grid[300][300];
 
 		int hundredDigit(int num) {
 			vector<int> digits;
@@ -42,15 +43,24 @@ namespace Day11 {
 			int result = 0;
 			for (int i = 0; i < size; i++) {
 				for (int j = 0; j < size; j++) {
-					result += calculatePowerLevel(x + i, y + j);
+					result += this->grid[x + i - 1][y + j - 1];
 				}
 			}
 			return result;
 		}
 
+		void createGrid() {
+			for (int x = 1; x <= 300; x++) {
+				for (int y = 1; y <= 300; y++) {
+					this->grid[x - 1][y - 1] = calculatePowerLevel(x, y);
+				}
+			}
+		}
+
 	public:
 		Grid(int serialNumber) {
 			this->serialNumber = serialNumber;
+			this->createGrid();
 		}
 
 		int totals(int x, int y, int size) {
