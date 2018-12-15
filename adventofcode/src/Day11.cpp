@@ -32,7 +32,7 @@ namespace Day11 {
 					auto result = grid.totals(x, y, size);
 					if (result > best) {
 						best = result;
-						candidate = make_tuple(x, y, size);
+						candidate = make_tuple(x, y, size*size);
 					}
 				}
 			}
