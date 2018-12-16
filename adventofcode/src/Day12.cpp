@@ -4,9 +4,9 @@
 namespace Day12 {
 
 	int Part1(string initialState, map<string, string> input) {
-		initialState = ".." + initialState + "..";
+		initialState = "..." + initialState + "...";
 		int sum = 0;
-		int idx = 2;
+		int idx = 3;
 		for (int g = 0; g < 20; g++) {
 			string generation = "";
 			for (int i = 2; i < initialState.size() - 2; i++) {

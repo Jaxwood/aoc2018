@@ -54,8 +54,3 @@ TEST_F(day12Fixture, Part1) {
 	auto actual = Day12::Part1("#..#.#..##......###...###", getTokens());
 	EXPECT_EQ(325, actual);
 }
-TEST_F(day12Fixture, Part1a) {
-	SetUp("day12.txt");
-	auto actual = Day12::Part1("#........#.#.#...###..###..###.#..#....###.###.#.#...####..##..##.#####..##...#.#.....#...###.#.####", getTokens());
-	EXPECT_EQ(325, actual);
-}
