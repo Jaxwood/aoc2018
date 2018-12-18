@@ -36,8 +36,8 @@ public:
 		_tokens = tokens;
 	}
 
-	map<string, string> getTokens() {
-		map<string, string> records;
+	unordered_map<string, string> getTokens() {
+		unordered_map<string, string> records;
 		auto reg = regex("([.|#]+)\\s=>\\s([#|.])", regex_constants::ECMAScript);
 		for (int i = 0; i < this->_tokens.size(); i++) {
 			smatch match;
@@ -53,4 +53,10 @@ TEST_F(day12Fixture, Part1) {
 	SetUp("day12_fixture.txt");
 	auto actual = Day12::Part1("#..#.#..##......###...###", getTokens());
 	EXPECT_EQ(325, actual);
+}
+
+TEST_F(day12Fixture, Part1a) {
+	SetUp("day12.txt");
+	auto actual = Day12::Part1("#........#.#.#...###..###..###.#..#....###.###.#.#...####..##..##.#####..##...#.#.....#...###.#.####", getTokens());
+	EXPECT_EQ(3217, actual);
 }
