@@ -14,19 +14,18 @@ namespace Day12 {
 		vector<char> pattern = { '#' };
 		unordered_map<string, string> rules;
 		unordered_map<string, vector<string>> cache;
-		int zeroIndex = 0;
+		int idx;
 
 		// adds 3 dots to the start if missing
 		void prefix() {
-			int dist = 3 - distance(begin(this->state), find(begin(this->state), end(this->state), '#'));
+			int dist = 5 - distance(begin(this->state), find(begin(this->state), end(this->state), '#'));
 			this->state = string(dist, '.') + this->state;
-			this->zeroIndex += dist;
 		}
 
 		// adds 3 dots to the end if missing
 		void postfix() {
 			auto it = find_end(begin(this->state), end(this->state), begin(this->pattern), end(this->pattern));
-			auto dist = 3 - (this->state.size() - distance(begin(this->state), it) - 1);
+			auto dist = 5 - (this->state.size() - distance(begin(this->state), it) - 1);
 			this->state = this->state + string(dist, '.');
 		}
 
@@ -34,25 +33,27 @@ namespace Day12 {
 		Garden(string state, unordered_map<string, string> rules) {
 			this->state = state;
 			this->rules = rules;
-			this->prefix();
-			this->postfix();
+			this->idx = 0;
 		}
 
 		void grow() {
+			this->prefix();
+			this->postfix();
+			this->idx -= 3;
+
 			vector<string> generation;
-			int cnt = 0;
+			bool found = false;
 			for (int i = 2; i < this->state.size() - 2; i++) {
 				string pattern = this->state.substr(i - 2, 5);
+				string value = ".";
 				auto it = this->rules.find(pattern);
 				if (it != this->rules.end()) {
-					auto value = (*it).second;
-					generation.push_back(value);
+					value = (*it).second;
 				}
-				else {
-					generation.push_back(".");
-				}
-				if (i == 2) {
-					this->zeroIndex = this->zeroIndex - 2;
+				generation.push_back(value);
+				if (!found && value == "#") {
+					this->idx += (i - 2);
+					found = true;
 				}
 			}
 			this->state = "";
@@ -60,8 +61,6 @@ namespace Day12 {
 				this->state += generation[i];
 			}
 
-			this->prefix();
-			this->postfix();
 		}
 
 		string layout() {
@@ -71,8 +70,9 @@ namespace Day12 {
 		int plants() {
 			int sum = 0;
 			string positives, negatives;
-			copy(begin(this->state) + this->zeroIndex, end(this->state), back_inserter(positives));
-			copy(begin(this->state), begin(this->state) + this->zeroIndex + 1, back_inserter(negatives));
+			int dist = abs(this->idx) + distance(begin(this->state), find(begin(this->state), end(this->state), '#'));
+			copy(begin(this->state) + dist, end(this->state), back_inserter(positives));
+			copy(begin(this->state), begin(this->state) + dist + 1, back_inserter(negatives));
 
 			for (int i = 0; i < positives.size(); i++) {
 				if (positives[i] == '#') {
