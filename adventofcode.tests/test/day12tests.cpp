@@ -106,23 +106,35 @@ TEST_F(day12Fixture, pattern7) {
 TEST_F(day12Fixture,  state01) {
 	SetUp("day12_fixture.txt");
 	auto actual = Day12::Part1(1, "#..#.#..##......###...###", getTokens());
-	EXPECT_EQ(".#...#....#.....#..#..#..#.", Day12::getCurrentState());
+	EXPECT_EQ("#...#....#.....#..#..#..#", Day12::getCurrentState());
 }
 
 TEST_F(day12Fixture,  state02) {
 	SetUp("day12_fixture.txt");
 	auto actual = Day12::Part1(2, "#..#.#..##......###...###", getTokens());
-	EXPECT_EQ("..##..##...##....#..#..#..##.", Day12::getCurrentState());
+	EXPECT_EQ("##..##...##....#..#..#..##", Day12::getCurrentState());
 }
 
 TEST_F(day12Fixture,  state03) {
 	SetUp("day12_fixture.txt");
 	auto actual = Day12::Part1(3, "#..#.#..##......###...###", getTokens());
-	EXPECT_EQ("..#.#...#..#.#....#..#..#...#..", Day12::getCurrentState());
+	EXPECT_EQ("#.#...#..#.#....#..#..#...#", Day12::getCurrentState());
 }
 
 TEST_F(day12Fixture,  state20) {
 	SetUp("day12_fixture.txt");
 	auto actual = Day12::Part1(20, "#..#.#..##......###...###", getTokens());
-	EXPECT_EQ("..................#....##....#####...#######....#.#..##..........", Day12::getCurrentState());
+	EXPECT_EQ("#....##....#####...#######....#.#..##", Day12::getCurrentState());
+}
+
+TEST_F(day12Fixture,  startIdx00) {
+	SetUp("day12_fixture.txt");
+	auto actual = Day12::Part1(0, "#..#.#..##......###...###", getTokens());
+	EXPECT_EQ(0, Day12::getStartIdx());
+}
+
+TEST_F(day12Fixture,  startIdx01) {
+	SetUp("day12_fixture.txt");
+	auto actual = Day12::Part1(3, "#..#.#..##......###...###", getTokens());
+	EXPECT_EQ(-1, Day12::getStartIdx());
 }
