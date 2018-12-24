@@ -5,6 +5,6 @@
 using namespace std;
 
 namespace Day9 {
-	int Part1(int players, int lastMable);
-	int Part2(int players, int lastMable);
+	long long Part1(int players, int lastMable);
+	long long Part2(int players, int lastMable);
 }
