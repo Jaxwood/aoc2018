@@ -7,42 +7,25 @@ using namespace std;
 
 namespace Day13 {
 
+	enum Direction {
+		North,
+		South,
+		East,
+		West
+	};
+
 	class Cart {
-		int x = 0;
-		int y = 0;
+	private:
+		int x, y;
+		Direction direction;
 	public:
-		Cart(int x, int y) {
+		Cart(int x, int y, Direction direction) {
 			this->x = x;
 			this->y = y;
+			this->direction = direction;
 		}
 	};
 
-	class Grid {
-	private:
-		char grid[5][12];
-		vector<Cart> carts;
-
-		bool isCart(char candidate) {
-			return candidate == '>' || candidate == '<' || candidate == 'v' || candidate == '^';
-		}
-
-	public:
-		Grid(vector<string> lines) {
-			for (int i = 0; i < lines.size(); i++) {
-				for (int j = 0; j < lines[i].size(); j++) {
-					auto candidate = lines[i][j];
-					grid[i][j] = candidate;
-					if (isCart(candidate)) {
-						carts.push_back(Cart(i, j));
-					}
-				}
-			}
-		}
-
-		void tick(vector<Cart> carts) {
-			for (auto &cart : carts) {
-			}
-		}
-	};
 	tuple<int, int> Part1(vector<string> lines);
+
 }
