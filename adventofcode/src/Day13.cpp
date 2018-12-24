@@ -6,7 +6,7 @@ namespace Day13 {
 	tuple<int, int> Part1(vector<string> lines) {
 		auto network = Network(lines);
 		network.setup();
-		while (network.tick()) {}
+		while (network.tick());
 		return network.collesion();
 	}
 }

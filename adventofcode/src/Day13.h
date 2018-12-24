@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -23,6 +24,24 @@ namespace Day13 {
 			this->x = x;
 			this->y = y;
 			this->direction = direction;
+		}
+
+		tuple<int, int> position() {
+			return make_tuple(this->x, this->y);
+		}
+
+		void move(vector<tuple<int, int>> moves) {
+
+		}
+
+		bool operator<(Cart &cart) {
+			if (this->x < cart.x) {
+				return true;
+			}
+			if (this->y < cart.y) {
+				return true;
+			}
+			return false;
 		}
 	};
 
@@ -64,6 +83,15 @@ namespace Day13 {
 			}
 		}
 
+		vector<tuple<int, int>> getPosibleMoves(tuple<int, int> position) {
+			auto moves = vector<tuple<int, int>>();
+			return moves;
+		}
+
+		bool collide() {
+			return false;
+		}
+
 	public:
 		Network(vector<string> lines) {
 			this->lines = lines;
@@ -88,7 +116,14 @@ namespace Day13 {
 		}
 
 		bool tick() {
-			return false;
+			int x, y = 0;
+			for (auto &cart : this->carts) {
+				auto position = cart.position();
+				auto moves = getPosibleMoves(position);
+				cart.move(moves);
+			}
+			sort(begin(this->carts), end(this->carts));
+			return collide();
 		}
 
 		tuple<int, int> collesion() {
