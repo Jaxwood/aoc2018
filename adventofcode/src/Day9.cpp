@@ -1,59 +1,60 @@
 #include "Day9.h"
 
 #include <numeric>
-#include <vector>
-#include <map>
+#include <list>
+#include <unordered_map>
 
 using namespace std;
 
 namespace Day9 {
-	int Part1(int participants, int lastMable) {
+	int nextMablePosition(int mablePosition, int size) {
+		return mablePosition == size - 1 ? 1 : (mablePosition += 2);
+	}
+	long long Part1(int participants, int lastMable) {
 		// setup game
-		int currentMable = 0;
-		vector<int> game;
-		game.push_back(0);
-		int player = 1;
-		map<int, int> players;
-
+		int mablePosition = 1;
+		list<int> game = { 0, 1 };
+		auto it = begin(game);
+		int player = 2;
+		unordered_map<int, long long> players;
+		int size = 2;
 		// turns
-		for (int i = 1; i <= lastMable; i++) {
+		for (int i = 2; i <= lastMable; i++) {
 			if (i % 23 == 0) {
-				players[player] += i;
-				if (currentMable > 7) {
-					currentMable -= 7;
+				if (mablePosition > 7) {
+					mablePosition -= 7;
+					for (int j = 0; j < 8; j++) {
+						it = prev(it);
+					}
 				}
 				else {
-					int diff = 7 - currentMable;
-					currentMable = game.size() - diff;
+					mablePosition = size - (7 - mablePosition);
+					it = begin(game);
+					for (int j = 0; j < mablePosition; j++) {
+						it = next(it);
+					}
 				}
-				players[player] += game.at(currentMable);
-				game.erase(begin(game) + currentMable);
+				players[player] += i + *it;
+				it = next(game.erase(it));
+				size--;
 			}
 			else {
-				if (i == 1) {
-					game.push_back(i);
-					currentMable = i;
-				}
 				// are we at the end?
-				else if (currentMable == game.size() - 1) {
-					currentMable = 1;
-					game.insert(begin(game) + currentMable, currentMable, i);
+				mablePosition = nextMablePosition(mablePosition, size);
+				if (mablePosition == 1) {
+					it = next(begin(game));
 				}
 				else {
-					currentMable += 2;
-					game.insert(begin(game) + currentMable, 1, i);
+					it = next(it);
 				}
+				it = next(game.insert(it, i));
+				size++;
 			}
 
 			// update active player
-			if (player == participants) {
-				player = 1;
-			}
-			else {
-				++player;
-			}
+			player = player == participants ? 1 : (player += 1);
 		}
-		int highscore = 0;
+		long long highscore = 0;
 		for (auto &p : players) {
 			if (p.second > highscore) {
 				highscore = p.second;
@@ -63,7 +64,7 @@ namespace Day9 {
 		return highscore;
 	}
 
-	int Part2(int players, int lastMable) {
+	long long Part2(int players, int lastMable) {
 		return Part1(players, lastMable * 100);
 	}
 }
