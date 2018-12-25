@@ -197,20 +197,12 @@ namespace Day13 {
 			}
 		}
 
-		bool collide() {
-			sort(begin(this->carts), end(this->carts));
-			auto it = unique(begin(this->carts), end(this->carts));
-			if (it != end(this->carts)) {
-				this->collisionCoord = (*it).position();
-				auto dist = distance(begin(this->carts), it);
-				this->carts.resize(dist, Cart(0, 0, ' ', North));
+		bool isCollision(Cart &cart) {
+			if (count_if(begin(this->carts), end(this->carts), [&cart](Cart &other) { return cart.position() == other.position();  }) > 1) {
+				this->collisionCoord = cart.position();
 				return true;
 			}
 			return false;
-		}
-
-		bool isCollision(Cart &cart) {
-			return count_if(begin(this->carts), end(this->carts), [&cart](Cart &other) { return cart.position() == other.position();  }) > 1;
 		}
 
 	public:
@@ -227,26 +219,28 @@ namespace Day13 {
 						auto direction = this->toDirection(candidate);
 						char pathway = this->replaceCart(direction);
 						carts.push_back(Cart(j, i, pathway, direction));
-						this->grid[i][j] = pathway;
+						this->grid[j][i] = pathway;
 					}
 					else {
-						this->grid[i][j] = candidate;
+						this->grid[j][i] = candidate;
 					}
 				}
 			}
 			this->carts = carts;
+			sort(begin(this->carts), end(this->carts));
 		}
 
 		bool tick() {
 			int x, y = 0;
 			for (auto &cart : this->carts) {
 				tie(x,y) = cart.move();
-				cart.setPath(grid[y][x]);
+				cart.setPath(grid[x][y]);
 				if (isCollision(cart)) {
-					break;
+					return false;
 				}
 			}
-			return !collide();
+			sort(begin(this->carts), end(this->carts));
+			return true;
 		}
 
 		tuple<int, int> collesion() {
