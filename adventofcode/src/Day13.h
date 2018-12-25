@@ -124,6 +124,7 @@ namespace Day13 {
 					}
 					break;
 				}
+				break;
 			case '/':
 				switch (this->direction) {
 				case East:
@@ -178,10 +179,20 @@ namespace Day13 {
 			if (this->x < cart.x) {
 				return true;
 			}
+			else {
+				return false;
+			}
 			if (this->y < cart.y) {
 				return true;
 			}
+			else {
+				return false;
+			}
 			return false;
+		}
+
+		bool operator==(Cart &other) {
+			return this->x == other.x && this->y == other.y;
 		}
 	};
 
@@ -190,6 +201,7 @@ namespace Day13 {
 		vector<string> lines;
 		vector<Cart> carts;
 		char grid[6][13];
+		tuple<int, int> collisionCoord;
 
 		bool isCart(char candidate) {
 			return candidate == '>' || candidate == '<' || candidate == 'v' || candidate == '^';
@@ -224,6 +236,15 @@ namespace Day13 {
 		}
 
 		bool collide() {
+			sort(begin(this->carts), end(this->carts));
+			auto cnt = this->carts.size();
+			auto it = unique(begin(this->carts), end(this->carts));
+			if (it != end(this->carts)) {
+				this->collisionCoord = (*it).position();
+				auto dist = distance(begin(this->carts), it);
+				this->carts.resize(dist, Cart(0, 0, ' ', North));
+				return true;
+			}
 			return false;
 		}
 
@@ -257,12 +278,11 @@ namespace Day13 {
 				tie(x,y) = cart.move();
 				cart.setPath(grid[y][x]);
 			}
-			sort(begin(this->carts), end(this->carts));
-			return collide();
+			return !collide();
 		}
 
 		tuple<int, int> collesion() {
-			return make_tuple(0, 0);
+			return this->collisionCoord;
 		}
 	};
 
