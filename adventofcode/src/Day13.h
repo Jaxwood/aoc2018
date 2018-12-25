@@ -257,9 +257,15 @@ namespace Day13 {
 
 		bool crashes() {
 			int x, y = 0;
+			vector<Cart> crashed;
 			for (auto &cart : this->carts) {
-				tie(x,y) = cart.move();
-				cart.setPath(grid[x][y]);
+				if (count(begin(crashed), end(crashed), cart) == 0) {
+					tie(x, y) = cart.move();
+					cart.setPath(grid[x][y]);
+					if (isCollision(cart)) {
+						crashed.push_back(cart);
+					}
+				}
 			}
 			this->removeCarts();
 			sort(begin(this->carts), end(this->carts));
