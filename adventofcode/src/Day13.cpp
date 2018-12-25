@@ -9,4 +9,15 @@ namespace Day13 {
 		while (network.tick());
 		return network.collesion();
 	}
+
+	tuple<int, int> Part2(vector<string> lines) {
+		auto network = Network(lines);
+		network.setup();
+		while (network.crashes());
+		return network.lastCart();
+	}
+
+	bool operator==(const Cart &c1, const Cart &c2) {
+		return c1.position() == c2.position();
+	}
 }

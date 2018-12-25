@@ -157,6 +157,9 @@
   <ItemGroup>
     <CopyFileToFolders Include="test\day13_input\day13_fixture.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day13_input\day13_fixtureb.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
