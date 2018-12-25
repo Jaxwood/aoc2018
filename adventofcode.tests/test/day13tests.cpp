@@ -46,3 +46,9 @@ TEST_F(day13Fixture, Part1) {
 	auto actual = Day13::Part1(getTokens());
 	EXPECT_EQ(make_tuple(7,3), actual);
 }
+
+TEST_F(day13Fixture, Part2) {
+	SetUp("day13_fixtureb.txt");
+	auto actual = Day13::Part2(getTokens());
+	EXPECT_EQ(make_tuple(6,4), actual);
+}

@@ -53,7 +53,7 @@ namespace Day13 {
 			this->decision = Left;
 		}
 
-		tuple<int, int> position() {
+		tuple<int, int> position() const {
 			return make_tuple(this->x, this->y);
 		}
 
@@ -154,9 +154,11 @@ namespace Day13 {
 		}
 
 		bool operator==(Cart &other) {
-			return this->x == other.x && this->y == other.y;
+			return this->position() == other.position();
 		}
 	};
+
+	bool operator==(const Cart &c1, const Cart &c2);
 
 	class Network {
 	private:
@@ -205,6 +207,16 @@ namespace Day13 {
 			return false;
 		}
 
+		void removeCarts() {
+			vector<Cart> nonCrashedCarts;
+			for (auto &cart : this->carts) {
+				if (!isCollision(cart)) {
+					nonCrashedCarts.push_back(cart);
+				}
+			}
+			this->carts = nonCrashedCarts;
+		}
+
 	public:
 		Network(vector<string> lines) {
 			this->lines = lines;
@@ -243,11 +255,28 @@ namespace Day13 {
 			return true;
 		}
 
+		bool crashes() {
+			int x, y = 0;
+			for (auto &cart : this->carts) {
+				tie(x,y) = cart.move();
+				cart.setPath(grid[x][y]);
+			}
+			this->removeCarts();
+			sort(begin(this->carts), end(this->carts));
+			return this->carts.size() != 1;
+		}
+
+		tuple<int, int> lastCart() {
+			return this->carts[0].position();
+		}
+
 		tuple<int, int> collesion() {
 			return this->collisionCoord;
 		}
 	};
 
 	tuple<int, int> Part1(vector<string> lines);
+
+	tuple<int, int> Part2(vector<string> lines);
 
 }
