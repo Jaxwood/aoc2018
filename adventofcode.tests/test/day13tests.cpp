@@ -42,7 +42,7 @@ public:
 };
 
 TEST_F(day13Fixture, Part1) {
-	SetUp("day13_fixture.txt");
+	SetUp("day13.txt");
 	auto actual = Day13::Part1(getTokens());
 	EXPECT_EQ(make_tuple(7,3), actual);
 }

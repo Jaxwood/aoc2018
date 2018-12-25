@@ -27,6 +27,23 @@ namespace Day13 {
 		char pathway;
 		Direction direction;
 		Decision decision;
+
+		void drive() {
+			switch (this->direction) {
+			case North:
+					this->y -= 1;
+					break;
+			case South:
+					this->y += 1;
+					break;
+			case East:
+					this->x += 1;
+					break;
+			case West:
+					this->x -= 1;
+					break;
+			}
+		}
 	public:
 		Cart(int x, int y, char pathway, Direction direction) {
 			this->x = x;
@@ -43,24 +60,7 @@ namespace Day13 {
 		tuple<int, int> move() {
 			switch (this->pathway) {
 			case '|':
-				switch (this->direction) {
-				case North:
-					this->y -= 1;
-					break;
-				case South:
-					this->y += 1;
-					break;
-				}
-				break;
 			case '-':
-				switch (this->direction) {
-				case East:
-					this->x += 1;
-					break;
-				case West:
-					this->x -= 1;
-					break;
-				}
 				break;
 			case '+':
 				switch (this->decision) {
@@ -69,57 +69,35 @@ namespace Day13 {
 					switch (this->direction) {
 					case East:
 						this->direction = North;
-						this->y -= 1;
 						break;
 					case West:
 						this->direction = South;
-						this->y += 1;
 						break;
 					case North:
 						this->direction = West;
-						this->x -= 1;
 						break;
 					case South:
 						this->direction = East;
-						this->x += 1;
 						break;
 					}
 					break;
 				case Straight:
 					this->decision = Right;
-					switch (this->direction) {
-					case East:
-						this->x += 1;
-						break;
-					case West:
-						this->x -= 1;
-						break;
-					case North:
-						this->y -= 1;
-						break;
-					case South:
-						this->y += 1;
-						break;
-					}
 					break;
 				case Right:
 					this->decision = Left;
 					switch (this->direction) {
 					case East:
 						this->direction = South;
-						this->y += 1;
 						break;
 					case West:
 						this->direction = North;
-						this->y -= 1;
 						break;
 					case North:
 						this->direction = East;
-						this->x += 1;
 						break;
 					case South:
 						this->direction = West;
-						this->x -= 1;
 						break;
 					}
 					break;
@@ -129,19 +107,15 @@ namespace Day13 {
 				switch (this->direction) {
 				case East:
 					this->direction = North;
-					this->y -= 1;
 					break;
 				case West:
 					this->direction = South;
-					this->y += 1;
 					break;
 				case North:
 					this->direction = East;
-					this->x += 1;
 					break;
 				case South:
 					this->direction = West;
-					this->x -= 1;
 					break;
 				}
 				break;
@@ -149,25 +123,22 @@ namespace Day13 {
 				switch (this->direction) {
 				case East:
 					this->direction = South;
-					this->y += 1;
 					break;
 				case West:
 					this->direction = North;
-					this->y -= 1;
 					break;
 				case North:
 					this->direction = West;
-					this->x -= 1;
 					break;
 				case South:
 					this->direction = East;
-					this->x += 1;
 					break;
 				}
 				break;
 			default:
 				throw exception("unknown pathway: " + this->pathway);
 			}
+			this->drive();
 			return make_tuple(this->x, this->y);
 		}
 
@@ -175,20 +146,11 @@ namespace Day13 {
 			this->pathway = pathway;
 		}
 
-		bool operator<(Cart &cart) {
-			if (this->x < cart.x) {
-				return true;
+		bool operator<(Cart &other) {
+			if (this->y == other.y) {
+				return this->x < other.x;
 			}
-			else {
-				return false;
-			}
-			if (this->y < cart.y) {
-				return true;
-			}
-			else {
-				return false;
-			}
-			return false;
+			return this->y < other.y;
 		}
 
 		bool operator==(Cart &other) {
@@ -200,7 +162,7 @@ namespace Day13 {
 	private:
 		vector<string> lines;
 		vector<Cart> carts;
-		char grid[6][13];
+		char grid[200][200];
 		tuple<int, int> collisionCoord;
 
 		bool isCart(char candidate) {
@@ -237,7 +199,6 @@ namespace Day13 {
 
 		bool collide() {
 			sort(begin(this->carts), end(this->carts));
-			auto cnt = this->carts.size();
 			auto it = unique(begin(this->carts), end(this->carts));
 			if (it != end(this->carts)) {
 				this->collisionCoord = (*it).position();
@@ -246,6 +207,10 @@ namespace Day13 {
 				return true;
 			}
 			return false;
+		}
+
+		bool isCollision(Cart &cart) {
+			return count_if(begin(this->carts), end(this->carts), [&cart](Cart &other) { return cart.position() == other.position();  }) > 1;
 		}
 
 	public:
@@ -277,6 +242,9 @@ namespace Day13 {
 			for (auto &cart : this->carts) {
 				tie(x,y) = cart.move();
 				cart.setPath(grid[y][x]);
+				if (isCollision(cart)) {
+					break;
+				}
 			}
 			return !collide();
 		}
