@@ -15,23 +15,163 @@ namespace Day13 {
 		West
 	};
 
+	enum Decision {
+		Left,
+		Straight,
+		Right
+	};
+
 	class Cart {
 	private:
 		int x, y;
+		char pathway;
 		Direction direction;
+		Decision decision;
 	public:
-		Cart(int x, int y, Direction direction) {
+		Cart(int x, int y, char pathway, Direction direction) {
 			this->x = x;
 			this->y = y;
+			this->pathway = pathway;
 			this->direction = direction;
+			this->decision = Left;
 		}
 
 		tuple<int, int> position() {
 			return make_tuple(this->x, this->y);
 		}
 
-		void move(vector<tuple<int, int>> moves) {
+		tuple<int, int> move() {
+			switch (this->pathway) {
+			case '|':
+				switch (this->direction) {
+				case North:
+					this->y -= 1;
+					break;
+				case South:
+					this->y += 1;
+					break;
+				}
+				break;
+			case '-':
+				switch (this->direction) {
+				case East:
+					this->x += 1;
+					break;
+				case West:
+					this->x -= 1;
+					break;
+				}
+				break;
+			case '+':
+				switch (this->decision) {
+				case Left:
+					this->decision = Straight;
+					switch (this->direction) {
+					case East:
+						this->direction = North;
+						this->y -= 1;
+						break;
+					case West:
+						this->direction = South;
+						this->y += 1;
+						break;
+					case North:
+						this->direction = West;
+						this->x -= 1;
+						break;
+					case South:
+						this->direction = East;
+						this->x += 1;
+						break;
+					}
+					break;
+				case Straight:
+					this->decision = Right;
+					switch (this->direction) {
+					case East:
+						this->x += 1;
+						break;
+					case West:
+						this->x -= 1;
+						break;
+					case North:
+						this->y -= 1;
+						break;
+					case South:
+						this->y += 1;
+						break;
+					}
+					break;
+				case Right:
+					this->decision = Left;
+					switch (this->direction) {
+					case East:
+						this->direction = South;
+						this->y += 1;
+						break;
+					case West:
+						this->direction = North;
+						this->y -= 1;
+						break;
+					case North:
+						this->direction = East;
+						this->x += 1;
+						break;
+					case South:
+						this->direction = West;
+						this->x -= 1;
+						break;
+					}
+					break;
+				}
+			case '/':
+				switch (this->direction) {
+				case East:
+					this->direction = North;
+					this->y -= 1;
+					break;
+				case West:
+					this->direction = South;
+					this->y += 1;
+					break;
+				case North:
+					this->direction = East;
+					this->x += 1;
+					break;
+				case South:
+					this->direction = West;
+					this->x -= 1;
+					break;
+				}
+				break;
+			case '\\':
+				switch (this->direction) {
+				case East:
+					this->direction = South;
+					this->y += 1;
+					break;
+				case West:
+					this->direction = North;
+					this->y -= 1;
+					break;
+				case North:
+					this->direction = West;
+					this->x -= 1;
+					break;
+				case South:
+					this->direction = East;
+					this->x += 1;
+					break;
+				}
+				break;
+			default:
+				throw exception("unknown pathway: " + this->pathway);
+			}
+			return make_tuple(this->x, this->y);
+		}
 
+		void setPath(char pathway) {
+			this->pathway = pathway;
 		}
 
 		bool operator<(Cart &cart) {
@@ -70,7 +210,7 @@ namespace Day13 {
 			}
 		}
 
-		char replaceDirection(Direction direction) {
+		char replaceCart(Direction direction) {
 			switch (direction) {
 			case South:
 			case North:
@@ -81,11 +221,6 @@ namespace Day13 {
 			default:
 				throw exception("unknown direction");
 			}
-		}
-
-		vector<tuple<int, int>> getPosibleMoves(tuple<int, int> position) {
-			auto moves = vector<tuple<int, int>>();
-			return moves;
 		}
 
 		bool collide() {
@@ -104,8 +239,9 @@ namespace Day13 {
 					auto candidate = lines[i][j];
 					if (this->isCart(candidate)) {
 						auto direction = this->toDirection(candidate);
-						carts.push_back(Cart(i, j, direction));
-						this->grid[i][j] = this->replaceDirection(direction);
+						char pathway = this->replaceCart(direction);
+						carts.push_back(Cart(j, i, pathway, direction));
+						this->grid[i][j] = pathway;
 					}
 					else {
 						this->grid[i][j] = candidate;
@@ -118,9 +254,8 @@ namespace Day13 {
 		bool tick() {
 			int x, y = 0;
 			for (auto &cart : this->carts) {
-				auto position = cart.position();
-				auto moves = getPosibleMoves(position);
-				cart.move(moves);
+				tie(x,y) = cart.move();
+				cart.setPath(grid[y][x]);
 			}
 			sort(begin(this->carts), end(this->carts));
 			return collide();
