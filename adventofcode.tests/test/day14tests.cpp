@@ -24,21 +24,21 @@ TEST(day14Fixture, Part1d) {
 }
 
 TEST(day14Fixture, Part2a) {
-	auto actual = Day14::Part2("607331");
+	auto actual = Day14::Part2(vector<int> {5, 1, 5, 8, 9});
 	EXPECT_EQ(9, actual);
 }
 
 TEST(day14Fixture, Part2b) {
-	auto actual = Day14::Part2("01245");
+	auto actual = Day14::Part2(vector<int> {0, 1, 2, 4, 5 });
 	EXPECT_EQ(5, actual);
 }
 
 TEST(day14Fixture, Part2c) {
-	auto actual = Day14::Part2("92510");
+	auto actual = Day14::Part2(vector<int> { 9, 2, 5, 1, 0});
 	EXPECT_EQ(18, actual);
 }
 
 TEST(day14Fixture, Part2d) {
-	auto actual = Day14::Part2("59414");
+	auto actual = Day14::Part2(vector<int> { 5, 9, 4, 1, 4});
 	EXPECT_EQ(2018, actual);
 }

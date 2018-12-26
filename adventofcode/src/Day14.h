@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
 #include <vector>
 
 namespace Day14 {
@@ -19,18 +20,17 @@ namespace Day14 {
 	class Reciepe {
 	private:
 		std::vector<int> reciepes;
-		std::string target;
-		int cnt;
+		std::vector<int> target;
 	public:
-		Reciepe(std::string initial, std::string target);
+		Reciepe(std::string initial, std::vector<int> target);
 		void produce(std::vector<Elv> &elves);
 		int size();
 		int count();
 		std::string result(int count, int length);
-		bool match(std::string target);
+		bool match(std::vector<int> target);
 	};
 
 	std::string Part1(int recipes);
 
-	int Part2(std::string recipes);
+	int Part2(std::vector<int> recipes);
 }
