@@ -62,4 +62,8 @@ namespace Day14 {
 		}
 		return reciepe.result(count);
 	}
+
+	string Part2(int count) {
+		return "";
+	}
 }

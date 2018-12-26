@@ -27,4 +27,6 @@ namespace Day14 {
 	};
 
 	std::string Part1(int recipes);
+
+	std::string Part2(int recipes);
 }
