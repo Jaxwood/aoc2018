@@ -18,10 +18,11 @@ namespace Day14 {
 
 	class Reciepe {
 	private:
-		std::string reciepes;
+		std::vector<int> reciepes;
+		std::string target;
 		int cnt;
 	public:
-		Reciepe(std::string initial);
+		Reciepe(std::string initial, std::string target);
 		std::vector<Elv> produce(std::vector<Elv> elves);
 		int size();
 		int count();
