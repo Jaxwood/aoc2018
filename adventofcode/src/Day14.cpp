@@ -34,7 +34,7 @@ namespace Day14 {
 		this->target = string(target.size(), ' ');
 	}
 
-	vector<Elv> Reciepe::produce(vector<Elv> elves) {
+	void Reciepe::produce(vector<Elv> &elves) {
 		int sum = 0;
 		for (auto &elv : elves) {
 			auto idx = elv.getOffset();
@@ -53,7 +53,6 @@ namespace Day14 {
 		for (auto &elv : elves) {
 			elv.updateOffset(size);
 		}
-		return elves;
 	}
 
 	int Reciepe::size() {
@@ -80,7 +79,7 @@ namespace Day14 {
 		vector<Elv> elves = { Elv(0, 0), Elv(1, 1) };
 		auto reciepe = Reciepe("37", to_string(count));
 		while(reciepe.size() < count + 10) {
-			elves = reciepe.produce(elves);
+			reciepe.produce(elves);
 		}
 		return reciepe.result(count, 10);
 	}
@@ -89,7 +88,7 @@ namespace Day14 {
 		vector<Elv> elves = { Elv(0, 0), Elv(1, 1) };
 		auto reciepe = Reciepe("37", target);
 		while (!reciepe.match(target)) {
-			elves = reciepe.produce(elves);
+			reciepe.produce(elves);
 		}
 		return reciepe.count();
 	}

@@ -23,7 +23,7 @@ namespace Day14 {
 		int cnt;
 	public:
 		Reciepe(std::string initial, std::string target);
-		std::vector<Elv> produce(std::vector<Elv> elves);
+		void produce(std::vector<Elv> &elves);
 		int size();
 		int count();
 		std::string result(int count, int length);
