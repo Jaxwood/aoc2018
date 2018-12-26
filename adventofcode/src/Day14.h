@@ -19,14 +19,17 @@ namespace Day14 {
 	class Reciepe {
 	private:
 		std::string reciepes;
+		int cnt;
 	public:
 		Reciepe(std::string initial);
 		std::vector<Elv> produce(std::vector<Elv> elves);
 		int size();
-		std::string result(int count);
+		int count();
+		std::string result(int count, int length);
+		bool match(std::string target);
 	};
 
 	std::string Part1(int recipes);
 
-	std::string Part2(int recipes);
+	int Part2(std::string recipes);
 }

@@ -28,6 +28,7 @@ namespace Day14 {
 
 	Reciepe::Reciepe(string initial) {
 		this->reciepes = initial;
+		this->cnt = 0;
 	}
 
 	vector<Elv> Reciepe::produce(vector<Elv> elves) {
@@ -38,7 +39,9 @@ namespace Day14 {
 			sum += num;
 			elv.setNextIndex(num + 1);
 		}
-		this->reciepes += to_string(sum);
+		auto str = to_string(sum);
+		this->cnt += str.size();
+		this->reciepes += str;
 		int size = this->reciepes.size();
 		for (auto &elv : elves) {
 			elv.updateOffset(size);
@@ -50,8 +53,16 @@ namespace Day14 {
 		return this->reciepes.size();
 	}
 
-	string Reciepe::result(int count) {
-		return this->reciepes.substr(count, 10);
+	int Reciepe::count() {
+		return this->cnt - 3;
+	}
+
+	string Reciepe::result(int count, int length) {
+		return this->reciepes.substr(count, length);
+	}
+
+	bool Reciepe::match(string target) {
+		return this->reciepes.find(target) != string::npos;
 	}
 
 	string Part1(int count) {
@@ -60,10 +71,15 @@ namespace Day14 {
 		while(reciepe.size() < count + 10) {
 			elves = reciepe.produce(elves);
 		}
-		return reciepe.result(count);
+		return reciepe.result(count, 10);
 	}
 
-	string Part2(int count) {
-		return "";
+	int Part2(string target) {
+		vector<Elv> elves = { Elv(0, 0), Elv(1, 1) };
+		auto reciepe = Reciepe("37");
+		while (!reciepe.match(target)) {
+			elves = reciepe.produce(elves);
+		}
+		return reciepe.count();
 	}
 }
