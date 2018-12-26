@@ -22,3 +22,23 @@ TEST(day14Fixture, Part1d) {
 	auto actual = Day14::Part1(2018);
 	EXPECT_EQ("5941429882", actual);
 }
+
+TEST(day14Fixture, Part2a) {
+	auto actual = Day14::Part2(9);
+	EXPECT_EQ("51589", actual);
+}
+
+TEST(day14Fixture, Part2b) {
+	auto actual = Day14::Part2(5);
+	EXPECT_EQ("01245", actual);
+}
+
+TEST(day14Fixture, Part2c) {
+	auto actual = Day14::Part2(18);
+	EXPECT_EQ("92510", actual);
+}
+
+TEST(day14Fixture, Part2d) {
+	auto actual = Day14::Part2(2018);
+	EXPECT_EQ("59414", actual);
+}
