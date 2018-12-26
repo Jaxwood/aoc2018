@@ -26,12 +26,11 @@ namespace Day14 {
 		this->offset = total % size;
 	}
 
-	Reciepe::Reciepe(string initial, string target) {
+	Reciepe::Reciepe(string initial, vector<int> target) {
 		for (int i = 0; i < initial.size(); i++) {
 			this->reciepes.push_back(initial[i] - '0');
 		}
-		this->cnt = 0;
-		this->target = string(target.size(), ' ');
+		this->target = target;
 	}
 
 	void Reciepe::produce(vector<Elv> &elves) {
@@ -43,11 +42,8 @@ namespace Day14 {
 			elv.setNextIndex(num + 1);
 		}
 		auto str = to_string(sum);
-		this->cnt += str.size();
 		for (int i = 0; i < str.size(); i++) {
 			this->reciepes.push_back(str[i] - '0');
-			this->target.erase(0, 1);
-			this->target.push_back(str[i]);
 		}
 		int size = this->reciepes.size();
 		for (auto &elv : elves) {
@@ -60,7 +56,8 @@ namespace Day14 {
 	}
 
 	int Reciepe::count() {
-		return this->cnt - 3;
+		auto it = search(begin(this->reciepes), end(this->reciepes), begin(target), end(target));
+		return distance(begin(this->reciepes), it);
 	}
 
 	string Reciepe::result(int count, int length) {
@@ -71,20 +68,20 @@ namespace Day14 {
 		return result;
 	}
 
-	bool Reciepe::match(string target) {
-		return this->target == target;
+	bool Reciepe::match(vector<int> target) {
+		return search(begin(this->reciepes), end(this->reciepes), begin(target), end(target)) != end(this->reciepes);
 	}
 
 	string Part1(int count) {
 		vector<Elv> elves = { Elv(0, 0), Elv(1, 1) };
-		auto reciepe = Reciepe("37", to_string(count));
+		auto reciepe = Reciepe("37", vector<int> { count });
 		while(reciepe.size() < count + 10) {
 			reciepe.produce(elves);
 		}
 		return reciepe.result(count, 10);
 	}
 
-	int Part2(string target) {
+	int Part2(vector<int> target) {
 		vector<Elv> elves = { Elv(0, 0), Elv(1, 1) };
 		auto reciepe = Reciepe("37", target);
 		while (!reciepe.match(target)) {
