@@ -8,15 +8,31 @@ namespace Day15 {
 		this->x = x;
 		this->y = y;
 		this->hitpoints = 200;
-		this->type = type == 'E' ? Elv : Goblin;
+		this->playerType = type == 'E' ? Elf : Goblin;
 	}
 
-	void Player::attack(Player &creature) {
-		creature.damage();
+	bool Player::inRange(const Player *player) {
+		return abs(this->x - (*player).x) + abs(this->y - (*player).y) == 2;
 	}
 
-	void Player::damage() {
+	bool Player::attack(Player &player) {
+		if (player.inRange(this)) {
+			return player.takeDamage();
+		}
+		return false;
+	}
+
+	bool Player::takeDamage() {
 		this->hitpoints -= 3;
+		return this->hitpoints <= 0;
+	}
+
+	void Player::move(Player player) {
+		// TODO
+	}
+
+	tuple<int,int> Player::position() const {
+		return make_tuple(this->x, this->y);
 	}
 
 	bool Player::operator<(Player &other) {
@@ -47,17 +63,42 @@ namespace Day15 {
 		}
 	}
 
+
+	Player& Game::opponentFor(Player &player) {
+		// TODO
+		return this->players[1];
+	}
+
+	void Game::remove(Player &player) {
+		this->players.erase(std::remove(this->players.begin(), this->players.end(), player), this->players.end());
+	}
+
 	void Game::turn() {
 		// sort by reading order
 		sort(begin(this->players), end(players));
-		// move each player
-		// attack with each player
+		// each player takes turn
+		for (auto &player : this->players) {
+			// find opponent
+			auto opponent = this->opponentFor(player);
+			// move towards opponent
+			player.move(opponent);
+			// attack opponent
+			if (player.attack(opponent)) {
+				this->remove(opponent);
+			}
+		}
 		// end turn
 		this->turnCount++;
 	}
 
 	bool Game::over() {
-		return true;
+		auto elves = count_if(begin(this->players), end(this->players), [](Player player) { return player.type() == Elf; });
+		auto goblins = count_if(begin(this->players), end(this->players), [](Player player) { return player.type() == Goblin; });
+		return elves == 0 || goblins == 0;
+	}
+
+	bool operator==(const Player &p1, const Player &p2) {
+		return p1.position() == p2.position();
 	}
 
 	int Part1(vector<string> lines) {
