@@ -4,32 +4,41 @@ using namespace std;
 
 namespace Day15 {
 	
-	Creature::Creature(int x, int y) {
+	Player::Player(int x, int y, char type) {
 		this->x = x;
 		this->y = y;
+		this->hitpoints = 200;
+		this->type = type == 'E' ? Elv : Goblin;
 	}
 
-	Elv::Elv(int x, int y) : Creature(x, y) {}
+	void Player::attack(Player &creature) {
+		creature.damage();
+	}
 
-	Goblin::Goblin(int x, int y) : Creature(x, y) {}
+	void Player::damage() {
+		this->hitpoints -= 3;
+	}
 
-	Dungeon::Dungeon(vector<string> lines) {
+	bool Player::operator<(Player &other) {
+		if (this->y == other.y) {
+			return this->x < other.x;
+		}
+		return this->y < other.y;
+	}
+
+	Game::Game(vector<string> lines) {
 		this->lines = lines;
+		this->turnCount = 0;
 	}
 
-	void Dungeon::setup() {
+	void Game::setup() {
 		char grid[7][7];
 		for (int y = 0; y < lines.size(); y++) {
 			for (int x = 0; x < lines[y].size(); x++) {
 				auto candidate = lines[y][x];
-				if (candidate == 'E') {
-					this->elves.push_back(Elv(x, y));
+				if (candidate == 'G' || candidate == 'E') {
+					this->players.push_back(Player(x,y, candidate));
 					this->grid[x][y] = '.';
-				}
-				else if (candidate == 'G') {
-					this->goblins.push_back(Goblin(x,y));
-					this->grid[x][y] = '.';
-
 				}
 				else {
 					this->grid[x][y] = candidate;
@@ -38,9 +47,25 @@ namespace Day15 {
 		}
 	}
 
+	void Game::turn() {
+		// sort by reading order
+		sort(begin(this->players), end(players));
+		// move each player
+		// attack with each player
+		// end turn
+		this->turnCount++;
+	}
+
+	bool Game::over() {
+		return true;
+	}
+
 	int Part1(vector<string> lines) {
-		auto dungeon = Dungeon(lines);
-		dungeon.setup();
-		return 0;
+		auto game = Game(lines);
+		game.setup();
+		while (!game.over()) {
+			game.turn();
+		}
+		return game.turns();
 	}
 }
