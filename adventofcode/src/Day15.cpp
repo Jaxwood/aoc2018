@@ -11,28 +11,45 @@ namespace Day15 {
 		this->playerType = type == 'E' ? Elf : Goblin;
 	}
 
-	bool Player::inRange(const Player *player) {
-		return abs(this->x - (*player).x) + abs(this->y - (*player).y) == 2;
+	bool Player::inRange(Player &player) {
+		return this->distance(player) == 1;
 	}
 
-	bool Player::attack(Player &player) {
-		if (player.inRange(this)) {
-			return player.takeDamage();
+	bool Player::takeDamage(Player &player) {
+		if (this->inRange(player)) {
+			this->hitpoints -= 3;
 		}
-		return false;
-	}
-
-	bool Player::takeDamage() {
-		this->hitpoints -= 3;
 		return this->hitpoints <= 0;
 	}
 
-	void Player::move(Player player) {
-		// TODO
+	void Player::move(Player &player) {
+		if (this->inRange(player)) {
+			return;
+		}
+		if (this->x > player.x) {
+			this->x -= 1;
+		}
+		else if (this->x < player.x) {
+			this->x += 1;
+		}
+		else if (this->y > player.y) {
+			this->y -= 1;
+		}
+		else {
+			this->y += 1;
+		}
 	}
 
 	tuple<int,int> Player::position() const {
 		return make_tuple(this->x, this->y);
+	}
+
+	int Player::distance(Player &player) {
+		return abs(this->x - player.x) + abs(this->y - player.y);
+	}
+
+	bool Player::dead() {
+		return this->hitpoints <= 0;
 	}
 
 	bool Player::operator<(Player &other) {
@@ -63,31 +80,49 @@ namespace Day15 {
 		}
 	}
 
-
-	Player& Game::opponentFor(Player &player) {
-		// TODO
-		return this->players[1];
+	int Game::opponentFor(Player &player) {
+		int shortestDistance = INT_MAX;
+		int index = -1;
+		for (int i = 0; i < this->players.size(); i++) {
+			auto opponent = this->players[i];
+			if (opponent.type() == player.type()) {
+				continue;
+			}
+			if (opponent.dead()) {
+				continue;
+			}
+			auto range = player.distance(opponent);
+			if (range < shortestDistance) {
+				shortestDistance = range;
+				index = i;
+			}
+		}
+		return index;
 	}
 
-	void Game::remove(Player &player) {
-		this->players.erase(std::remove(this->players.begin(), this->players.end(), player), this->players.end());
+	void Game::removeDeadPlayers() {
+		 vector<Player> survivors;
+		 copy_if(begin(this->players), end(this->players), back_inserter(survivors), [](Player player) { return !player.dead(); });
+		 this->players = survivors;
 	}
 
 	void Game::turn() {
 		// sort by reading order
-		sort(begin(this->players), end(players));
+		sort(begin(this->players), end(this->players));
 		// each player takes turn
 		for (auto &player : this->players) {
 			// find opponent
 			auto opponent = this->opponentFor(player);
-			// move towards opponent
-			player.move(opponent);
-			// attack opponent
-			if (player.attack(opponent)) {
-				this->remove(opponent);
+			if (opponent == -1) {
+				continue;
 			}
+			// move towards opponent
+			player.move(this->players[opponent]);
+			// attack opponent
+			this->players[opponent].takeDamage(player);
 		}
 		// end turn
+		this->removeDeadPlayers();
 		this->turnCount++;
 	}
 
