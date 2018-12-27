@@ -2,23 +2,28 @@
 
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace Day15 {
 
 	enum PlayerType {
-		Elv,
+		Elf,
 		Goblin
 	};
 
 	class Player {
-	protected:
+	private:
 		int x, y, hitpoints;
-		PlayerType type;
+		PlayerType playerType;
 	public:
 		Player(int x, int y, char type);
-		void attack(Player &creature);
-		void damage();
+		bool inRange(const Player *player);
+		bool attack(Player &player);
+		bool takeDamage();
+		void move(Player player);
+		PlayerType type() { return this->playerType; }
+		std::tuple<int, int> position() const;
 		bool operator<(Player &other);
 	};
 
@@ -33,8 +38,12 @@ namespace Day15 {
 		void setup();
 		void turn();
 		bool over();
+		void remove(Player &player);
 		int turns() { return this->turnCount; }
+		Player& opponentFor(Player &player);
 	};
+
+	bool operator==(Player &p1, Player &p2);
 
 	int Part1(std::vector<std::string> lines);
 }
