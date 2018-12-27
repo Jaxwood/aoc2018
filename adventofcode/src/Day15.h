@@ -16,12 +16,13 @@ namespace Day15 {
 	private:
 		int x, y, hitpoints;
 		PlayerType playerType;
+		bool inRange(Player &player);
 	public:
 		Player(int x, int y, char type);
-		bool inRange(const Player *player);
-		bool attack(Player &player);
-		bool takeDamage();
-		void move(Player player);
+		bool takeDamage(Player &player);
+		int distance(Player &player);
+		void move(Player &player);
+		bool dead();
 		PlayerType type() { return this->playerType; }
 		std::tuple<int, int> position() const;
 		bool operator<(Player &other);
@@ -33,14 +34,14 @@ namespace Day15 {
 		std::vector<std::string> lines;
 		std::vector<Player> players;
 		int turnCount;
+		void removeDeadPlayers();
+		int opponentFor(Player &player);
 	public:
 		Game(std::vector<std::string> lines);
 		void setup();
 		void turn();
 		bool over();
-		void remove(Player &player);
 		int turns() { return this->turnCount; }
-		Player& opponentFor(Player &player);
 	};
 
 	bool operator==(Player &p1, Player &p2);
