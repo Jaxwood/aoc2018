@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include <fstream>
+#include <algorithm>
+#include <tuple>
 
 #include "Day15.h"
 
