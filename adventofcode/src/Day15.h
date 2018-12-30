@@ -54,7 +54,8 @@ namespace Day15 {
 		std::vector<Point> shortestPath(std::map<Point, int> paths);
 		Point selectByReadingOrder(std::vector<Point> paths);
 		Point selectMove(Point from, Point to);
+		bool isAtTarget(Point from, std::vector<Point> &targets);
 	};
 
-	int Part1(std::vector<std::string> lines);
+	Atlas Part1(std::vector<std::string> lines);
 }

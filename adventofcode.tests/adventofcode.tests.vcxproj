@@ -184,6 +184,12 @@
     <CopyFileToFolders Include="test\day15_input\day15_pathfinder_initial.txt" />
     <CopyFileToFolders Include="test\day15_input\day15_pathfinder_round1.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_pathfinder_round2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_pathfinder_round3.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
