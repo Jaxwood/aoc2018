@@ -171,6 +171,15 @@
   <ItemGroup>
     <CopyFileToFolders Include="test\day15_input\day15_atlas_clear.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_pathfinder_after.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_pathfinder_before.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_pathfinder_reachable.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

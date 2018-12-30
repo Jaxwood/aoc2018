@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <tuple>
+#include <map>
 
 #include "Day15.h"
 
@@ -69,7 +70,7 @@ TEST_F(day15Fixture, atlas_neighbors) {
 	auto sut = Day15::Atlas();
 	sut.initialize(getTokens());
 	auto actual = sut.neighbors(make_tuple(1,1));
-	auto expected = vector<Point>{ make_tuple(2,1), make_tuple(2,1) };
+	auto expected = vector<Point>{ make_tuple(1,2), make_tuple(2,1) };
 	EXPECT_EQ(expected, actual);
 }
 
@@ -114,4 +115,79 @@ TEST_F(day15Fixture, player_sort) {
 	auto expected = vector<Player>{ Player(make_tuple(2, 3), 2), Player(make_tuple(3,3), 2), Player(make_tuple(0,4),2) };
 	sort(begin(actual), end(actual));
 	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, pathfinder_move) {
+	SetUp("day15_pathfinder_before.txt");
+	auto actual = Day15::Atlas();
+	actual.initialize(getTokens());
+	SetUp("day15_pathfinder_after.txt");
+	auto expected = Day15::Atlas();
+	expected.initialize(getTokens());
+	auto sut = Day15::PathFinder(&actual);
+	sut.move(make_tuple(2,1));
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, pathfinder_target) {
+	SetUp("day15_pathfinder_before.txt");
+	auto atlas = Day15::Atlas();
+	atlas.initialize(getTokens());
+	auto sut = Day15::PathFinder(&atlas);
+	auto actual = sut.targets(make_tuple(2,1));
+	auto expected = vector<Point>{ make_tuple(4,3) };
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, pathfinder_targetinrange) {
+	SetUp("day15_pathfinder_before.txt");
+	auto atlas = Day15::Atlas();
+	atlas.initialize(getTokens());
+	auto sut = Day15::PathFinder(&atlas);
+	auto actual = sut.targetsInRange(vector<Point> { make_tuple(4, 3) });
+	auto expected = vector<Point>{ make_tuple(3,3), make_tuple(5,3), make_tuple(4,2) };
+	sort(begin(expected), end(expected));
+	sort(begin(actual), end(actual));
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, pathfinder_reachable) {
+	SetUp("day15_pathfinder_reachable.txt");
+	auto atlas = Day15::Atlas();
+	atlas.initialize(getTokens());
+	auto sut = Day15::PathFinder(&atlas);
+	auto from = make_tuple(1, 1);
+	auto targets = sut.targetsInRange(sut.targets(from));
+	auto reachable = sut.reachable(from, targets);
+	vector<Point> actual;
+	transform(begin(reachable), end(reachable), back_inserter(actual), [](pair<Point, int> p) {
+		return p.first;
+	});
+
+	auto expected = vector<Point>{ make_tuple(1, 3), make_tuple(2, 2), make_tuple(3, 1), make_tuple(3, 3) };
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, pathfinder_shortestPath) {
+	SetUp("day15_pathfinder_reachable.txt");
+	auto atlas = Day15::Atlas();
+	atlas.initialize(getTokens());
+	auto sut = Day15::PathFinder(&atlas);
+	auto data = map<Point, int>();
+	data[make_tuple(1, 1)] = 2;
+	data[make_tuple(2, 1)] = 3;
+	data[make_tuple(3, 1)] = 2;
+	auto actual = sut.shortestPath(data);
+	auto expected = vector<Point>{ make_tuple(1,1), make_tuple(3,1) };
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, pathfinder_readingOrder) {
+	SetUp("day15_pathfinder_reachable.txt");
+	auto atlas = Day15::Atlas();
+	atlas.initialize(getTokens());
+	auto sut = Day15::PathFinder(&atlas);
+	auto data = vector<Point>{ make_tuple(4,2), make_tuple(3,3) };
+	auto actual = sut.selectByReadingOrder(data);
+	EXPECT_EQ(make_tuple(4,2), actual);
 }
