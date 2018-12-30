@@ -191,3 +191,26 @@ TEST_F(day15Fixture, pathfinder_readingOrder) {
 	auto actual = sut.selectByReadingOrder(data);
 	EXPECT_EQ(make_tuple(4,2), actual);
 }
+
+TEST_F(day15Fixture, pathfinder_moves) {
+	SetUp("day15_pathfinder_initial.txt");
+	auto actual = Day15::Atlas();
+	actual.initialize(getTokens());
+
+	SetUp("day15_pathfinder_round1.txt");
+	auto expected = Day15::Atlas();
+	expected.initialize(getTokens());
+
+	auto sut = PathFinder(&actual);
+
+	sut.move(make_tuple(1,1));
+	sut.move(make_tuple(4,1));
+	sut.move(make_tuple(7,1));
+	sut.move(make_tuple(1,4));
+	sut.move(make_tuple(4,4));
+	sut.move(make_tuple(7,4));
+	sut.move(make_tuple(1,7));
+	sut.move(make_tuple(4,7));
+	sut.move(make_tuple(7,7));
+	EXPECT_EQ(expected, actual);
+}
