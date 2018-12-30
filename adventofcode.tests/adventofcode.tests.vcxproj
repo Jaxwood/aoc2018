@@ -165,6 +165,12 @@
   <ItemGroup>
     <CopyFileToFolders Include="test\day15_input\day15_fixture.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_atlas_swap.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day15_input\day15_atlas_clear.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
