@@ -235,6 +235,9 @@ namespace Day15 {
 
 	Point PathFinder::selectMove(Point from, Point to) {
 		auto moves = this->atlas->neighbors(from);
+		if (count_if(begin(moves), end(moves), [to](Point p) {return p == to; }) > 0) {
+			return to;
+		}
 		auto costs = this->reachable(to, moves);
 		auto shortest = this->shortestPath(costs);
 		return this->selectByReadingOrder(shortest);
