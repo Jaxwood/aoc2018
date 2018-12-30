@@ -94,3 +94,24 @@ TEST_F(day15Fixture, atlas_types) {
 	sort(begin(expected), end(expected));
 	EXPECT_EQ(expected, actual);
 }
+
+TEST_F(day15Fixture, player_takehit) {
+	auto actual = Player(make_tuple(1, 1), 3);
+	auto target = Player(make_tuple(2, 1), 3);
+	actual.attack(&target);
+	EXPECT_EQ(false, target.alive());
+}
+
+TEST_F(day15Fixture, player_outofreach) {
+	auto actual = Player(make_tuple(1, 1), 2);
+	auto target = Player(make_tuple(2, 2), 2);
+	actual.attack(&target);
+	EXPECT_EQ(true, target.alive());
+}
+
+TEST_F(day15Fixture, player_sort) {
+	auto actual = vector<Player>{ Player(make_tuple(3, 3), 2), Player(make_tuple(2,3), 2), Player(make_tuple(0,4),2) };
+	auto expected = vector<Player>{ Player(make_tuple(2, 3), 2), Player(make_tuple(3,3), 2), Player(make_tuple(0,4),2) };
+	sort(begin(actual), end(actual));
+	EXPECT_EQ(expected, actual);
+}
