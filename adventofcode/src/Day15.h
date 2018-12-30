@@ -18,13 +18,28 @@ namespace Day15 {
 	public:
 		void initialize(std::vector<std::string> raw);
 		bool equal(const Atlas &other) const;
-		void swap(Point p1, Point p2);
-		void clear(Point point);
-		std::vector<Point> neighbors(Point point) const;
+		void swap(const Point p1, const Point p2);
+		void clear(const Point point);
+		std::vector<Point> neighbors(const Point point) const;
 		std::vector<Point> types(const char c) const;
 	};
 
 	bool operator==(const Atlas &a1, const Atlas &a2);
+
+	class Player {
+		Point location;
+		int hitpoints;
+		bool canReach(Player *opponent) const;
+	public:
+		Player(Point location, int hitpoints);
+		bool alive() const;
+		void attack(Player* player) const;
+		Point position() const;
+		void takehit();
+		bool operator<(Player &other) const;
+	};
+
+	bool operator==(const Player &p1, const Player &p2);
 
 	class PathFinder {
 	};
