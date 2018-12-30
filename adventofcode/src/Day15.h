@@ -20,6 +20,7 @@ namespace Day15 {
 		bool equal(const Atlas &other) const;
 		void swap(const Point p1, const Point p2);
 		void clear(const Point point);
+		char at(const Point point) const;
 		std::vector<Point> neighbors(const Point point) const;
 		std::vector<Point> types(const char c) const;
 	};
@@ -42,6 +43,17 @@ namespace Day15 {
 	bool operator==(const Player &p1, const Player &p2);
 
 	class PathFinder {
+		Atlas *atlas;
+	public:
+		PathFinder(Atlas *atlas);
+		std::vector<Point> targetsInRange(std::vector<Point> &targets);
+		void move(Point from);
+		std::vector<Point> targets(Point from);
+		std::map<Point, int> reachable(Point from, std::vector<Point> &targets);
+		int nearest(Point from, Point target, std::map<Point, Point> parents);
+		std::vector<Point> shortestPath(std::map<Point, int> paths);
+		Point selectByReadingOrder(std::vector<Point> paths);
+		Point selectMove(Point from, Point to);
 	};
 
 	int Part1(std::vector<std::string> lines);
