@@ -4,107 +4,171 @@ using namespace std;
 
 namespace Day15 {
 
-	Player::Player(int x, int y, char type) {
-		this->x = x;
-		this->y = y;
-		this->hitpoints = 200;
-		this->playerType = type == 'E' ? Elf : Goblin;
-	}
+	typedef tuple<int, int> Point;
 
-	void Player::takeDamage() {
-		this->hitpoints -= 3;
-	}
-
-	tuple<int, int> Player::position() const {
-		return make_tuple(this->x, this->y);
-	}
-
-	void Player::move(int x, int y) {
-		this->x = x;
-		this->y = y;
-	}
-
-	bool Player::dead() {
-		return this->hitpoints <= 0;
-	}
-
-	bool Player::operator<(Player &other) {
-		if (this->y == other.y) {
-			return this->x < other.x;
+	class Player {
+		int x, y;
+		char c;
+		int hitpoints;
+	public:
+		Player(int x, int y, char c) {
+			this->x = x;
+			this->y = y;
+			this->c = c;
+			this->hitpoints = 200;
 		}
-		return this->y < other.y;
-	}
-	BattleField::BattleField() {
-	}
 
-	void BattleField::addCoord(int x, int y, char c) {
-		if (c == 'E' || c == 'G') {
-			this->players.push_back(Player(x, y, c));
+		bool isElf() const {
+			return this->c == 'E';
 		}
-		this->grid[x][y] = c;
-	}
 
-	vector<Player> BattleField::targets(Player player) {
-		vector<Player> opponents;
-		copy_if(begin(this->players), end(this->players), back_inserter(opponents), [player](Player candidate) {
-			if (candidate.position() != player.position() && candidate.type() != player.type()) {
-				return true;
+		Point position() const {
+			return make_tuple(this->x, this->y);
+		}
+
+		void setPosition(int x, int y) {
+			this->x = x;
+			this->y = y;
+		}
+
+		void takeDamage() {
+			this->hitpoints -= 3;
+		}
+
+		bool alive() {
+			return this->hitpoints > 0;
+		}
+
+		bool operator<(Player &other) {
+			if (this->y == other.y) {
+				return this->x < other.x;
 			}
-			return false;
+
+			return this->y < other.y;
+		}
+
+		bool operator==(Player &other) {
+			return this->position() == other.position();
+		}
+	};
+
+	const int size = 10;
+	vector<Player> players;
+	char grid[size][size];
+	map<Point, vector<Point>> atlas;
+	char OPEN = '.';
+
+	void updateGrid(int x, int y, char c) {
+		grid[y][x] = c;
+	}
+
+	char at(int x, int y) {
+		return grid[y][x];
+	}
+
+	void setup(std::vector<std::string> &lines)
+	{
+		for (auto y = 0; y < lines.size(); y++) {
+			for (auto x = 0; x < lines[y].size(); x++) {
+				updateGrid(x, y, lines[y][x]);
+				if (lines[y][x] == 'E' || lines[y][x] == 'G') {
+					players.push_back(Player(x,y,lines[y][x]));
+				}
+			}
+		}
+	}
+
+	vector<Point> neighbors(int x, int y) {
+		vector<tuple<int, int>> result;
+		if (at(x + 1,y) == OPEN) { result.push_back(make_tuple(x + 1, y)); }
+		if (at(x - 1,y) == OPEN) { result.push_back(make_tuple(x - 1, y)); }
+		if (at(x, y + 1) == OPEN) { result.push_back(make_tuple(x, y + 1)); }
+		if (at(x, y - 1) == OPEN) { result.push_back(make_tuple(x, y - 1)); }
+
+		return result;
+	}
+
+	vector<Point> neighbors(Point position) {
+		int x, y;
+		tie(x, y) = position;
+		return neighbors(x, y);
+	}
+
+	map<Point, vector<Point>> openFields() {
+		map<Point, vector<Point>> fields;
+		for (int y = 0; y < size; y++) {
+			for (int x = 0; x < size; x++) {
+				if (at(x,y) == OPEN) {
+					fields[make_tuple(x, y)] = neighbors(x, y);
+				}
+			}
+		}
+		return fields;
+	}
+
+	vector<Player> findTargets(Player player) {
+		vector<Player> targets;
+		copy_if(begin(players), end(players), back_inserter(targets), [player](Player p) {
+			return player.isElf() != p.isElf();
 		});
-
-		return opponents;
+		return targets;
 	}
 
-	vector<Player> BattleField::inRange(vector<Player> candidates) {
-		auto grid = this->grid;
-		vector<Player> opponents;
-		copy_if(begin(candidates), end(candidates), back_inserter(opponents), [grid](Player candidate) {
-			int x, y;
-			tie(x, y) = candidate.position();
-			return grid[x + 1][y] == '.' || grid[x - 1][y] == '.' || grid[x][y + 1] == '.' || grid[x][y - 1] == '.';
+	Point readingOrder(vector<Point> destinations) {
+		sort(begin(destinations), end(destinations), [](Point p1, Point p2) {
+			int x1, y1, x2, y2;
+			tie(x1, y1) = p1;
+			tie(x2, y2) = p2;
+			if (y1 == y2) {
+				return x2 < x1;
+			}
+			return y1 < y2;
 		});
-
-		return opponents;
+		return destinations[0];
 	}
 
-	vector<tuple<int, int>> BattleField::neighbors(int x, int y) {
-		vector<tuple<int, int>> candidates;
-		if (this->grid[x+1][y] == '.') {
-			candidates.push_back(make_tuple(x+1, y));
-		}
-		if (this->grid[x-1][y] == '.') {
-			candidates.push_back(make_tuple(x-1, y));
-		}
-		if (this->grid[x][y+1] == '.') {
-			candidates.push_back(make_tuple(x, y+1));
-		}
-		if (this->grid[x][y - 1] == '.') {
-			candidates.push_back(make_tuple(x, y-1));
-		}
-		return candidates;
-	}
-
-	bool BattleField::canReach(tuple<int, int> from, tuple<int, int> to, map<tuple<int, int>, vector<tuple<int, int>>> squares) {
-		vector<tuple<int, int>> checked = { from };
-		queue<tuple<int, int>> candidates;
-		if (from == to) {
+	bool canAttack(Point player, Point target) {
+		int x, y, x2, y2;
+		tie(x, y) = player;
+		tie(x2, y2) = target;
+		if (x + 1 == x2 && y == y2) {
 			return true;
 		}
-		for (auto &c : squares[from]) {
-			candidates.push(c);
+		if (x - 1 == x2 && y == y2) {
+			return true;
 		}
-		while (candidates.size() > 0) {
-			auto c = candidates.front();
-			candidates.pop();
-			if (c == to) {
+		if (x == x2 && y + 1 == y2) {
+			return true;
+		}
+		if (x == x2 && y - 1 == y2) {
+			return true;
+		}
+		return false;
+	}
+
+	bool reachable(Point from, Point to) {
+		atlas = openFields();
+		vector<Point> visited = { from }; queue<Point> queue;
+		if (canAttack(from, to)) {
+			return true;
+		}
+
+		auto targets = neighbors(to);
+
+		for (auto &p : neighbors(from)) {
+			queue.push(p);
+		}
+		while (!queue.empty()) {
+			auto point = queue.front();
+			queue.pop();
+			if (count_if(begin(targets), end(targets), [point](Point target) { return point == target; }) > 0) {
 				return true;
 			}
 			else {
-				checked.push_back(c);
-				for (auto &candidate : squares[c]) {
-					if (count(begin(checked), end(checked), candidate) == 0) {
-						candidates.push(candidate);
+				visited.push_back(point);
+				for (auto &n : atlas[point]) {
+					if (count(begin(visited), end(visited), n) == 0) {
+						queue.push(n);
 					}
 				}
 			}
@@ -112,145 +176,147 @@ namespace Day15 {
 		return false;
 	}
 
-	vector<Player> BattleField::reachable(Player player, vector<Player> candidates) {
-		vector<Player> result;
-		int x, y;
-		tie(x, y) = player.position();
-		this->grid[x][y] = '.';
-		for (auto &c : candidates) {
-			tie(x, y) = c.position();
-			this->grid[x][y] = '.';
+	bool isWithinRange(Player player, vector<Player> targets) {
+		for (auto target : targets) {
+			if (canAttack(player.position(), target.position()) && target.alive()) {
+				return true;
+			}
 		}
-		auto openSquares = map<tuple<int, int>, vector<tuple<int, int>>>();
-		for (int y = 0; y < 7; y++) {
-			for (int x = 0; x < 7; x++) {
-				if (this->grid[x][y] == '.') {
-					openSquares[make_tuple(x, y)] = this->neighbors(x, y);
+		return false;
+	}
+
+	Point closest(Player player, vector<Player> destinations) {
+		map<Point, Point> parents;
+		map<Point, int> costs;
+		map<Point, map<Point, int>> destinationCost;
+		atlas = openFields();
+		auto from = player.position();
+		for (auto destination : destinations) {
+			auto to = destination.position();
+			vector<Point> visited = { to }; queue<Point> visiting;
+
+			atlas[from] = neighbors(from);
+			for_each(begin(atlas[from]), end(atlas[from]), [from](Point p) {
+				atlas[p].push_back(from);
+			});
+			atlas[to] = neighbors(to);
+			for_each(begin(atlas[to]), end(atlas[to]), [to](Point p) {
+				atlas[p].push_back(to);
+			});
+
+			for (auto &neighbor : atlas[to]) {
+				parents[neighbor] = to;
+				costs[neighbor] = 1;
+				visiting.push(neighbor);
+			}
+			while (!visiting.empty()) {
+				auto location = visiting.front();
+				visiting.pop();
+				visited.push_back(location);
+				for (auto &neighbor : atlas[location]) {
+					if (count(begin(visited), end(visited), neighbor) == 0) {
+						parents[neighbor] = location;
+						costs[neighbor] = 1 + costs[location];
+						visiting.push(neighbor);
+					}
+				}
+			}
+			destinationCost[destination.position()] = costs;
+		}
+
+		int lowestCost = INT_MAX;
+		for (auto &destination : destinations) {
+			auto costs = destinationCost[destination.position()];
+			for (auto &neighbor : neighbors(player.position())) {
+				auto cost = costs[neighbor];
+				if (cost < lowestCost) {
+					lowestCost = cost;
 				}
 			}
 		}
-		this->grid[x][y] = player.type() == Elf ? 'E' : 'G';
-		for (auto &c : candidates) {
-			tie(x, y) = c.position();
-			this->grid[x][y] = c.type() == Elf ? 'E' : 'G';
-		}
-		for (auto &candidate : candidates) {
-			if (this->canReach(player.position(), candidate.position(), openSquares)) {
-				result.push_back(candidate);
-			}
-		}
-		return result;
-	}
-
-	Player BattleField::nearest(Player player, vector<Player> players) {
-		map<int, vector<Player>> result;
-		int x1, y1, x2, y2;
-		tie(x1,y1) = player.position();
-		for (auto &p : players) {
-			tie(x2, y2) = p.position();
-			auto dist = abs(x1 - x2) + abs(y1 - y2);
-			result[dist].push_back(p);
-		}
-
-		auto candidate = *min_element(begin(result), end(result), [](std::pair<int, vector<Player>> p1, std::pair<int, vector<Player>> p2) {
-			return p1.first < p2.first;
-		});
-
-		if (candidate.second.size() > 1) {
-			auto candidates = candidate.second;
-			sort(begin(candidates), end(candidates));
-			return candidates[0];
-		}
-		else {
-			return candidate.second[0];
-		}
-	}
-
-	void BattleField::chooseMove(Player from, Player to) {
-		int x1, y1, x2, y2;
-		tie(x1, y1) = from.position();
-		tie(x2, y2) = to.position();
-
-		if (y1 == y2) {
-			// right
-			if (x1 < x2) {
-
-			}
-			else {
-				// left
-				
-			}
-		}
-		if (y1 < y2) {
-			// down
-			if(this->grid[x1][y1+1] == '.')
-		}
-		else {
-			// up
-		}
-	}
-
-	void BattleField::move(Player player) {
-		auto opponents = this->targets(player);
-		opponents = this->inRange(opponents);
-		opponents = this->reachable(player, opponents);
-		auto opponent = this->nearest(player, opponents);
-		this->chooseMove(player, opponent);
-	}
-
-	Game::Game() {
-		this->turnCount = 0;
-	}
-
-	void Game::removeDeadPlayers() {
-		 vector<Player> alive;
-		 copy_if(begin(this->players), end(this->players), back_inserter(alive), [](Player player) { return !player.dead(); });
-		 this->players = alive;
-	}
-
-	void Game::setup(vector<string> lines) {
-		for (int y = 0; y < lines.size(); y++) {
-			for (int x = 0; x < lines[y].size(); x++) {
-				auto candidate = lines[y][x];
-				if (candidate == 'G' || candidate == 'E') {
-					this->players.push_back(Player(x,y, candidate));
+		vector<Point> lowCostPlayers;
+		for (auto &destination : destinations) {
+			auto costs = destinationCost[destination.position()];
+			for (auto &neighbor : neighbors(player.position())) {
+				auto cost = costs[neighbor];
+				if (cost == lowestCost) {
+					lowCostPlayers.push_back(neighbor);
 				}
-				this->battleField.addCoord(x, y, candidate);
+			}
+		}
+    
+		return readingOrder(lowCostPlayers);
+	}
+
+	void attack(Player player, vector<Player> targets) {
+		vector<Player> attackable;
+		for (int i = 0; i < targets.size(); i++) {
+			if (player.position() == targets[i].position()) {
+				continue;
+			}
+			if (canAttack(player.position(), targets[i].position())) {
+				attackable.push_back(players[i]);
+			}
+		}
+		if (attackable.size() == 0) return;
+
+		sort(begin(attackable), end(attackable));
+		auto target = attackable[0].position();
+		for (auto i = 0; i < players.size(); i++) {
+			if (players[i].position() == target) {
+				players[i].takeDamage();
+				// update grid
+				int x, y;
+				tie(x, y) = players[i].position();
+				updateGrid(x, y, OPEN);
 			}
 		}
 	}
 
-	void Game::turn() {
-		// sort by reading order
-		sort(begin(this->players), end(this->players));
-		// each player takes turn
-		for (auto &player : this->players) {
-			// move
-			this->battleField.move(player);
-			// attack
-			// update
-		}
-		// end turn
-		this->removeDeadPlayers();
-		this->turnCount++;
-	}
-
-	bool Game::over() {
-		auto elves = count_if(begin(this->players), end(this->players), [](Player player) { return player.type() == Elf; });
-		auto goblins = count_if(begin(this->players), end(this->players), [](Player player) { return player.type() == Goblin; });
-		return elves == 0 || goblins == 0;
-	}
-
-	bool operator==(const Player &p1, const Player &p2) {
-		return p1.position() == p2.position();
+	bool game() {
+		return count_if(begin(players), end(players), [](Player player){
+			return player.isElf() && player.alive();
+		}) > 0;
 	}
 
 	int Part1(vector<string> lines) {
-		auto game = Game();
-		game.setup(lines);
-		while (!game.over()) {
-			game.turn();
+		setup(lines);
+		while(game()) {
+			sort(begin(players), end(players));
+			for (int i = 0; i < players.size(); i++) {
+				vector<Player> inrange;
+				auto player = players[i];
+				if (!player.alive()) {
+					continue;
+				}
+				auto targets = findTargets(player);
+				copy_if(begin(targets), end(targets), back_inserter(inrange), [player](Player t) {
+					return reachable(player.position(), t.position());
+				});
+				if (inrange.size() == 0) {
+					continue;
+				}
+
+				if (!isWithinRange(player, inrange)) {
+					int x, y, x2, y2;
+					auto pos = closest(player, inrange);
+					if (pos == player.position()) throw exception("invalid");
+					tie(x, y) = pos;
+					updateGrid(x, y, player.isElf() ? 'E' : 'G');
+					tie(x2, y2) = player.position();
+					updateGrid(x2, y2, OPEN);
+					players[i].setPosition(x, y);
+				}
+				// attack
+				attack(player, inrange);
+			}
+			// remove dead players
+			vector<Player> alive;
+			copy_if(begin(players), end(players), back_inserter(alive), [](Player player) {
+				return player.alive();
+			});
+			players = alive;
 		}
-		return game.turns();
+		return 0;
 	}
 }
