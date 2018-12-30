@@ -43,3 +43,54 @@ TEST_F(day15Fixture, Part1) {
 	auto actual = Day15::Part1(getTokens());
 	EXPECT_EQ(27730, actual);
 }
+
+TEST_F(day15Fixture, atlas_equal) {
+	SetUp("day15_fixture.txt");
+	auto actual = Day15::Atlas();
+	actual.initialize(getTokens());
+	auto expected = Day15::Atlas();
+	expected.initialize(getTokens());
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, atlas_swap) {
+	SetUp("day15_fixture.txt");
+	auto actual = Day15::Atlas();
+	actual.initialize(getTokens());
+	SetUp("day15_atlas_swap.txt");
+	auto expected = Day15::Atlas();
+	expected.initialize(getTokens());
+	actual.swap(make_tuple(1,1), make_tuple(1,2));
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, atlas_neighbors) {
+	SetUp("day15_fixture.txt");
+	auto sut = Day15::Atlas();
+	sut.initialize(getTokens());
+	auto actual = sut.neighbors(make_tuple(1,1));
+	auto expected = vector<Point>{ make_tuple(2,1), make_tuple(2,1) };
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, atlas_clear) {
+	SetUp("day15_fixture.txt");
+	auto actual = Day15::Atlas();
+	actual.initialize(getTokens());
+	SetUp("day15_atlas_clear.txt");
+	auto expected = Day15::Atlas();
+	expected.initialize(getTokens());
+	actual.clear(make_tuple(4,4));
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day15Fixture, atlas_types) {
+	SetUp("day15_fixture.txt");
+	auto sut = Day15::Atlas();
+	sut.initialize(getTokens());
+	auto actual = sut.types('G');
+	sort(begin(actual), end(actual));
+	auto expected = vector<Point>{ make_tuple(1,1), make_tuple(1,4), make_tuple(1,7), make_tuple(4,1), make_tuple(4,7), make_tuple(7,1), make_tuple(7,4), make_tuple(7,7) };
+	sort(begin(expected), end(expected));
+	EXPECT_EQ(expected, actual);
+}
