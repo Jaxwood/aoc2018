@@ -243,17 +243,60 @@ namespace Day15 {
 		return this->selectByReadingOrder(shortest);
 	}
 
-	void PathFinder::move(Point from) {
-		auto targets = this->targets(from);
-		auto inrange = this->targetsInRange(targets);
-		auto reachable = this->reachable(from, inrange);
-		auto shortest = this->shortestPath(reachable);
-		auto destination = this->selectByReadingOrder(shortest);
-		auto move = this->selectMove(from, destination);
-		this->atlas->swap(from, move);
+	bool PathFinder::isAtTarget(Point from, vector<Point> &targets) {
+		int x, y, x2, y2;
+		tie(x, y) = from;
+		for (auto target : targets) {
+			tie(x2, y2) = target;
+			if (x2 + 1 == x && y == y2) {
+				return true;
+			}
+			if (x2 - 1 == x && y == y2) {
+				return true;
+			}
+			if (x2 == x && y2 == y + 1) {
+				return true;
+			}
+			if (x2 == x && y2 == y - 1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	int Part1(vector<string> lines) {
-		return 0;
+	void PathFinder::move(Point from) {
+		auto targets = this->targets(from);
+		if (!this->isAtTarget(from, targets)) {
+			auto inrange = this->targetsInRange(targets);
+			auto reachable = this->reachable(from, inrange);
+			if (reachable.size() > 0) {
+				auto shortest = this->shortestPath(reachable);
+				auto destination = this->selectByReadingOrder(shortest);
+				auto move = this->selectMove(from, destination);
+				this->atlas->swap(from, move);
+			}
+		}
+	}
+
+	Atlas Part1(vector<string> lines) {
+		auto atlas = Atlas();
+		atlas.initialize(lines);
+		auto pathfinder = PathFinder(&atlas);
+		for (int i = 0; i < 3; i++) {
+			vector<Player> players;
+			auto elves = atlas.types('E');
+			auto goblins = atlas.types('G');
+			elves.insert(end(elves), begin(goblins), end(goblins));
+			transform(begin(elves), end(elves), back_inserter(players), [](Point p) {
+				return Player(p, 300);
+			});
+			sort(begin(players), end(players));
+
+			for (auto &player : players) {
+				pathfinder.move(player.position());
+			}
+		}
+
+		return atlas;
 	}
 }

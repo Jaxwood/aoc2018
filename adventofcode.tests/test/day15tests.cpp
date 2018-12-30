@@ -42,7 +42,10 @@ public:
 TEST_F(day15Fixture, Part1) {
 	SetUp("day15_fixture.txt");
 	auto actual = Day15::Part1(getTokens());
-	EXPECT_EQ(27730, actual);
+	SetUp("day15_pathfinder_round3.txt");
+	auto expected = Day15::Atlas();
+	expected.initialize(getTokens());
+	EXPECT_EQ(expected, actual);
 }
 
 TEST_F(day15Fixture, atlas_equal) {
