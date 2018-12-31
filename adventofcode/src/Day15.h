@@ -41,8 +41,8 @@ namespace Day15 {
 		void takehit();
 		bool operator<(Player &other) const;
 		void move(const Point destination);
-		bool isElf();
-		int health();
+		bool isElf() const;
+		int health() const;
 	};
 
 	bool operator==(const Player &p1, const Player &p2);
@@ -51,7 +51,7 @@ namespace Day15 {
 		Atlas *atlas;
 	public:
 		PathFinder(Atlas *atlas);
-		std::vector<Point> targetsInRange(std::vector<Point> &targets);
+		std::vector<Point> targetLocations(std::vector<Point> &targets);
 		Point move(Point from);
 		std::vector<Point> targets(Point from);
 		std::map<Point, int> reachable(Point from, std::vector<Point> &targets);
