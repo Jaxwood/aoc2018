@@ -23,6 +23,7 @@ namespace Day15 {
 		char at(const Point point) const;
 		std::vector<Point> neighbors(const Point point) const;
 		std::vector<Point> types(const char c) const;
+		bool adjacent(Point p1, Point p2);
 	};
 
 	bool operator==(const Atlas &a1, const Atlas &a2);
@@ -30,14 +31,18 @@ namespace Day15 {
 	class Player {
 		Point location;
 		int hitpoints;
-		bool canReach(Player *opponent) const;
+		bool elf;
 	public:
-		Player(Point location, int hitpoints);
+		Player(Point location, bool isElf, int hitpoints);
 		bool alive() const;
 		void attack(Player* player) const;
 		Point position() const;
+		bool canReach(Player *opponent) const;
 		void takehit();
 		bool operator<(Player &other) const;
+		void move(const Point destination);
+		bool isElf();
+		int health();
 	};
 
 	bool operator==(const Player &p1, const Player &p2);
@@ -47,7 +52,7 @@ namespace Day15 {
 	public:
 		PathFinder(Atlas *atlas);
 		std::vector<Point> targetsInRange(std::vector<Point> &targets);
-		void move(Point from);
+		Point move(Point from);
 		std::vector<Point> targets(Point from);
 		std::map<Point, int> reachable(Point from, std::vector<Point> &targets);
 		int nearest(Point from, Point target, std::map<Point, Point> parents);
@@ -57,5 +62,23 @@ namespace Day15 {
 		bool isAtTarget(Point from, std::vector<Point> &targets);
 	};
 
-	Atlas Part1(std::vector<std::string> lines);
+	class Game {
+		std::vector<Player> players;
+		int turns;
+	public:
+		Game(std::vector<Player> players);
+		bool over();
+		Player* attack(Player player);
+		void order();
+		Player move(Player player, Point to);
+		std::vector<Player> participants();
+		void turn();
+		int score();
+		void sync();
+	};
+
+	bool sortPoints(Point p1, Point p2);
+
+	int Part1(std::vector<std::string> lines);
+	Atlas Example(std::vector<std::string> lines);
 }

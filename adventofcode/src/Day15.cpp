@@ -80,14 +80,37 @@ namespace Day15 {
 		return this->grid[y][x];
 	}
 
+	bool Atlas::adjacent(Point p1, Point p2) {
+		int x, y, x2, y2;
+		tie(x, y) = p1;
+		tie(x2, y2) = p2;
+		if (x2 + 1 == x && y == y2) {
+			return true;
+		}
+		if (x2 - 1 == x && y == y2) {
+			return true;
+		}
+		if (x2 == x && y2 == y + 1) {
+			return true;
+		}
+		if (x2 == x && y2 == y - 1) {
+			return true;
+		}
+		return false;
+	}
+
 	// PLAYER
 
-	Player::Player(Point position, int hitpoints) {
+	Player::Player(Point position, bool isElf, int hitpoints) {
 		this->hitpoints = hitpoints;
 		this->location = position;
+		this->elf = isElf;
 	}
 
 	bool Player::canReach(Player* opponent) const {
+		if (this->elf == opponent->isElf()) {
+			return false;
+		}
 		int x, y;
 		tie(x, y) = this->position();
 		if (make_tuple(x + 1, y) == opponent->position()) {
@@ -123,14 +146,20 @@ namespace Day15 {
 		return this->hitpoints > 0;
 	}
 
+	void Player::move(const Point destination) {
+		this->location = destination;
+	}
+
+	bool Player::isElf() {
+		return this->elf;
+	}
+
+	int Player::health() {
+		return this->hitpoints;
+	}
+
 	bool Player::operator<(Player &other) const {
-		int x, y, x2, y2;
-		tie(x, y) = this->position();
-		tie(x2, y2) = other.position();
-		if (y == y2) {
-			return x < x2;
-		}
-		return y < y2;
+		return sortPoints(this->position(), other.position());
 	}
 
 	bool operator==(const Player &p1, const Player &p2) {
@@ -221,15 +250,7 @@ namespace Day15 {
 		if (shortest.size() == 0) {
 			throw exception("no path availible");
 		}
-		sort(begin(shortest), end(shortest), [](Point p1, Point p2) {
-			int x, y, x2, y2;
-			tie(x, y) = p1;
-			tie(x2, y2) = p2;
-			if (y == y2) {
-				return x < x2;
-			}
-			return y < y2;
-		});
+		sort(begin(shortest), end(shortest), sortPoints);
 		return shortest[0];
 	}
 
@@ -244,27 +265,15 @@ namespace Day15 {
 	}
 
 	bool PathFinder::isAtTarget(Point from, vector<Point> &targets) {
-		int x, y, x2, y2;
-		tie(x, y) = from;
 		for (auto target : targets) {
-			tie(x2, y2) = target;
-			if (x2 + 1 == x && y == y2) {
-				return true;
-			}
-			if (x2 - 1 == x && y == y2) {
-				return true;
-			}
-			if (x2 == x && y2 == y + 1) {
-				return true;
-			}
-			if (x2 == x && y2 == y - 1) {
+			if (this->atlas->adjacent(from, target)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	void PathFinder::move(Point from) {
+	Point PathFinder::move(Point from) {
 		auto targets = this->targets(from);
 		if (!this->isAtTarget(from, targets)) {
 			auto inrange = this->targetsInRange(targets);
@@ -274,11 +283,164 @@ namespace Day15 {
 				auto destination = this->selectByReadingOrder(shortest);
 				auto move = this->selectMove(from, destination);
 				this->atlas->swap(from, move);
+				return move;
+			}
+		}
+		return from;
+	}
+
+	bool sortPoints(Point p1, Point p2) {
+		int x, y, x2, y2;
+		tie(x, y) = p1;
+		tie(x2, y2) = p2;
+		if (y == y2) {
+			return x < x2;
+		}
+		return y < y2;
+	}
+
+	// Game
+
+	Game::Game(vector<Player> players) {
+		this->players = players;
+		this->turns = 0;
+	}
+
+	void Game::turn() {
+		this->turns++;
+	}
+
+	bool Game::over() {
+		auto elves = count_if(begin(this->players), end(this->players), [](Player p) {
+			return p.isElf() && p.alive();
+		});
+		auto goblins = count_if(begin(this->players), end(this->players), [](Player p) {
+			return !p.isElf() && p.alive();
+		});
+		return elves == 0 || goblins == 0;
+	}
+
+	Player* Game::attack(Player player) {
+		if (player.alive() == false) {
+			return nullptr;
+		}
+		vector<Player> opponents;
+		for (auto opponent : this->players) {
+			if (player.canReach(&opponent) && opponent.alive()) {
+				opponents.push_back(opponent);
+			}
+		}
+
+		if (opponents.size() == 0) {
+			return nullptr;
+		}
+
+		// sort by hp then by reading order
+		sort(begin(opponents), end(opponents), [](Player &p1, Player &p2) {
+			if (p1.health() == p2.health()) {
+				return sortPoints(p1.position(), p2.position());
+			}
+			return p1.health() < p2.health();
+		});
+		
+		auto target = opponents[0];
+		for (auto i = 0; i < this->players.size(); i++) {
+			if (this->players[i].position() == target.position()) {
+				player.attack(&this->players[i]);
+				if (this->players[i].alive() == false) {
+					return &this->players[i];
+				}
+			}
+		}
+		return nullptr;
+	}
+
+	vector<Player> Game::participants() {
+		return this->players;
+	}
+
+	void Game::order() {
+		sort(begin(this->players), end(this->players));
+	}
+
+	Player Game::move(Player player, Point to) {
+		for (auto i = 0; i < this->players.size(); i++) {
+			if (this->players[i].alive() == false) {
+				continue;
+			}
+			if (this->players[i].position() == player.position()) {
+				this->players[i].move(to);
+				return this->players[i];
 			}
 		}
 	}
 
-	Atlas Part1(vector<string> lines) {
+	int Game::score() {
+		int sum = 0;
+		for (auto player : this->players) {
+			if (player.alive()) {
+				sum += player.health();
+			}
+		}
+
+		return this->turns * sum;
+	}
+
+	void Game::sync() {
+		vector<Player> survivors;
+		copy_if(begin(this->players), end(this->players), back_inserter(survivors), [](Player player) {
+			return player.alive();
+		});
+		this->players = survivors;
+	}
+
+	int Part1(vector<string> lines) {
+		auto atlas = Atlas();
+		atlas.initialize(lines);
+		auto pathfinder = PathFinder(&atlas);
+		vector<Player> players;
+		auto elves = atlas.types('E');
+		auto goblins = atlas.types('G');
+		transform(begin(elves), end(elves), back_inserter(players), [](Point p) {
+			return Player(p, true, 200);
+		});
+		transform(begin(goblins), end(goblins), back_inserter(players), [](Point p) {
+			return Player(p, false, 200);
+		});
+		auto game = Game(players);
+		while(!game.over()) {
+			game.turn();
+			game.order();
+			for (auto &player : game.participants()) {
+				if (player.alive()) {
+					auto to = pathfinder.move(player.position());
+					auto movedPlayer = game.move(player, to);
+					auto attackedPlayer = game.attack(movedPlayer);
+					if (attackedPlayer != nullptr) {
+						atlas.clear(attackedPlayer->position());
+					}
+				}
+			}
+			game.sync();
+			// verify sync
+			for (auto &p : game.participants()) {
+				if (p.alive() == false) {
+					continue;
+				}
+				auto c = atlas.at(p.position());
+				if (p.isElf() && c != 'E') {
+					throw exception("Elf out of sync");
+				}
+				if (!p.isElf() && c != 'G') {
+					throw exception("Goblins out of sync");
+				}
+			}
+		}
+
+		return game.score();
+	}
+
+	Atlas  Example(vector<string> lines) {
 		auto atlas = Atlas();
 		atlas.initialize(lines);
 		auto pathfinder = PathFinder(&atlas);
@@ -288,7 +450,7 @@ namespace Day15 {
 			auto goblins = atlas.types('G');
 			elves.insert(end(elves), begin(goblins), end(goblins));
 			transform(begin(elves), end(elves), back_inserter(players), [](Point p) {
-				return Player(p, 300);
+				return Player(p, true, 300);
 			});
 			sort(begin(players), end(players));
 
