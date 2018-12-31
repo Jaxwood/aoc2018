@@ -150,11 +150,11 @@ namespace Day15 {
 		this->location = destination;
 	}
 
-	bool Player::isElf() {
+	bool Player::isElf() const {
 		return this->elf;
 	}
 
-	int Player::health() {
+	int Player::health() const {
 		return this->hitpoints;
 	}
 
@@ -163,7 +163,7 @@ namespace Day15 {
 	}
 
 	bool operator==(const Player &p1, const Player &p2) {
-		return p1.position() == p2.position();
+		return p1.position() == p2.position() && p1.health() == p2.health() && p1.isElf() == p2.isElf();
 	}
 
 	// PathFinder
@@ -177,7 +177,7 @@ namespace Day15 {
 		return this->atlas->types(type == 'E' ? 'G' : 'E');
 	}
 
-	vector<Point> PathFinder::targetsInRange(vector<Point> &targets)
+	vector<Point> PathFinder::targetLocations(vector<Point> &targets)
 	{
 		vector<Point> locations;
 		for (auto &target : targets) {
@@ -276,7 +276,7 @@ namespace Day15 {
 	Point PathFinder::move(Point from) {
 		auto targets = this->targets(from);
 		if (!this->isAtTarget(from, targets)) {
-			auto inrange = this->targetsInRange(targets);
+			auto inrange = this->targetLocations(targets);
 			auto reachable = this->reachable(from, inrange);
 			if (reachable.size() > 0) {
 				auto shortest = this->shortestPath(reachable);
@@ -408,11 +408,15 @@ namespace Day15 {
 			return Player(p, false, 200);
 		});
 		auto game = Game(players);
+		auto end = false;
 		while(!game.over()) {
-			game.turn();
 			game.order();
 			for (auto &player : game.participants()) {
 				if (player.alive()) {
+					if (pathfinder.targets(player.position()).size() == 0) {
+						end = true;
+						break;
+					}
 					auto to = pathfinder.move(player.position());
 					auto movedPlayer = game.move(player, to);
 					auto attackedPlayer = game.attack(movedPlayer);
@@ -420,6 +424,9 @@ namespace Day15 {
 						atlas.clear(attackedPlayer->position());
 					}
 				}
+			}
+			if (!end) {
+				game.turn();
 			}
 			game.sync();
 			// verify sync

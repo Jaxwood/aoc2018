@@ -40,15 +40,39 @@ public:
 };
 
 TEST_F(day15Fixture, Part1) {
-	SetUp("day15_example.txt");
+	SetUp("day15_fixture.txt");
 	auto actual = Day15::Part1(getTokens());
 	EXPECT_EQ(27730, actual);
+}
+
+TEST_F(day15Fixture, Part1a) {
+	SetUp("day15_example.txt");
+	auto actual = Day15::Part1(getTokens());
+	EXPECT_EQ(36334, actual);
 }
 
 TEST_F(day15Fixture, Part1b) {
 	SetUp("day15_example2.txt");
 	auto actual = Day15::Part1(getTokens());
-	EXPECT_EQ(36334, actual);
+	EXPECT_EQ(39514, actual);
+}
+
+TEST_F(day15Fixture, Part1c) {
+	SetUp("day15_example3.txt");
+	auto actual = Day15::Part1(getTokens());
+	EXPECT_EQ(27755, actual);
+}
+
+TEST_F(day15Fixture, Part1d) {
+	SetUp("day15_example4.txt");
+	auto actual = Day15::Part1(getTokens());
+	EXPECT_EQ(28944, actual);
+}
+
+TEST_F(day15Fixture, Part1e) {
+	SetUp("day15_example5.txt");
+	auto actual = Day15::Part1(getTokens());
+	EXPECT_EQ(18740, actual);
 }
 
 TEST_F(day15Fixture, Example) {
@@ -159,7 +183,7 @@ TEST_F(day15Fixture, pathfinder_targetinrange) {
 	auto atlas = Day15::Atlas();
 	atlas.initialize(getTokens());
 	auto sut = Day15::PathFinder(&atlas);
-	auto actual = sut.targetsInRange(vector<Point> { make_tuple(4, 3) });
+	auto actual = sut.targetLocations(vector<Point> { make_tuple(4, 3) });
 	auto expected = vector<Point>{ make_tuple(3,3), make_tuple(5,3), make_tuple(4,2) };
 	sort(begin(expected), end(expected));
 	sort(begin(actual), end(actual));
@@ -172,7 +196,7 @@ TEST_F(day15Fixture, pathfinder_reachable) {
 	atlas.initialize(getTokens());
 	auto sut = Day15::PathFinder(&atlas);
 	auto from = make_tuple(1, 1);
-	auto targets = sut.targetsInRange(sut.targets(from));
+	auto targets = sut.targetLocations(sut.targets(from));
 	auto reachable = sut.reachable(from, targets);
 	vector<Point> actual;
 	transform(begin(reachable), end(reachable), back_inserter(actual), [](pair<Point, int> p) {
