@@ -64,5 +64,5 @@ public:
 TEST_F(day16Fixture, Part1) {
 	SetUp("day16_fixture.txt");
 	auto actual = Day16::Part1(getTokens());
-	EXPECT_EQ(3, actual);
+	EXPECT_EQ(1, actual);
 }
