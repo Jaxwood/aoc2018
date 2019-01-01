@@ -194,7 +194,6 @@ namespace Day15 {
 		map<Point, int> canBeReached;
 		queue<Point> queue;
 		vector<Point> visited = { from };
-		vector<Point> inQueue = { from };
 		map<Point, Point> parents;
 		queue.push(from);
 		while (!queue.empty()) {
