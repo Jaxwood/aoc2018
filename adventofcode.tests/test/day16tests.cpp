@@ -41,6 +41,9 @@ public:
 			result.push_back(stoi(match[3]));
 			result.push_back(stoi(match[4]));
 		}
+		else {
+			throw exception("no match found");
+		}
 		return result;
 	}
 
@@ -59,10 +62,26 @@ public:
 		}
 		return result;
 	}
+
+	vector<vector<int>> getOperations() {
+		auto result = vector<vector<int>>();
+		for (auto i = 0; i < _tokens.size(); i++) {
+			auto reg = regex("(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)", regex_constants::ECMAScript);
+			auto operation = this->getSegment(i, reg);
+			result.push_back(operation);
+		}
+		return result;
+	}
 };
 
 TEST_F(day16Fixture, Part1) {
-	SetUp("day16_fixture.txt");
+	SetUp("day16_part1.txt");
 	auto actual = Day16::Part1(getTokens());
-	EXPECT_EQ(1, actual);
+	EXPECT_EQ(624, actual);
+}
+
+TEST_F(day16Fixture, Part2) {
+	SetUp("day16_part2.txt");
+	auto actual = Day16::Part2(getOperations());
+	EXPECT_EQ(584, actual);
 }
