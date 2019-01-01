@@ -127,22 +127,22 @@ TEST_F(day15Fixture, atlas_types) {
 }
 
 TEST_F(day15Fixture, player_takehit) {
-	auto actual = Player(make_tuple(1, 1), true, 3);
-	auto target = Player(make_tuple(2, 1), false, 3);
+	auto actual = Player(make_tuple(1, 1), true, 3, 3);
+	auto target = Player(make_tuple(2, 1), false, 3, 3);
 	actual.attack(&target);
 	EXPECT_EQ(false, target.alive());
 }
 
 TEST_F(day15Fixture, player_outofreach) {
-	auto actual = Player(make_tuple(1, 1), true, 2);
-	auto target = Player(make_tuple(2, 2), true, 2);
+	auto actual = Player(make_tuple(1, 1), true, 2, 3);
+	auto target = Player(make_tuple(2, 2), true, 2, 3);
 	actual.attack(&target);
 	EXPECT_EQ(true, target.alive());
 }
 
 TEST_F(day15Fixture, player_sort) {
-	auto actual = vector<Player>{ Player(make_tuple(3, 3), true, 2), Player(make_tuple(2,3),  true,2), Player(make_tuple(0,4), true,2) };
-	auto expected = vector<Player>{ Player(make_tuple(2, 3), true, 2), Player(make_tuple(3,3),  true,2), Player(make_tuple(0,4), true,2) };
+	auto actual = vector<Player>{ Player(make_tuple(3, 3), true, 2, 3), Player(make_tuple(2,3),  true,2, 3), Player(make_tuple(0,4), true,2, 3) };
+	auto expected = vector<Player>{ Player(make_tuple(2, 3), true, 2, 3), Player(make_tuple(3,3),  true,2, 3), Player(make_tuple(0,4), true,2, 3) };
 	sort(begin(actual), end(actual));
 	EXPECT_EQ(expected, actual);
 }
@@ -252,7 +252,7 @@ TEST_F(day15Fixture, game_over) {
 }
 
 TEST_F(day15Fixture, game_notOver) {
-	auto players = vector<Player>{ Player(make_tuple(0,0), true, 200),Player(make_tuple(0,0), false, 200) };
+	auto players = vector<Player>{ Player(make_tuple(0,0), true, 200, 3),Player(make_tuple(0,0), false, 200, 3) };
 	auto sut = Game(players);
 	EXPECT_EQ(false, sut.over());
 }
