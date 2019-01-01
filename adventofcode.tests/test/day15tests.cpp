@@ -75,17 +75,8 @@ TEST_F(day15Fixture, Part1e) {
 	EXPECT_EQ(18740, actual);
 }
 
-TEST_F(day15Fixture, Example) {
-	SetUp("day15_fixture.txt");
-	auto actual = Day15::Example(getTokens());
-	SetUp("day15_pathfinder_round3.txt");
-	auto expected = Day15::Atlas();
-	expected.initialize(getTokens());
-	EXPECT_EQ(expected, actual);
-}
-
 TEST_F(day15Fixture, atlas_equal) {
-	SetUp("day15_fixture.txt");
+	SetUp("day15_atlas.txt");
 	auto actual = Day15::Atlas();
 	actual.initialize(getTokens());
 	auto expected = Day15::Atlas();
@@ -94,7 +85,7 @@ TEST_F(day15Fixture, atlas_equal) {
 }
 
 TEST_F(day15Fixture, atlas_swap) {
-	SetUp("day15_fixture.txt");
+	SetUp("day15_atlas.txt");
 	auto actual = Day15::Atlas();
 	actual.initialize(getTokens());
 	SetUp("day15_atlas_swap.txt");
@@ -105,7 +96,7 @@ TEST_F(day15Fixture, atlas_swap) {
 }
 
 TEST_F(day15Fixture, atlas_neighbors) {
-	SetUp("day15_fixture.txt");
+	SetUp("day15_atlas.txt");
 	auto sut = Day15::Atlas();
 	sut.initialize(getTokens());
 	auto actual = sut.neighbors(make_tuple(1,1));
@@ -114,7 +105,7 @@ TEST_F(day15Fixture, atlas_neighbors) {
 }
 
 TEST_F(day15Fixture, atlas_clear) {
-	SetUp("day15_fixture.txt");
+	SetUp("day15_atlas.txt");
 	auto actual = Day15::Atlas();
 	actual.initialize(getTokens());
 	SetUp("day15_atlas_clear.txt");
@@ -125,7 +116,7 @@ TEST_F(day15Fixture, atlas_clear) {
 }
 
 TEST_F(day15Fixture, atlas_types) {
-	SetUp("day15_fixture.txt");
+	SetUp("day15_atlas.txt");
 	auto sut = Day15::Atlas();
 	sut.initialize(getTokens());
 	auto actual = sut.types('G');

@@ -80,5 +80,4 @@ namespace Day15 {
 	bool sortPoints(Point p1, Point p2);
 
 	int Part1(std::vector<std::string> lines);
-	Atlas Example(std::vector<std::string> lines);
 }

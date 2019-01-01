@@ -446,26 +446,4 @@ namespace Day15 {
 
 		return game.score();
 	}
-
-	Atlas  Example(vector<string> lines) {
-		auto atlas = Atlas();
-		atlas.initialize(lines);
-		auto pathfinder = PathFinder(&atlas);
-		for (int i = 0; i < 3; i++) {
-			vector<Player> players;
-			auto elves = atlas.types('E');
-			auto goblins = atlas.types('G');
-			elves.insert(end(elves), begin(goblins), end(goblins));
-			transform(begin(elves), end(elves), back_inserter(players), [](Point p) {
-				return Player(p, true, 300);
-			});
-			sort(begin(players), end(players));
-
-			for (auto &player : players) {
-				pathfinder.move(player.position());
-			}
-		}
-
-		return atlas;
-	}
 }
