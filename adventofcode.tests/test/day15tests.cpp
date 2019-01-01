@@ -164,7 +164,7 @@ TEST_F(day15Fixture, pathfinder_target) {
 	auto atlas = Day15::Atlas();
 	atlas.initialize(getTokens());
 	auto sut = Day15::PathFinder(&atlas);
-	auto actual = sut.targets(make_tuple(2,1));
+	auto actual = sut.findOppontents(make_tuple(2,1));
 	auto expected = vector<Point>{ make_tuple(4,3) };
 	EXPECT_EQ(expected, actual);
 }
@@ -174,7 +174,7 @@ TEST_F(day15Fixture, pathfinder_targetinrange) {
 	auto atlas = Day15::Atlas();
 	atlas.initialize(getTokens());
 	auto sut = Day15::PathFinder(&atlas);
-	auto actual = sut.targetLocations(vector<Point> { make_tuple(4, 3) });
+	auto actual = sut.opponentNeighborFields(vector<Point> { make_tuple(4, 3) });
 	auto expected = vector<Point>{ make_tuple(3,3), make_tuple(5,3), make_tuple(4,2) };
 	sort(begin(expected), end(expected));
 	sort(begin(actual), end(actual));
@@ -187,8 +187,8 @@ TEST_F(day15Fixture, pathfinder_reachable) {
 	atlas.initialize(getTokens());
 	auto sut = Day15::PathFinder(&atlas);
 	auto from = make_tuple(1, 1);
-	auto targets = sut.targetLocations(sut.targets(from));
-	auto reachable = sut.reachable(from, targets);
+	auto targets = sut.opponentNeighborFields(sut.findOppontents(from));
+	auto reachable = sut.shortestPath(from, targets);
 	vector<Point> actual;
 	transform(begin(reachable), end(reachable), back_inserter(actual), [](pair<Point, int> p) {
 		return p.first;
@@ -207,7 +207,7 @@ TEST_F(day15Fixture, pathfinder_shortestPath) {
 	data[make_tuple(1, 1)] = 2;
 	data[make_tuple(2, 1)] = 3;
 	data[make_tuple(3, 1)] = 2;
-	auto actual = sut.shortestPath(data);
+	auto actual = sut.findBestLocation(data);
 	auto expected = vector<Point>{ make_tuple(1,1), make_tuple(3,1) };
 	EXPECT_EQ(expected, actual);
 }

@@ -172,52 +172,50 @@ namespace Day15 {
 		this->atlas = atlas;
 	}
 
-	vector<Point> PathFinder::targets(Point from) {
+	vector<Point> PathFinder::findOppontents(Point from) {
 		auto type = this->atlas->at(from);
 		return this->atlas->types(type == 'E' ? 'G' : 'E');
 	}
 
-	vector<Point> PathFinder::targetLocations(vector<Point> &targets)
+	vector<Point> PathFinder::opponentNeighborFields(vector<Point> &opponents)
 	{
 		vector<Point> locations;
-		for (auto &target : targets) {
-			for (auto &neighbor : this->atlas->neighbors(target)) {
+		for (auto &opponent : opponents) {
+			for (auto &neighbor : this->atlas->neighbors(opponent)) {
 				locations.push_back(neighbor);
 			}
 		}
 		return locations;
 	}
 
-	map<Point, int> PathFinder::reachable(Point from, vector<Point> &targets)
+	map<Point, int> PathFinder::shortestPath(Point from, vector<Point> &opponents)
 	{
 		map<Point, int> canBeReached;
-		for (auto &target : targets) {
-			queue<Point> queue;
-			vector<Point> visited = { from };
-			map<Point, Point> parents;
-			queue.push(from);
-			while (!queue.empty()) {
-				auto next = queue.front();
-				queue.pop();
-				if (next == target) {
-					canBeReached[target] = nearest(from, target, parents);
-					break;
+		queue<Point> queue;
+		vector<Point> visited = { from };
+		vector<Point> inQueue = { from };
+		map<Point, Point> parents;
+		queue.push(from);
+		while (!queue.empty()) {
+			auto next = queue.front();
+			queue.pop();
+			for (auto &neighbor : this->atlas->neighbors(next)) {
+				if (count_if(begin(visited), end(visited), [neighbor](Point p) { return p == neighbor; }) == 0) {
+					queue.push(neighbor);
+					visited.push_back(neighbor);
+					parents[neighbor] = next;
 				}
-				else {
-					visited.push_back(next);
-					for (auto &neighbor : this->atlas->neighbors(next)) {
-						if (count_if(begin(visited), end(visited), [neighbor](Point p) { return p == neighbor; }) == 0) {
-							queue.push(neighbor);
-							parents[neighbor] = next;
-						}
-					}
-				}
+			}
+		}
+		for (auto &opponent : opponents) {
+			if (parents.find(opponent) != parents.end()) {
+				canBeReached[opponent] = this->calculateDistance(from, opponent, parents);
 			}
 		}
 		return canBeReached;
 	}
 
-	int PathFinder::nearest(Point from, Point target, map<Point, Point> parents) {
+	int PathFinder::calculateDistance(Point from, Point target, map<Point, Point> parents) {
 		int cnt = 0;
 		while (true) {
 			auto p = parents[target];
@@ -229,7 +227,7 @@ namespace Day15 {
 		}
 	}
 
-	vector<Point> PathFinder::shortestPath(map<Point, int> paths) {
+	vector<Point> PathFinder::findBestLocation(map<Point, int> paths) {
 		int min = INT_MAX;
 		for(auto path : paths) {
 			int score = path.second;
@@ -259,34 +257,34 @@ namespace Day15 {
 		if (count_if(begin(moves), end(moves), [to](Point p) {return p == to; }) > 0) {
 			return to;
 		}
-		auto costs = this->reachable(to, moves);
-		auto shortest = this->shortestPath(costs);
+		auto costs = this->shortestPath(to, moves);
+		auto shortest = this->findBestLocation(costs);
 		return this->selectByReadingOrder(shortest);
 	}
 
-	bool PathFinder::isAtTarget(Point from, vector<Point> &targets) {
-		for (auto target : targets) {
-			if (this->atlas->adjacent(from, target)) {
+	bool PathFinder::isNextToOpponent(Point from, vector<Point> &opponents) {
+		for (auto opponent : opponents) {
+			if (this->atlas->adjacent(from, opponent)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	Point PathFinder::move(Point from) {
-		auto targets = this->targets(from);
-		if (!this->isAtTarget(from, targets)) {
-			auto inrange = this->targetLocations(targets);
-			auto reachable = this->reachable(from, inrange);
-			if (reachable.size() > 0) {
-				auto shortest = this->shortestPath(reachable);
+	Point PathFinder::move(Point playerLocation) {
+		auto targets = this->findOppontents(playerLocation);
+		if (!this->isNextToOpponent(playerLocation, targets)) {
+			auto opponentLocations = this->opponentNeighborFields(targets);
+			auto shortestPaths = this->shortestPath(playerLocation, opponentLocations);
+			if (shortestPaths.size() > 0) {
+				auto shortest = this->findBestLocation(shortestPaths);
 				auto destination = this->selectByReadingOrder(shortest);
-				auto move = this->selectMove(from, destination);
-				this->atlas->swap(from, move);
-				return move;
+				auto newPlayerLocation = this->selectMove(playerLocation, destination);
+				this->atlas->swap(playerLocation, newPlayerLocation);
+				return newPlayerLocation;
 			}
 		}
-		return from;
+		return playerLocation;
 	}
 
 	bool sortPoints(Point p1, Point p2) {
@@ -423,7 +421,7 @@ namespace Day15 {
 			game.order();
 			for (auto &player : game.participants()) {
 				if (game.isAlive(player)) {
-					if (pathfinder.targets(player.position()).size() == 0) {
+					if (pathfinder.findOppontents(player.position()).size() == 0) {
 						end = true;
 						break;
 					}
