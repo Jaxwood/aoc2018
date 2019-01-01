@@ -4,6 +4,17 @@
 #include <string>
 
 namespace Day16 {
-	int Part1(std::vector<std::string> lines);
+	class Instruction {
+		std::vector<int> before;
+		std::vector<int> after;
+		std::vector<int> operation;
+	public:
+		Instruction(std::vector<int> before, std::vector<int> after, std::vector<int> operation) {
+			this->after = after;
+			this->before = before;
+			this->operation = operation;
+		}
+	};
+	int Part1(std::vector<Instruction> lines);
 }
 
