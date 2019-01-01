@@ -350,6 +350,7 @@ namespace Day15 {
 				if (this->players[i].alive() == false) {
 					return &this->players[i];
 				}
+				break;
 			}
 		}
 		return nullptr;
@@ -385,6 +386,15 @@ namespace Day15 {
 
 		return this->turns * sum;
 	}
+	bool Game::isAlive(Player player) {
+		for (auto &candidate : this->players) {
+			if (player.position() == candidate.position()) {
+				return candidate.alive();
+			}
+		}
+
+		return false;
+	}
 
 	void Game::sync() {
 		vector<Player> survivors;
@@ -412,7 +422,7 @@ namespace Day15 {
 		while(!game.over()) {
 			game.order();
 			for (auto &player : game.participants()) {
-				if (player.alive()) {
+				if (game.isAlive(player)) {
 					if (pathfinder.targets(player.position()).size() == 0) {
 						end = true;
 						break;
