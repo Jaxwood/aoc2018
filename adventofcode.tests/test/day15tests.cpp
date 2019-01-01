@@ -75,6 +75,36 @@ TEST_F(day15Fixture, Part1e) {
 	EXPECT_EQ(18740, actual);
 }
 
+TEST_F(day15Fixture, Part2a) {
+	SetUp("day15_fixture.txt");
+	auto actual = Day15::Part2(getTokens(),15);
+	EXPECT_EQ(4988, actual);
+}
+
+TEST_F(day15Fixture, Part2b) {
+	SetUp("day15_example2.txt");
+	auto actual = Day15::Part2(getTokens(), 4);
+	EXPECT_EQ(31284, actual);
+}
+
+TEST_F(day15Fixture, Part2c) {
+	SetUp("day15_example3.txt");
+	auto actual = Day15::Part2(getTokens(), 15);
+	EXPECT_EQ(3478, actual);
+}
+
+TEST_F(day15Fixture, Part2d) {
+	SetUp("day15_example4.txt");
+	auto actual = Day15::Part2(getTokens(), 12);
+	EXPECT_EQ(6474, actual);
+}
+
+TEST_F(day15Fixture, Part2e) {
+	SetUp("day15_example5.txt");
+	auto actual = Day15::Part2(getTokens(), 34);
+	EXPECT_EQ(1140, actual);
+}
+
 TEST_F(day15Fixture, atlas_equal) {
 	SetUp("day15_atlas.txt");
 	auto actual = Day15::Atlas();
