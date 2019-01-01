@@ -456,7 +456,59 @@ namespace Day15 {
 		return game.score();
 	}
 
-	int Part2(vector<string> lines) {
-		return 0;
-	}
-}
+	int Part2(vector<string> lines, int ap) {
+		auto atlas = Atlas();
+		atlas.initialize(lines);
+		auto pathfinder = PathFinder(&atlas);
+		vector<Player> players;
+		auto elves = atlas.types('E');
+		auto goblins = atlas.types('G');
+		transform(begin(elves), end(elves), back_inserter(players), [ap](Point p) {
+			return Player(p, true, 200, ap);
+		});
+		transform(begin(goblins), end(goblins), back_inserter(players), [](Point p) {
+			return Player(p, false, 200, 3);
+		});
+		int elvesCnt = elves.size();
+		auto game = Game(players);
+		auto end = false;
+		while(!game.over()) {
+			game.order();
+			for (auto &player : game.participants()) {
+				if (game.isAlive(player)) {
+					if (pathfinder.findOppontents(player.position()).size() == 0) {
+						end = true;
+						break;
+					}
+					auto to = pathfinder.move(player.position());
+					auto movedPlayer = game.move(player, to);
+					auto attackedPlayer = game.attack(movedPlayer);
+					if (attackedPlayer != nullptr) {
+						atlas.clear(attackedPlayer->position());
+					}
+				}
+			}
+			if (!end) {
+				game.turn();
+			}
+			game.sync();
+			// verify sync
+			for (auto &p : game.participants()) {
+				if (p.alive() == false) {
+					continue;
+				}
+				auto c = atlas.at(p.position());
+				if (p.isElf() && c != 'E') {
+					throw exception("Elf out of sync");
+				}
+				if (!p.isElf() && c != 'G') {
+					throw exception("Goblins out of sync");
+				}
+			}
+		}
+
+		if (elvesCnt != atlas.types('E').size()) {
+			throw exception("elves has died");
+		}
+		return game.score();
+	}}

@@ -82,5 +82,5 @@ namespace Day15 {
 	bool sortPoints(Point p1, Point p2);
 
 	int Part1(std::vector<std::string> lines);
-	int Part2(std::vector<std::string> lines);
+	int Part2(std::vector<std::string> lines, int ap);
 }
