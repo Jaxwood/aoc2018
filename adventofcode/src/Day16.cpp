@@ -4,7 +4,7 @@ using namespace std;
 
 namespace Day16 {
 
-	int Part1(vector<string> lines) {
+	int Part1(vector<Instruction> lines) {
 		return 0;
 	}
 }
