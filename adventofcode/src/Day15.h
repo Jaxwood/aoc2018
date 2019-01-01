@@ -74,6 +74,7 @@ namespace Day15 {
 		std::vector<Player> participants();
 		void turn();
 		int score();
+		bool isAlive(Player player);
 		void sync();
 	};
 
