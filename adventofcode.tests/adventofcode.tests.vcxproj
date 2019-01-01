@@ -58,6 +58,7 @@
     <ClCompile Include="test\day13tests.cpp" />
     <ClCompile Include="test\day14tests.cpp" />
     <ClCompile Include="test\day15tests.cpp" />
+    <ClCompile Include="test\day16tests.cpp" />
     <ClCompile Include="test\day1tests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -203,6 +204,9 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="test\day15_input\day15_atlas.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day16_input\day16_fixture.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
