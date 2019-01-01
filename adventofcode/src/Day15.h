@@ -12,9 +12,9 @@ namespace Day15 {
 	typedef std::tuple<int, int> Point;
 
 	class Atlas {
-		const int size = 10;
+		const int size = 32;
 		const char OPEN = '.';
-		char grid[10][10];
+		char grid[32][32];
 	public:
 		void initialize(std::vector<std::string> raw);
 		bool equal(const Atlas &other) const;
@@ -51,15 +51,15 @@ namespace Day15 {
 		Atlas *atlas;
 	public:
 		PathFinder(Atlas *atlas);
-		std::vector<Point> targetLocations(std::vector<Point> &targets);
+		std::vector<Point> opponentNeighborFields(std::vector<Point> &targets);
 		Point move(Point from);
-		std::vector<Point> targets(Point from);
-		std::map<Point, int> reachable(Point from, std::vector<Point> &targets);
-		int nearest(Point from, Point target, std::map<Point, Point> parents);
-		std::vector<Point> shortestPath(std::map<Point, int> paths);
+		std::vector<Point> findOppontents(Point from);
+		std::map<Point, int> shortestPath(Point from, std::vector<Point> &targets);
+		int calculateDistance(Point from, Point target, std::map<Point, Point> parents);
+		std::vector<Point> findBestLocation(std::map<Point, int> paths);
 		Point selectByReadingOrder(std::vector<Point> paths);
 		Point selectMove(Point from, Point to);
-		bool isAtTarget(Point from, std::vector<Point> &targets);
+		bool isNextToOpponent(Point from, std::vector<Point> &targets);
 	};
 
 	class Game {
