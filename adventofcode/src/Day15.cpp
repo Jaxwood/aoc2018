@@ -101,10 +101,11 @@ namespace Day15 {
 
 	// PLAYER
 
-	Player::Player(Point position, bool isElf, int hitpoints) {
+	Player::Player(Point position, bool isElf, int hitpoints, int ap) {
 		this->hitpoints = hitpoints;
 		this->location = position;
 		this->elf = isElf;
+		this->ap = ap;
 	}
 
 	bool Player::canReach(Player* opponent) const {
@@ -130,12 +131,12 @@ namespace Day15 {
 
 	void Player::attack(Player *opponent) const {
 		if (canReach(opponent)) {
-			opponent->takehit();
+			opponent->takehit(this->ap);
 		}
 	}
 
-	void Player::takehit() {
-		this->hitpoints -= 3;
+	void Player::takehit(int amount) {
+		this->hitpoints -= amount;
 	}
 
 	Point Player::position() const {
@@ -410,10 +411,10 @@ namespace Day15 {
 		auto elves = atlas.types('E');
 		auto goblins = atlas.types('G');
 		transform(begin(elves), end(elves), back_inserter(players), [](Point p) {
-			return Player(p, true, 200);
+			return Player(p, true, 200, 3);
 		});
 		transform(begin(goblins), end(goblins), back_inserter(players), [](Point p) {
-			return Player(p, false, 200);
+			return Player(p, false, 200, 3);
 		});
 		auto game = Game(players);
 		auto end = false;
@@ -453,5 +454,9 @@ namespace Day15 {
 		}
 
 		return game.score();
+	}
+
+	int Part2(vector<string> lines) {
+		return 0;
 	}
 }

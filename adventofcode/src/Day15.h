@@ -32,13 +32,14 @@ namespace Day15 {
 		Point location;
 		int hitpoints;
 		bool elf;
+		int ap;
 	public:
-		Player(Point location, bool isElf, int hitpoints);
+		Player(Point location, bool isElf, int hitpoints, int ap);
 		bool alive() const;
 		void attack(Player* player) const;
 		Point position() const;
 		bool canReach(Player *opponent) const;
-		void takehit();
+		void takehit(int amount);
 		bool operator<(Player &other) const;
 		void move(const Point destination);
 		bool isElf() const;
@@ -81,4 +82,5 @@ namespace Day15 {
 	bool sortPoints(Point p1, Point p2);
 
 	int Part1(std::vector<std::string> lines);
+	int Part2(std::vector<std::string> lines);
 }
