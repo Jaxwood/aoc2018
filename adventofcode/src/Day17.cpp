@@ -3,6 +3,58 @@
 using namespace std;
 
 namespace Day17 {
+	char ground[15][600];
+	int sizeX = 600;
+	int sizeY = 15;
+	char WATER = '|';
+	char SAND = '.';
+	char CLAY = '#';
+
+	void fill(int x, int y) {
+		bool inSand = false;
+		while (!inSand) {
+			// go left
+			int tempX = x;
+			while (ground[y][tempX] != CLAY) {
+				ground[y][tempX] = WATER;
+				if (ground[y + 1][tempX] == SAND) {
+					inSand = true;
+					break;
+				}
+				tempX--;
+			}
+			// go right
+			tempX = x;
+			while (ground[y][tempX] != CLAY) {
+				ground[y][tempX] = WATER;
+				if (ground[y + 1][tempX] == SAND) {
+					inSand = true;
+					break;
+				}
+				tempX++;
+			}
+			y--;
+		}
+	}
+
+	void flow(int y) {
+		for (int x = 0; x < sizeX; x++) {
+			if (ground[y - 1][x] == WATER && ground[y][x] == SAND) {
+				ground[y][x] = WATER;
+			}
+		}
+	}
+
+	vector<int> inBasin(int y) {
+		vector<int> basins;
+		for (auto x = 0; x < sizeX; x++) {
+			if (ground[y + 1][x] == CLAY && ground[y][x] == WATER && (ground[y][x+1] == SAND || ground[y][x-1] == SAND)) {
+				basins.push_back(x);
+			}
+		}
+		return basins;
+	}
+
 	int Part1(vector<Clay> lines) {
 		// transform clays to a map data structure
 		map<int, vector<int>> veins;
@@ -14,13 +66,6 @@ namespace Day17 {
 			}
 		}
 
-		int sizeX = 600;
-		int sizeY = 15;
-		char WATER = '|';
-		char SAND = '.';
-		char CLAY = '#';
-
-		char ground[15][600];
 		// add sand tiles to the ground
 		for (auto y = 0; y < sizeY; y++) {
 			for (auto x = 0; x < sizeX; x++) {
@@ -37,44 +82,25 @@ namespace Day17 {
 		}
 
 		// fill water
-		auto y = 0;
+		auto y = 1;
 		auto x = 500;
 		yMax++;
+		ground[0][500] = WATER;
 		while (y != yMax) {
-			// fill water until hitting clay
-			if (ground[y][x] == SAND) {
-				ground[y][x] = WATER;
-				y++;
-			}
-			else {
-				// fill basin
-				y--;
-				auto xTemp = x;
-				// go left
-				while (ground[y][xTemp] != CLAY) {
-					ground[y][xTemp] = WATER;
-					xTemp--;
-					if (ground[y + 1][xTemp] == SAND) {
-						x = xTemp;
-						break;
-					}
+			flow(y);
+			auto xs = inBasin(y);
+			if (xs.size() > 0) {
+				for (auto &basin : xs) {
+					fill(basin, y);
 				}
-				// go right
-				xTemp = x;
-				while (ground[y][xTemp] != CLAY) {
-					ground[y][xTemp] = WATER;
-					xTemp++;
-					if (ground[y + 1][xTemp] == SAND) {
-						x = xTemp;
-						break;
-					}
-				}
+				y = 0;
 			}
+			y++;
 		}
 
 		// count water tiles
 		auto waterTiles = 0;
-		for (auto y = 0; y < sizeY; y++) {
+		for (auto y = 1; y < sizeY; y++) {
 			for (auto x = 0; x < sizeX; x++) {
 				if(ground[y][x] == WATER) {
 					waterTiles++;
