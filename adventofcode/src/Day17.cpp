@@ -4,12 +4,27 @@
 using namespace std;
 
 namespace Day17 {
-	char ground[15][600];
-	int sizeX = 600;
-	int sizeY = 15;
+	char ground[2000][2000];
+	int sizeX = 2000;
+	int sizeY = 2000;
 	char WATER = '|';
 	char SAND = '.';
 	char CLAY = '#';
+
+	void dump() {
+		std::ofstream out("output.txt");
+		vector<string> result;
+		for (auto y = 1; y < sizeY; y++) {
+			string text = "";
+			for (auto x = 0; x < sizeX; x++) {
+				text += ground[y][x];
+			}
+			result.push_back(text);
+		}
+		for (auto &line : result) {
+			out << line << endl;
+		}
+	}
 
 	bool isSand(int x, int y) {
 		return ground[y][x] == SAND;
@@ -24,40 +39,49 @@ namespace Day17 {
 	}
 
 	bool isEdge(int x, int y) {
-		return isSand(x, y+1);
+		if (isSand(x, y + 1)) {
+			return true;
+		}
+		while (isWater(x, y)) {
+			y++;
+			if (isSand(x, y)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void addWater(int x, int y) {
 		ground[y][x] = WATER;
 	}
 
-	void addWaterLeft(int x, int y) {
+	bool addWaterLeft(int x, int y) {
 		while (true) {
+			if (isClay(x,y)) {
+				return false;
+			}
+			addWater(x, y);
+			if (isEdge(x, y)) {
+				return true;
+			}
 			x--;
-			if (isClay(x,y)) {
-				break;
-			}
-			addWater(x, y);
-			if (isEdge(x, y)) {
-				break;
-			}
 		}
 	}
 
-	void addWaterRight(int x, int y) {
+	bool addWaterRight(int x, int y) {
 		while (true) {
-			x++;
 			if (isClay(x,y)) {
-				break;
+				return false;
 			}
 			addWater(x, y);
 			if (isEdge(x, y)) {
-				break;
+				return true;
 			}
+			x++;
 		}
 	}
 
-	vector<int> waterAbove(int y) {
+	vector<int> drip(int y) {
 		vector<int> edges;
 		for (int x = 0; x < sizeX; x++) {
 			if (isSand(x, y) && isWater(x, y - 1)) {
@@ -67,28 +91,34 @@ namespace Day17 {
 		return edges;
 	}
 
-	vector<int> findEdges(int y) {
-		vector<int> edges;
-		for (int x = 0; x < sizeX; x++) {
-			if (isWater(x, y) && isSand(x, y + 1)) {
-				edges.push_back(x);
-			}
+	void fillBasin(int x, int y) {
+		auto left = addWaterLeft(x, y);
+		auto right = addWaterRight(x, y);
+		if (left || right) {
+			return;
 		}
-		return edges;
+		return fillBasin(x, y - 1);
 	}
 
-	void dump() {
-		std::ofstream out("output.txt");
-		vector<string> result;
-		for (auto y = 1; y < sizeY; y++) {
-			string text = "";
-			for (auto x = 475; x < 525; x++) {
-				text += ground[y][x];
-			}
-			result.push_back(text);
+	bool isBasin(int x, int y) {
+		if (isClay(x, y)) {
+			return true;
 		}
-		for (auto &line : result) {
-			out << line << endl;
+		while (isWater(x, y)) {
+			y++;
+			if(isClay(x,y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	int findWaterSource() {
+		for (auto y = 1; y < sizeY; y++) {
+			auto water = drip(y);
+			if (water.size() > 0) {
+				return y - 1;
+			}
 		}
 	}
 
@@ -111,9 +141,13 @@ namespace Day17 {
 		}
 		// add clay tiles to the ground
 		auto yMax = 0;
+		auto yMin = INT_MAX;
 		for (auto &vein : veins) {
 			for (auto xs : vein.second) {
 				ground[vein.first][xs] = CLAY;
+			}
+			if (vein.first < yMin) {
+				yMin = vein.first;
 			}
 			yMax = vein.first;
 		}
@@ -123,39 +157,23 @@ namespace Day17 {
 		int x = 500;
 		yMax++;
 		while (y != yMax) {
-			if (isSand(x, y)) {
-				auto xs = waterAbove(y);
-				if (xs.size() == 0) {
-					addWater(x, y);
+			auto xs = drip(y);
+			for (auto x : xs) {
+				if (isBasin(x, y + 1)) {
+					fillBasin(x, y);
+					y = findWaterSource();
 				}
 				else {
-					for (int i = 0; i < xs.size(); i++) {
-						x = xs[i];
-						addWater(x, y);
-					}
-				}
-				y++;
-			}
-			else {
-				y--;
-				addWaterLeft(x, y);
-				addWaterRight(x, y);
-
-				auto xs = findEdges(y);
-				if (xs.size() > 0) {
-					y++;
-					for (int i = 0; i < xs.size(); i++) {
-						x = xs[i];
-					}
-					// y++;
+					addWater(x, y);
 				}
 			}
-			dump();
+			y++;
 		}
+		dump();
 
 		// count water tiles
 		auto waterTiles = 0;
-		for (auto y = 1; y < sizeY; y++) {
+		for (auto y = yMin; y < sizeY; y++) {
 			for (auto x = 0; x < sizeX; x++) {
 				if(ground[y][x] == WATER) {
 					waterTiles++;
