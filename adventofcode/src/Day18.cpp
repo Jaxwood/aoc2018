@@ -4,22 +4,115 @@ using namespace std;
 
 namespace Day18 {
 	int dimension = 10;
+	int boundary = dimension - 1;
 	char lumberArea[10][10];
 	char transformed[10][10];
 	const char TREE = '|';
 	const char OPEN = '.';
 	const char LUMBERYARD = '#';
 
-	void transformOpen(int x, int y) {
+	void dump() {
+		std::ofstream out("output.txt");
+		vector<string> result;
+		for (auto y = 0; y < dimension; y++) {
+			string text = "";
+			for (auto x = 0; x < dimension; x++) {
+				text += lumberArea[y][x];
+			}
+			result.push_back(text);
+		}
+		for (auto &line : result) {
+			out << line << endl;
+		}
+	}
 
+	int sumTree(int x, int y) {
+		int sum = 0;
+		if (y > 0 && lumberArea[y-1][x] == TREE) {
+			sum++;
+		}
+		if (y > 0 && x > 0 && lumberArea[y - 1][x - 1] == TREE) {
+			sum++;
+		}
+		if (y > 0 && x < boundary && lumberArea[y - 1][x + 1] == TREE) {
+			sum++;
+		}
+		if (y < boundary && lumberArea[y + 1][x] == TREE) {
+			sum++;
+		}
+		if (x > 0 && lumberArea[y][x - 1] == TREE) {
+			sum++;
+		}
+		if (x < boundary && lumberArea[y][x + 1] == TREE) {
+			sum++;
+		}
+		if (y < boundary && x > 0 && lumberArea[y + 1][x - 1] == TREE) {
+			sum++;
+		}
+		if (y < boundary && x < boundary && lumberArea[y + 1][x + 1] == TREE) {
+			sum++;
+		}
+		return sum;
+	}
+
+	int sumLumberyard(int x, int y) {
+		int sum = 0;
+		if (y > 0 && lumberArea[y-1][x] == LUMBERYARD) {
+			sum++;
+		}
+		if (y > 0 && x > 0 && lumberArea[y - 1][x - 1] == LUMBERYARD) {
+			sum++;
+		}
+		if (y > 0 && x < boundary && lumberArea[y - 1][x + 1] == LUMBERYARD) {
+			sum++;
+		}
+		if (y < boundary && lumberArea[y + 1][x] == LUMBERYARD) {
+			sum++;
+		}
+		if (x > 0 && lumberArea[y][x - 1] == LUMBERYARD) {
+			sum++;
+		}
+		if (x < boundary && lumberArea[y][x + 1] == LUMBERYARD) {
+			sum++;
+		}
+		if (y < boundary && x > 0 && lumberArea[y + 1][x - 1] == LUMBERYARD) {
+			sum++;
+		}
+		if (y < boundary && x < boundary && lumberArea[y + 1][x + 1] == LUMBERYARD) {
+			sum++;
+		}
+		return sum;
+	}
+
+	void transformOpen(int x, int y) {
+		int sum = sumTree(x, y);
+		if (sum >= 3) {
+			transformed[y][x] = TREE;
+		}
+		else {
+			transformed[y][x] = OPEN;
+		}
 	}
 
 	void transformTree(int x, int y) {
-
+		int sum = sumLumberyard(x, y);
+		if (sum >= 3) {
+			transformed[y][x] = LUMBERYARD;
+		}
+		else {
+			transformed[y][x] = TREE;
+		}
 	}
 
 	void transformLumberyard(int x, int y) {
-
+		int lumberyards = sumLumberyard(x, y);
+		int trees = sumTree(x, y);
+		if (lumberyards > 0 && trees > 0) {
+			transformed[y][x] = LUMBERYARD;
+		}
+		else {
+			transformed[y][x] = OPEN;
+		}
 	}
 
 	void copy() {
@@ -69,6 +162,8 @@ namespace Day18 {
 			tick();
 			copy();
 		}
+
+		// dump();
 
 		return sum(TREE) * sum(LUMBERYARD);
 	}
