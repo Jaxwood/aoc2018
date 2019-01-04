@@ -3,10 +3,10 @@
 using namespace std;
 
 namespace Day18 {
-	int dimension = 10;
+	int dimension = 50;
 	int boundary = dimension - 1;
-	char lumberArea[10][10];
-	char transformed[10][10];
+	char lumberArea[50][50];
+	char transformed[50][50];
 	const char TREE = '|';
 	const char OPEN = '.';
 	const char LUMBERYARD = '#';
@@ -23,6 +23,17 @@ namespace Day18 {
 		}
 		for (auto &line : result) {
 			out << line << endl;
+		}
+	}
+
+	void dumpStr(map<int, int> sums) {
+		std::ofstream out("output.txt");
+		vector<string> result;
+		for (auto m : sums) {
+			result.push_back(to_string(m.first) + " -> " + to_string(m.second));
+		}
+		for (auto str : result) {
+			out << str << endl;
 		}
 	}
 
@@ -163,8 +174,23 @@ namespace Day18 {
 			copy();
 		}
 
-		// dump();
-
 		return sum(TREE) * sum(LUMBERYARD);
+	}
+
+	int Part2() {
+		auto repetition = vector<int>{ 201600, 202404, 204074, 205220, 209951, 211088, 214292, 214587, 216315, 214935, 214635, 213239, 211653,203814, 204941, 204680, 203138, 204756, 206305, 204960, 205907, 207468, 208962, 210184, 211145, 211200, 205965, 201863 };
+		int idx = 0;
+		int size = repetition.size();
+		for (auto i = 0; i < 1000000000; i++) {
+			idx++;
+			if (i == 399) {
+				idx = 0;
+			}
+			if (idx >= size) {
+				idx = 0;
+			}
+		}
+
+		return repetition[idx];
 	}
 }

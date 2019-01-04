@@ -40,7 +40,11 @@ public:
 };
 
 TEST_F(day18Fixture, Part1) {
-	SetUp("day18_fixture.txt");
+	SetUp("day18_part1.txt");
 	auto actual = Day18::Part1(getTokens());
-	EXPECT_EQ(1147, actual);
+	EXPECT_EQ(574200, actual);
+}
+TEST_F(day18Fixture, Part2) {
+	auto actual = Day18::Part2();
+	EXPECT_EQ(211653, actual);
 }
