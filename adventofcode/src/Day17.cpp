@@ -4,10 +4,11 @@
 using namespace std;
 
 namespace Day17 {
-	char ground[2000][2000];
-	int sizeX = 2000;
-	int sizeY = 2000;
+	char ground[2100][2100];
+	int sizeX = 2100;
+	int sizeY = 2100;
 	char WATER = '|';
+	char REST = '~';
 	char SAND = '.';
 	char CLAY = '#';
 
@@ -31,7 +32,7 @@ namespace Day17 {
 	}
 
 	bool isWater(int x, int y) {
-		return ground[y][x] == WATER;
+		return ground[y][x] == WATER || ground[y][x] == REST;
 	}
 
 	bool isClay(int x, int y) {
@@ -55,12 +56,16 @@ namespace Day17 {
 		ground[y][x] = WATER;
 	}
 
+	void addRestWater(int x, int y) {
+		ground[y][x] = REST;
+	}
+
 	bool addWaterLeft(int x, int y) {
 		while (true) {
 			if (isClay(x,y)) {
 				return false;
 			}
-			addWater(x, y);
+			addRestWater(x, y);
 			if (isEdge(x, y)) {
 				return true;
 			}
@@ -73,7 +78,7 @@ namespace Day17 {
 			if (isClay(x,y)) {
 				return false;
 			}
-			addWater(x, y);
+			addRestWater(x, y);
 			if (isEdge(x, y)) {
 				return true;
 			}
@@ -122,8 +127,15 @@ namespace Day17 {
 		}
 	}
 
-	int Part1(vector<Clay> lines) {
-		// transform clays to a map data structure
+	void replaceWaterAtRest(int y) {
+		for (auto x = 0; x < sizeX; x++) {
+			if (isWater(x, y)) {
+				ground[y][x] = WATER;
+			}
+		}
+	}
+
+	map<int, vector<int>> toVeins(vector<Clay> lines) {
 		map<int, vector<int>> veins;
 		for (auto &clay : lines) {
 			for (auto &y : clay.ys()) {
@@ -132,8 +144,10 @@ namespace Day17 {
 				}
 			}
 		}
+		return veins;
+	}
 
-		// add sand tiles to the ground
+	tuple<int, int> setupGround(map<int, vector<int>> veins) {
 		for (auto y = 0; y < sizeY; y++) {
 			for (auto x = 0; x < sizeX; x++) {
 				ground[y][x] = SAND;
@@ -152,6 +166,10 @@ namespace Day17 {
 			yMax = vein.first;
 		}
 
+		return make_tuple(yMin, yMax);
+	}
+
+	void run(int yMax) {
 		ground[0][500] = WATER;
 		int y = 1;
 		int x = 500;
@@ -162,6 +180,7 @@ namespace Day17 {
 				if (isBasin(x, y + 1)) {
 					fillBasin(x, y);
 					y = findWaterSource();
+					replaceWaterAtRest(y);
 				}
 				else {
 					addWater(x, y);
@@ -169,18 +188,61 @@ namespace Day17 {
 			}
 			y++;
 		}
-		dump();
+	}
 
-		// count water tiles
+	int sum(int yMin) {
 		auto waterTiles = 0;
 		for (auto y = yMin; y < sizeY; y++) {
 			for (auto x = 0; x < sizeX; x++) {
-				if(ground[y][x] == WATER) {
+				if(ground[y][x] == WATER || ground[y][x] == REST) {
 					waterTiles++;
 				}
 			}
 		}
 		return waterTiles;
+	}
 
+	int sumWaterAtRest(int yMin) {
+		auto waterTiles = 0;
+		for (auto y = yMin; y < sizeY; y++) {
+			for (auto x = 0; x < sizeX; x++) {
+				if(ground[y][x] == REST) {
+					waterTiles++;
+				}
+			}
+		}
+		return waterTiles;
+	}
+
+	int Part1(vector<Clay> lines) {
+		int yMin, yMax;
+		// transform clays to a map data structure
+		auto veins = toVeins(lines);
+		// add sand tiles to the ground
+		tie(yMin, yMax) = setupGround(veins);
+
+		// fill water
+		run(yMax);
+
+		dump();
+
+		// count water tiles
+		return sum(yMin);
+	}
+
+	int Part2(vector<Clay> lines) {
+		int yMin, yMax;
+		// transform clays to a map data structure
+		auto veins = toVeins(lines);
+		// add sand tiles to the ground
+		tie(yMin, yMax) = setupGround(veins);
+
+		// fill water
+		run(yMax);
+
+		dump();
+
+		// count water tiles
+		return sumWaterAtRest(yMin);
 	}
 }

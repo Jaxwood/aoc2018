@@ -18,4 +18,5 @@ namespace Day17 {
 		}
 	};
 	int Part1(std::vector<Clay> lines);
+	int Part2(std::vector<Clay> lines);
 }
