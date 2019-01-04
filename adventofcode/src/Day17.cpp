@@ -129,7 +129,7 @@ namespace Day17 {
 
 	void replaceWaterAtRest(int y) {
 		for (auto x = 0; x < sizeX; x++) {
-			if (isWater(x, y)) {
+			if (isWater(x, y) && (isSand(x - 1, y - 1) || isSand(x + 1, y - 1))) {
 				ground[y][x] = WATER;
 			}
 		}
@@ -224,7 +224,7 @@ namespace Day17 {
 		// fill water
 		run(yMax);
 
-		dump();
+		// dump();
 
 		// count water tiles
 		return sum(yMin);
@@ -240,7 +240,7 @@ namespace Day17 {
 		// fill water
 		run(yMax);
 
-		dump();
+		// dump();
 
 		// count water tiles
 		return sumWaterAtRest(yMin);
