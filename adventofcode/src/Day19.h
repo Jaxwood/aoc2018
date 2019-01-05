@@ -3,11 +3,7 @@
 #include <vector>
 
 namespace Day19 {
-	class InstructionPointer {
-		int registry;
-	public:
-		InstructionPointer(int registry) : registry(registry) {};
-	};
+
 	class Instruction {
 		std::string operation;
 		std::vector<int> operations;
@@ -16,13 +12,13 @@ namespace Day19 {
 		int read(const int registry);
 		std::string type() const;
 	};
-	class Device {
+
+	class InstructionPointer {
+		int ip;
 		int A = 0;
-		int B = 0;
-		int C = 0;
+		int B = 1;
+		int C = 2;
 		std::vector<int> memory;
-	public:
-		Device();
 		void addr(Instruction instruction);
 		void addi(Instruction instruction);
 		void mulr(Instruction instruction);
@@ -39,6 +35,15 @@ namespace Day19 {
 		void eqir(Instruction instruction);
 		void eqri(Instruction instruction);
 		void eqrr(Instruction instruction);
+	public:
+		InstructionPointer(int ip) {
+			this->ip = ip;
+			this->memory = std::vector<int>{ 0, 0, 0, 0, 0, 0 };
+		};
+		int registry(int num);
+		int getInstruction();
+		void execute(Instruction instruction);
 	};
+
 	int Part1(InstructionPointer pointer, std::vector<Instruction> instructions);
 }
