@@ -5,8 +5,12 @@ using namespace std;
 namespace Day19 {
 
 	int InstructionPointer::registry(int num) {
-		// subtract 1 as the increment of the pointer should not be counted
-		return this->memory[num] - 1;
+		if (num == this->ip) {
+			return this->memory[num] - 1;
+		}
+		else {
+			return this->memory[num];
+		}
 	}
 
 	int InstructionPointer::getInstruction() {
@@ -63,6 +67,7 @@ namespace Day19 {
 		if (t == "eqrr") {
 			this->eqrr(instruction);
 		}
+		this->memory[this->ip]++;
 	}
 
 	void InstructionPointer::addr(Instruction instruction) {
