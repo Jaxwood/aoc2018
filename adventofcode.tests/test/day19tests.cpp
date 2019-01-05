@@ -59,5 +59,5 @@ public:
 TEST_F(day19Fixture, Part1) {
 	SetUp("day19_fixture.txt");
 	auto actual = Day19::Part1(getPointer(), getTokens());
-	EXPECT_EQ(5, actual);
+	EXPECT_EQ(6, actual);
 }
