@@ -5,7 +5,8 @@ using namespace std;
 namespace Day19 {
 
 	int InstructionPointer::registry(int num) {
-		return this->memory[num];
+		// subtract 1 as the increment of the pointer should not be counted
+		return this->memory[num] - 1;
 	}
 
 	int InstructionPointer::getInstruction() {
