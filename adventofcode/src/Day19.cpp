@@ -134,12 +134,27 @@ namespace Day19 {
 		this->memory[instruction.read(this->C)] = this->memory[instruction.read(this->A)] == this->memory[instruction.read(this->B)] ? 1 : 0;
 	}
 
+	string InstructionPointer::log() {
+		string result;
+		for (size_t i = 0; i < this->memory.size(); i++) {
+			result += "\t" + to_string(this->memory[i]);
+		}
+		return result;
+	}
+
 	int Instruction::read(const int registry) {
 		return this->operations[registry];
 	}
 
 	string Instruction::type() const {
 		return this->operation;
+	}
+
+	void dump(vector<string> logs) {
+		std::ofstream out("output.txt");
+		for (auto str : logs) {
+			out << str << endl;
+		}
 	}
 
 	int Part1(InstructionPointer pointer, vector<Instruction> instructions) {
@@ -152,5 +167,19 @@ namespace Day19 {
 			pointer.execute(instruction);
 		}
 		return pointer.registry(0);
+	}
+
+	int Part2() {
+		// register 0 is being increment every time register 2 is dividable with the current value in register 1.
+		// register 1 is being incremented with 1 every 10551282 tick.
+		// runs from 1 to the value of register 2 which is 10551282 in this case.
+		long long sum = 0;
+		int reg1 = 1;
+		for (auto reg1 = 1; reg1 <= 10551282; reg1++) {
+			if (10551282 % reg1 == 0) {
+				sum = sum + reg1;
+			}
+		}
+		return sum;
 	}
 }
