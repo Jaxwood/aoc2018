@@ -1,5 +1,8 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
+#include <string>
 #include <vector>
 
 namespace Day19 {
@@ -43,7 +46,9 @@ namespace Day19 {
 		int registry(int num);
 		int getInstruction();
 		void execute(Instruction instruction);
+		std::string log();
 	};
 
 	int Part1(InstructionPointer pointer, std::vector<Instruction> instructions);
+	int Part2();
 }

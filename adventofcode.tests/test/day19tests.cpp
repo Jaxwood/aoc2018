@@ -61,3 +61,8 @@ TEST_F(day19Fixture, Part1) {
 	auto actual = Day19::Part1(getPointer(), getTokens());
 	EXPECT_EQ(6, actual);
 }
+
+TEST_F(day19Fixture, Part2) {
+	auto actual = Day19::Part2();
+	EXPECT_EQ(24117312, actual);
+}
