@@ -8,7 +8,7 @@
 
 namespace Day20 {
 	typedef std::tuple<int, int> Point;
-	std::vector<std::string> split(std::string input);
-	std::string group(std::string input);
+
+	std::vector<std::string> paths(std::vector<std::string> acc, std::string raw);
 	int Part1(std::string input);
 }
