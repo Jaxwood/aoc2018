@@ -35,14 +35,40 @@ public:
 		_tokens = tokens;
 	}
 
-	vector<string> getTokens() {
-		return _tokens;
+	string getTokens() {
+		return _tokens[0];
 	}
 };
 
+TEST_F(day20Fixture, Part1) {
+	SetUp("day20_part1.txt");
+	auto actual = Day20::Part1(getTokens());
+	EXPECT_EQ(31, actual);
+}
+
 TEST_F(day20Fixture, Part1a) {
-	auto actual = Day20::Part1("^ENNWSWW(NEWS|)$");
+	auto actual = Day20::Part1("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$");
+	EXPECT_EQ(31, actual);
+}
+
+TEST_F(day20Fixture, Part1b) {
+	auto actual = Day20::Part1("^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$");
+	EXPECT_EQ(23, actual);
+}
+
+TEST_F(day20Fixture, Part1c) {
+	auto actual = Day20::Part1("^WNE$");
 	EXPECT_EQ(3, actual);
+}
+
+TEST_F(day20Fixture, Part1d) {
+	auto actual = Day20::Part1("^ENWWW(NEEE|SSE(EE|N))$");
+	EXPECT_EQ(10, actual);
+}
+
+TEST_F(day20Fixture, Part1e) {
+	auto actual = Day20::Part1("^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$");
+	EXPECT_EQ(18, actual);
 }
 
 TEST_F(day20Fixture, Paths) {

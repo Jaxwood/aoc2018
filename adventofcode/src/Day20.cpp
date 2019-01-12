@@ -107,6 +107,12 @@ namespace Day20 {
 
 	int Part1(string raw) {
 		auto root = paths(vector<string>(), raw);
-		return 0;
+		int cnt = 0;
+		for (auto &r : root) {
+			if (r.size() > cnt) {
+				cnt = r.size();
+			}
+		}
+		return cnt;
 	}
 }
