@@ -32,24 +32,7 @@ namespace Day20 {
 		throw exception("unknown char: " + c);
 	}
 
-	class Vertex {
-		vector<Vertex> edges;
-		Point vertice;
-		char direction;
-	public:
-		Vertex(char c, Point point) {
-			this->vertice = point;
-			this->direction = c;
-		}
-		void append(Vertex vertex) {
-			this->edges.push_back(vertex);
-		}
-		Point location() {
-			return this->vertice;
-		}
-	};
-
-	string group(string raw) {
+	tuple<int,string> group(string raw) {
 		int cnt = 0;
 		int size = 0;
 		do {
@@ -61,7 +44,7 @@ namespace Day20 {
 			}
 			size++;
 		} while (cnt != 0);
-		return raw.substr(0,size);
+		return make_tuple(size, raw.substr(0, size));
 	}
 
 	vector<string> split(string raw) {
@@ -92,28 +75,38 @@ namespace Day20 {
 		return result;
 	}
 
-	Vertex build(Vertex node, string raw) {
-		if (raw.size() == 0) {
-			return node;
+	vector<string> paths(vector<string> acc, string raw) {
+		if (raw.size() == 0) return acc;
+		char direction = raw[0];
+		if (direction == BEGIN) return paths(acc, raw.substr(1));
+		if (direction == END) return acc;
+
+		if (direction == OPEN) {
+			int size;
+			string section;
+			tie(size, section) = group(raw);
+			auto choices = split(section);
+			vector<string> result;
+			for (auto &c : choices) {
+				for (auto &r : paths(acc, c)) {
+					result.push_back(r);
+				}
+			}
+			return paths(result, raw.substr(size));
 		}
-		char c = raw[0];
-		if (c == END) {
-			return node;
-		}
-		if (c == OPEN) {
-		}
-		else if (c == CLOSE) {
-			throw exception("encounter close character");
+		if (acc.size() == 0) {
+			acc.push_back(string(1, direction));
 		}
 		else {
-			auto next = Vertex(c, move(node.location(), c));
-			node.append(build(next, raw.substr(1)));
-			return node;
+			for (size_t i = 0; i < acc.size(); i++) {
+				acc[i].append(string(1, direction));
+			}
 		}
+		return paths(acc, raw.substr(1));
 	}
 
 	int Part1(string raw) {
-		auto root = build(Vertex('^', make_tuple(0, 0)), raw.substr(1));
+		auto root = paths(vector<string>(), raw);
 		return 0;
 	}
 }

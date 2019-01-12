@@ -45,30 +45,26 @@ TEST_F(day20Fixture, Part1a) {
 	EXPECT_EQ(3, actual);
 }
 
-TEST_F(day20Fixture, GroupA) {
-	auto actual = Day20::group("(NEWS|)ABD");
-	EXPECT_EQ("(NEWS|)", actual);
-}
-
-TEST_F(day20Fixture, GroupB) {
-	auto actual = Day20::group("(NEWS(W|S)W)SS");
-	EXPECT_EQ("(NEWS(W|S)W)", actual);
-}
-
-TEST_F(day20Fixture, SplitA) {
-	auto actual = Day20::split("(W|S)");
-	auto expected = vector<string>{ "W", "S" };
+TEST_F(day20Fixture, Paths) {
+	auto expected = vector<string>{ "ENS", "ES" };
+	auto actual = Day20::paths(vector<string>(), "^E(N|)S$");
 	EXPECT_EQ(expected, actual);
 }
 
-TEST_F(day20Fixture, SplitB) {
-	auto actual = Day20::split("(W|(S|W))");
-	auto expected = vector<string>{ "W", "(S|W)" };
+TEST_F(day20Fixture, PathsA) {
+	auto expected = vector<string>{ "ENSS", "ENES", "ES" };
+	auto actual = Day20::paths(vector<string>(), "^E(N(S|E)|)S$");
 	EXPECT_EQ(expected, actual);
 }
 
-TEST_F(day20Fixture, SplitC) {
-	auto actual = Day20::split("(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))");
-	auto expected = vector<string>{ "E", "NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE))" };
+TEST_F(day20Fixture, PathsB) {
+	auto expected = vector<string>{ "ENSWESN", "ESWESN", "ENSESN", "ESESN", "ENSWEN", "ESWEN", "ENSEN", "ESEN" };
+	auto actual = Day20::paths(vector<string>(), "^E(N|)S(W|)E(S|)N$");
+	EXPECT_EQ(expected, actual);
+}
+
+TEST_F(day20Fixture, PathsC) {
+	auto expected = vector<string>{ "ENS", "ESS", "ES" };
+	auto actual = Day20::paths(vector<string>(), "^E(N|(S|))S$");
 	EXPECT_EQ(expected, actual);
 }
