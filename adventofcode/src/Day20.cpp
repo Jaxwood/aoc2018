@@ -75,38 +75,36 @@ namespace Day20 {
 		return result;
 	}
 
-	vector<string> paths(vector<string> acc, string raw) {
-		if (raw.size() == 0) return acc;
-		char direction = raw[0];
-		if (direction == BEGIN) return paths(acc, raw.substr(1));
-		if (direction == END) return acc;
-
-		if (direction == OPEN) {
-			int size;
-			string section;
-			tie(size, section) = group(raw);
-			auto choices = split(section);
+	vector<string> paths(vector<string> acc) {
+		vector<string> outer;
+		while (true) {
 			vector<string> result;
-			for (auto &c : choices) {
-				for (auto &r : paths(acc, c)) {
-					result.push_back(r);
+			for (auto &a : acc) {
+				string str; int size;
+				int idx = a.find(OPEN);
+				if (idx == -1) {
+					outer.push_back(a);
+					continue;
+				}
+				auto head = a.substr(0, idx);
+				tie(size,str) = group(a.substr(idx));
+				auto choices = split(str);
+				auto tail = a.substr(idx+size);
+				for (auto &choice : choices) {
+					result.push_back(head + choice + tail);
 				}
 			}
-			return paths(result, raw.substr(size));
-		}
-		if (acc.size() == 0) {
-			acc.push_back(string(1, direction));
-		}
-		else {
-			for (size_t i = 0; i < acc.size(); i++) {
-				acc[i].append(string(1, direction));
+			acc = result;
+			if (all_of(begin(acc), end(acc), [](string str) { return str.find(OPEN) == -1; })){
+				copy(begin(acc), end(acc), back_inserter(outer));
+				break;
 			}
 		}
-		return paths(acc, raw.substr(1));
+		return outer;
 	}
 
 	int Part1(string raw) {
-		auto root = paths(vector<string>(), raw);
+		auto root = paths(vector<string> { raw });
 		int cnt = 0;
 		for (auto &r : root) {
 			if (r.size() > cnt) {
