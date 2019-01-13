@@ -70,27 +70,3 @@ TEST_F(day20Fixture, Part1e) {
 	auto actual = Day20::Part1("^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$");
 	EXPECT_EQ(18, actual);
 }
-
-TEST_F(day20Fixture, Paths) {
-	auto expected = vector<string>{ "ENS", "ES" };
-	auto actual = Day20::paths(vector<string>{ "^E(N|)S$"});
-	EXPECT_EQ(expected, actual);
-}
-
-TEST_F(day20Fixture, PathsA) {
-	auto expected = vector<string>{ "ENSS", "ENES", "ES" };
-	auto actual = Day20::paths(vector<string>{ "^E(N(S|E)|)S$" });
-	EXPECT_EQ(expected, actual);
-}
-
-TEST_F(day20Fixture, PathsB) {
-	auto expected = vector<string>{ "ENSWESN", "ESWESN", "ENSESN", "ESESN", "ENSWEN", "ESWEN", "ENSEN", "ESEN" };
-	auto actual = Day20::paths(vector<string>{ "^E(N|)S(W|)E(S|)N$"});
-	EXPECT_EQ(expected, actual);
-}
-
-TEST_F(day20Fixture, PathsC) {
-	auto expected = vector<string>{ "ENS", "ESS", "ES" };
-	auto actual = Day20::paths(vector<string>{"^E(N|(S|))S$"});
-	EXPECT_EQ(expected, actual);
-}
