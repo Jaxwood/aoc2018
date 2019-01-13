@@ -73,24 +73,24 @@ TEST_F(day20Fixture, Part1e) {
 
 TEST_F(day20Fixture, Paths) {
 	auto expected = vector<string>{ "ENS", "ES" };
-	auto actual = Day20::paths(vector<string>(), "^E(N|)S$");
+	auto actual = Day20::paths(vector<string>{ "^E(N|)S$"});
 	EXPECT_EQ(expected, actual);
 }
 
 TEST_F(day20Fixture, PathsA) {
 	auto expected = vector<string>{ "ENSS", "ENES", "ES" };
-	auto actual = Day20::paths(vector<string>(), "^E(N(S|E)|)S$");
+	auto actual = Day20::paths(vector<string>{ "^E(N(S|E)|)S$" });
 	EXPECT_EQ(expected, actual);
 }
 
 TEST_F(day20Fixture, PathsB) {
 	auto expected = vector<string>{ "ENSWESN", "ESWESN", "ENSESN", "ESESN", "ENSWEN", "ESWEN", "ENSEN", "ESEN" };
-	auto actual = Day20::paths(vector<string>(), "^E(N|)S(W|)E(S|)N$");
+	auto actual = Day20::paths(vector<string>{ "^E(N|)S(W|)E(S|)N$"});
 	EXPECT_EQ(expected, actual);
 }
 
 TEST_F(day20Fixture, PathsC) {
 	auto expected = vector<string>{ "ENS", "ESS", "ES" };
-	auto actual = Day20::paths(vector<string>(), "^E(N|(S|))S$");
+	auto actual = Day20::paths(vector<string>{"^E(N|(S|))S$"});
 	EXPECT_EQ(expected, actual);
 }

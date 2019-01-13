@@ -9,6 +9,6 @@
 namespace Day20 {
 	typedef std::tuple<int, int> Point;
 
-	std::vector<std::string> paths(std::vector<std::string> acc, std::string raw);
+	std::vector<std::string> paths(std::vector<std::string> acc);
 	int Part1(std::string input);
 }
