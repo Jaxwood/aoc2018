@@ -34,6 +34,9 @@ namespace Day20 {
 		else if (c == this->EAST) {
 			next = make_tuple(x + 1, y);
 		}
+		else {
+			throw exception("unknown character");
+		}
 		this->addRoom(next);
 		this->current = next;
 	}
@@ -65,12 +68,12 @@ namespace Day20 {
 		return size - idx;
 	}
 
-	vector<string> split(int idx, int size, string raw) {
+	vector<string> split(string raw) {
 		vector<string> result;
 		string segment = "";
 		int cnt = 0;
 		// trim ends
-		raw = raw.substr(idx + 1, size - 2);
+		raw = raw.substr(1, raw.size() - 2);
 
 		for (auto i = 0; i < raw.size(); i++) {
 			auto next = raw[i];
@@ -93,22 +96,24 @@ namespace Day20 {
 		return result;
 	}
 
-	vector<string> expand(int idx, string directions) {
-		int size = group(idx, directions);
-		auto sections = split(idx, size, directions);
+	vector<string> expand(string directions) {
 		vector<string> result;
-		for (auto &section : sections) {
-			if (count(begin(section), end(section), '(') == 0) {
-				result.push_back(section);
+		auto sections = split(directions);
+		while (!sections.empty()) {
+			auto candidate = sections.back();
+			sections.pop_back();
+			if(count(begin(candidate), end(candidate), '(') > 0) {
+				int idx = candidate.find('(');
+				auto prefix = idx != string::npos ? candidate.substr(0, idx) : "";
+				int size = group(idx, candidate);
+				auto postfix = candidate.size() != (size + idx) ? candidate.substr(idx + size) : "";
+				auto candidates = expand(candidate.substr(idx, size));
+				for (auto &next : candidates) {
+					result.push_back(prefix + next + postfix);
+				}
 			}
 			else {
-				auto location = section.find('(');
-				int size = group(location, section);
-				auto tail = section.substr(location + size);
-				auto head = section.substr(0, location);
-				for (auto ex : expand(location, section)) {
-					result.push_back(head + ex + tail);
-				}
+				result.push_back(candidate);
 			}
 		}
 		return result;
@@ -120,13 +125,16 @@ namespace Day20 {
 
 	int Part1(string directions) {
 		Dungeon dungeon = Dungeon();
-		int idx = 1;
-		char c = directions[idx];
+		int idx = 0;
+		if (directions[idx] != '^') {
+			throw exception("unexpected character");
+		}
+		char c = directions[++idx];
 		while(c != '$') {
 			if (c == '(') {
 				dungeon.checkpoint();
 				int size = group(idx, directions);
-				auto sections = expand(idx, directions);
+				auto sections = expand(directions.substr(idx, size));
 				for (auto &section : sections) {
 					for (auto n : section) {
 						dungeon.move(n);
