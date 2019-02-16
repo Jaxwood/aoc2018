@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <map>
+#include <queue>
 #include <set>
 #include <string>
 #include <tuple>
@@ -24,12 +25,14 @@ namespace Day20 {
 		std::map<Room, std::set<Room>> rooms;
 		Room current;
 		Room store;
+
+		void calculateMove(char direction);
 	public:
 		Dungeon();
 		void addRoom(Room number);
-		void move(char direction);
-		void restore();
-		void checkpoint();
+		void move(std::string directions);
+		void restore(Room room);
+		Room getCurrentRoom();
 		int size();
 		std::set<Room> getRooms(Room room);
 	};
