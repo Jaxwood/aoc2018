@@ -63,7 +63,7 @@ namespace Day20 {
 		return this->rooms.size();
 	}
 
-	int maxDistance(Dungeon &dungeon)
+	map<Room, int> maxDistance(Dungeon &dungeon)
 	{
 		vector<Room> path = { make_tuple(0,0) };
 		vector<Room> visited;
@@ -82,10 +82,7 @@ namespace Day20 {
 			}
 		}
 
-		auto max = *(max_element(begin(distances), end(distances), [](pair<Room, int> p1, pair<Room, int> p2) {
-			return p1.second < p2.second;
-		}));
-		return max.second;
+		return distances;
 	}
 
 	tuple<string, string> getSegment(string directions) {
@@ -139,9 +136,8 @@ namespace Day20 {
 		return result;
 	}
 
-	int Part1(string directions) {
+	void populateDungeon(Dungeon& dungeon, string directions) {
 		char GROUP = '(';
-		Dungeon dungeon = Dungeon();
 		if (directions[0] != '^' && directions[directions.size()-1] != '$') {
 			throw exception("invalid input - should start with ^ and end with $");
 		}
@@ -181,6 +177,25 @@ namespace Day20 {
 				}
 			}
 		}
-		return maxDistance(dungeon);
+	}
+
+	int Part1(string directions) {
+		Dungeon dungeon = Dungeon();
+		populateDungeon(dungeon, directions);
+		auto distances = maxDistance(dungeon);
+		auto max = *(max_element(begin(distances), end(distances), [](pair<Room, int> p1, pair<Room, int> p2) {
+			return p1.second < p2.second;
+		}));
+		return max.second;
+	}
+
+	int Part2(string directions) {
+		Dungeon dungeon = Dungeon();
+		populateDungeon(dungeon, directions);
+		auto distances = maxDistance(dungeon);
+		auto max = count_if(begin(distances), end(distances), [](pair<Room, int> pair) {
+			return pair.second >= 1000;
+		});
+		return max;
 	}
 }

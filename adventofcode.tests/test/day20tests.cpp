@@ -46,6 +46,12 @@ TEST_F(day20Fixture, Part1) {
 	EXPECT_EQ(4186, actual);
 }
 
+TEST_F(day20Fixture, Part2) {
+	SetUp("day20_part1.txt");
+	auto actual = Day20::Part2(getTokens());
+	EXPECT_EQ(4186, actual);
+}
+
 TEST_F(day20Fixture, Part1a) {
 	auto actual = Day20::Part1("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$");
 	EXPECT_EQ(31, actual);
