@@ -12,7 +12,7 @@ namespace Day20 {
 		this->rooms[number].insert(this->current);
 	}
 
-	void Dungeon::move(char c) {
+	void Dungeon::calculateMove(char c) {
 		int x, y;
 		tie(x, y) = this->current;
 		Room next;
@@ -41,119 +41,33 @@ namespace Day20 {
 		this->current = next;
 	}
 
+	void Dungeon::move(string directions) {
+		for (auto &c : directions) {
+			this->calculateMove(c);
+		}
+	}
+
 	set<Room> Dungeon::getRooms(Room room) {
 		return this->rooms[room];
 	}
 
-	void Dungeon::checkpoint() {
-		this->store = this->current;
+	Room Dungeon::getCurrentRoom() {
+		return this->current;
 	}
 
-	void Dungeon::restore() {
-		this->current = this->store;
-	}
-
-	int group(int idx, string raw) {
-		int cnt = 0;
-		int size = idx;
-		do {
-			if (raw[size] == ')') {
-				cnt--;
-			}
-			if (raw[size] == '(') {
-				cnt++;
-			}
-			size++;
-		} while (cnt != 0);
-		return size - idx;
-	}
-
-	vector<string> split(string raw) {
-		vector<string> result;
-		string segment = "";
-		int cnt = 0;
-		// trim ends
-		raw = raw.substr(1, raw.size() - 2);
-
-		for (auto i = 0; i < raw.size(); i++) {
-			auto next = raw[i];
-			if (next == '(') {
-				cnt++;
-			}
-			if (next == ')') {
-				cnt--;
-			}
-			if (next == '|' && cnt == 0) {
-				result.push_back(segment);
-				segment = "";
-			}
-			else {
-				segment += next;
-			}
-		}
-		result.push_back(segment);
-
-		return result;
-	}
-
-	vector<string> expand(string directions) {
-		vector<string> result;
-		auto sections = split(directions);
-		while (!sections.empty()) {
-			auto candidate = sections.back();
-			sections.pop_back();
-			if(count(begin(candidate), end(candidate), '(') > 0) {
-				int idx = candidate.find('(');
-				auto prefix = idx != string::npos ? candidate.substr(0, idx) : "";
-				int size = group(idx, candidate);
-				auto postfix = candidate.size() != (size + idx) ? candidate.substr(idx + size) : "";
-				auto candidates = expand(candidate.substr(idx, size));
-				for (auto &next : candidates) {
-					result.push_back(prefix + next + postfix);
-				}
-			}
-			else {
-				result.push_back(candidate);
-			}
-		}
-		return result;
+	void Dungeon::restore(Room room) {
+		this->current = room;
 	}
 
 	int Dungeon::size() {
 		return this->rooms.size();
 	}
 
-	int Part1(string directions) {
-		Dungeon dungeon = Dungeon();
-		int idx = 0;
-		if (directions[idx] != '^') {
-			throw exception("unexpected character");
-		}
-		char c = directions[++idx];
-		while(c != '$') {
-			if (c == '(') {
-				dungeon.checkpoint();
-				int size = group(idx, directions);
-				auto sections = expand(directions.substr(idx, size));
-				for (auto &section : sections) {
-					for (auto n : section) {
-						dungeon.move(n);
-					}
-					dungeon.restore();
-				}
-				idx += size;
-			}
-			else {
-				dungeon.move(c);
-				idx++;
-			}
-			c = directions[idx];
-		}
-
+	int maxDistance(Dungeon &dungeon)
+	{
 		vector<Room> path = { make_tuple(0,0) };
 		vector<Room> visited;
-		map<Room, int> distances;
-		distances[make_tuple(0, 0)] = 0;
+		map<Room, int> distances = { make_pair(make_tuple(0, 0), 0) };
 		while (!path.empty()) {
 			auto room = path.back();
 			path.pop_back();
@@ -172,5 +86,101 @@ namespace Day20 {
 			return p1.second < p2.second;
 		}));
 		return max.second;
+	}
+
+	tuple<string, string> getSegment(string directions) {
+		auto len = directions.find('(');
+		if (len != string::npos) {
+			return make_tuple(directions.substr(0, len), directions.substr(len));
+		}
+		return make_tuple(directions, "");
+	}
+
+	tuple<string, string> getGroup(string directions) {
+		int cnt = 0;
+		int len = 0;
+		for (auto i = 0; i < directions.size(); i++) {
+			if (directions[i] == '(') {
+				cnt++;
+			}
+			if (directions[i] == ')') {
+				cnt--;
+			}
+			if (cnt == 0) {
+				len = i;
+				break;
+			}
+		}
+		return make_tuple(directions.substr(1, len - 1), directions.substr(len+1));
+	}
+
+	vector<string> getSplit(string directions) {
+		vector<string> result;
+		string segment = "";
+		int cnt = 0;
+
+		for (auto i = 0; i < directions.size(); i++) {
+			auto next = directions[i];
+			if (next == '(') {
+				cnt++;
+			}
+			if (next == ')') {
+				cnt--;
+			}
+			if (next == '|' && cnt == 0) {
+				result.push_back(segment);
+				segment = "";
+			}
+			else {
+				segment += next;
+			}
+		}
+		result.push_back(segment);
+		return result;
+	}
+
+	int Part1(string directions) {
+		char GROUP = '(';
+		Dungeon dungeon = Dungeon();
+		if (directions[0] != '^' && directions[directions.size()-1] != '$') {
+			throw exception("invalid input - should start with ^ and end with $");
+		}
+		string head, tail;
+		Room current = dungeon.getCurrentRoom();
+		queue<tuple<string, Room>> segments;
+		segments.push(make_tuple(directions.substr(1, directions.size()-2), current));
+		while (!segments.empty()) {
+			tie (tail, current) = segments.front();
+			dungeon.restore(current);
+			segments.pop();
+			// is it a group?
+			if (tail[0] == GROUP) {
+				tie (head, tail) = getGroup(tail);
+				auto splits = getSplit(head);
+				for (auto &split : splits) {
+					dungeon.restore(current);
+					if (any_of(begin(split), end(split), [GROUP](char c) { return c == GROUP; })) {
+						string hd, tl;
+						tie (hd, tl) = getSegment(split);
+						dungeon.move(hd);
+						segments.push(make_tuple(tl, dungeon.getCurrentRoom()));
+					}
+					else {
+						dungeon.move(split);
+					}
+				}
+				if (tail != "") {
+					segments.push(make_tuple(tail, dungeon.getCurrentRoom()));
+				}
+			}
+			else { // take until next group
+				tie(head, tail) = getSegment(tail);
+				dungeon.move(head);
+				if (tail != "") {
+					segments.push(make_tuple(tail, dungeon.getCurrentRoom()));
+				}
+			}
+		}
+		return maxDistance(dungeon);
 	}
 }
