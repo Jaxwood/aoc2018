@@ -38,4 +38,5 @@ namespace Day20 {
 	};
 
 	int Part1(std::string input);
+	int Part2(std::string input);
 }
