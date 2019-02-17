@@ -60,5 +60,10 @@ public:
 TEST_F(day21Fixture, Part1) {
 	SetUp("day21_part1.txt");
 	auto actual = Day21::Part1(getPointer(), getTokens());
-	EXPECT_EQ(6, actual);
+	EXPECT_EQ(11474091, actual);
+}
+
+TEST_F(day21Fixture, Part2) {
+	auto actual = Day21::Part2();
+	EXPECT_EQ(4520776, actual);
 }
