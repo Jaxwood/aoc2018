@@ -17,6 +17,10 @@ namespace Day19 {
 		return this->memory[this->ip];
 	}
 
+	void InstructionPointer::setRegistery(int registryNum, int registryValue) {
+		this->memory[registryNum] = registryValue;
+	}
+
 	void InstructionPointer::execute(Instruction instruction) {
 		auto t = instruction.type();
 		if (t == "addr") {

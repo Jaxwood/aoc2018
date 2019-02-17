@@ -52,6 +52,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="test\day21tests.cpp" />
     <ClCompile Include="test\day10tests.cpp" />
     <ClCompile Include="test\day11tests.cpp" />
     <ClCompile Include="test\day12tests.cpp" />
@@ -236,6 +237,9 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="test\day20_input\day20_part1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day21_input\day21_part1.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

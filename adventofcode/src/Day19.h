@@ -45,6 +45,7 @@ namespace Day19 {
 		};
 		int registry(int num);
 		int getInstruction();
+		void setRegistery(int registryNum, int registryValue);
 		void execute(Instruction instruction);
 		std::string log();
 	};
