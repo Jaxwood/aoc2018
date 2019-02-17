@@ -21,7 +21,7 @@ namespace Day19 {
 		int A = 0;
 		int B = 1;
 		int C = 2;
-		std::vector<int> memory;
+		std::vector<long long> memory;
 		void addr(Instruction instruction);
 		void addi(Instruction instruction);
 		void mulr(Instruction instruction);
@@ -41,7 +41,7 @@ namespace Day19 {
 	public:
 		InstructionPointer(int ip) {
 			this->ip = ip;
-			this->memory = std::vector<int>{ 0, 0, 0, 0, 0, 0 };
+			this->memory = std::vector<long long>{ 0, 0, 0, 0, 0, 0 };
 		};
 		int registry(int num);
 		int getInstruction();
