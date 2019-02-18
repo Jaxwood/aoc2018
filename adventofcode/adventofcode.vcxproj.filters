@@ -78,6 +78,9 @@
     <ClInclude Include="src\Day21.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Day22.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Day1.cpp">
@@ -141,6 +144,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Day21.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Day22.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
