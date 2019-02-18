@@ -11,6 +11,12 @@ namespace Day22 {
 		{ 2, Narrow }
 	};
 
+	map<ErosionLevel, vector<Tools>> toolsForSurface = {
+		{ Rocky, { ClimbingGear, Torch } },
+		{ Wet, { ClimbingGear, Neither } },
+		{ Narrow, { Torch, Neither } }
+	};
+
 	long long CalculateErosionLevel(tuple<int, int> target, int depth, size_t x, size_t y) {
 		int targetX, targetY;
 		tie(targetX, targetY) = target;
@@ -47,5 +53,22 @@ namespace Day22 {
 		}
 
 		return sum;
+	}
+
+	map<tuple<int, int>, int> travelCosts;
+
+	int Part2(tuple<int, int> target, int depth) {
+		int moveCost = 1;
+		int gearSwitchCost = 7;
+		ErosionLevel cavern[11][11];
+		for (size_t x = 0; x <= 10; x++) {
+			for (size_t y = 0; y <= 10; y++) {
+				auto erosionLevel = CalculateErosionLevel(target, depth, x, y);
+				cavern[y][x] = cavernTypes[erosionLevel % 3];
+			}
+		}
+		// build a graph with a cost associated with each edge
+		// use Dijkstra's algorithm to calculate shortest path
+		return 0;
 	}
 }
