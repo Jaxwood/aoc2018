@@ -16,3 +16,8 @@ TEST(day22Fixture, Part2) {
 	auto actual = Day22::Part2(make_tuple(10,10), 510);
 	EXPECT_EQ(45, actual);
 }
+
+TEST(day22Fixture, Part2A) {
+	auto actual = Day22::Part2(make_tuple(14,709), 6084);
+	EXPECT_EQ(45, actual);
+}
