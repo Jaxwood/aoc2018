@@ -95,16 +95,7 @@ namespace Day22 {
 	}
 
 	int getTravelCost(Tools tool, ErosionLevel erosionLevelSource, ErosionLevel erosionLevelTarget) {
-		if (erosionLevelSource == erosionLevelTarget) {
-			return 1;
-		}
-		else if (canUseTool(erosionLevelTarget, tool))
-		{
-			return 1;
-		}
-		else {
-			return 8;
-		}
+		return canUseTool(erosionLevelTarget, tool) ? 1 : 8;
 	}
 
 	tuple<int, int> findNext(set<tuple<int, int>> &visited, map<tuple<int, int>, int> &travelCosts) {
@@ -134,8 +125,8 @@ namespace Day22 {
 		}
 		travelCosts[make_tuple(0, 0)] = 0;
 		set<tuple<int, int>> visited;
-		map<tuple<int, int>, Tools> equipmentList;
-		equipmentList[make_tuple(0, 0)] = Torch;
+		map<tuple<int, int>, set<Tools>> equipmentList;
+		equipmentList[make_tuple(0, 0)] = { Torch };
 		int x1, y1, x2, y2;
 
 		while (!regions.empty())
@@ -143,19 +134,24 @@ namespace Day22 {
 			auto next = findNext(visited, travelCosts);
 			regions.erase(next);
 			auto neighbors = getNeighbors(next);
-			auto equipment = equipmentList[next];
+			auto equipments = equipmentList[next];
 			tie(x1, y1) = next;
 			for (auto &neighbor : neighbors) {
 				if (visited.find(neighbor) == visited.end()) {
 					tie(x2, y2) = neighbor;
-					auto cost = getTravelCost(equipment, cavern[y1][x1], cavern[y2][x2]);
-					auto newCost = travelCosts[next] + cost;
-					if (neighbor == target && equipment == ClimbingGear) {
-						newCost += 7;
-					}
-					if (newCost < travelCosts[neighbor]) {
-						travelCosts[neighbor] = newCost;
-						equipmentList[neighbor] = canUseTool(cavern[y2][x2], equipment) ? equipment : switchTool(equipment, toolsForSurface[cavern[y1][x1]]);
+					for (auto equipment : equipments) {
+						auto cost = getTravelCost(equipment, cavern[y1][x1], cavern[y2][x2]);
+						auto newCost = travelCosts[next] + cost;
+						if (neighbor == target && equipment == ClimbingGear) {
+							newCost += 7;
+						}
+						if (newCost == travelCosts[neighbor]) {
+							equipmentList[neighbor].insert(canUseTool(cavern[y2][x2], equipment) ? equipment : switchTool(equipment, toolsForSurface[cavern[y1][x1]]));
+						}
+						if (newCost < travelCosts[neighbor]) {
+							travelCosts[neighbor] = newCost;
+							equipmentList[neighbor] = { canUseTool(cavern[y2][x2], equipment) ? equipment : switchTool(equipment, toolsForSurface[cavern[y1][x1]]) };
+						}
 					}
 				}
 			}
