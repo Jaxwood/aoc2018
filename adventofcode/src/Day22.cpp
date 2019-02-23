@@ -3,8 +3,8 @@
 using namespace std;
 
 namespace Day22 {
-	int maxX = 20;
-	int maxY = 20;
+	int maxX = 150;
+	int maxY = 850;
 	map<tuple<int, int>, long long> erosionLevels;
 
 	map<int, ErosionLevel> cavernTypes = {
@@ -98,21 +98,21 @@ namespace Day22 {
 		return canUseTool(erosionLevelTarget, tool) ? 1 : 8;
 	}
 
-	tuple<int, int> findNext(set<tuple<int, int>> &visited, map<tuple<int, int>, int> &travelCosts) {
-		vector<pair<tuple<int, int>, int>> pairs;
-		copy(begin(travelCosts), end(travelCosts), back_inserter(pairs));
-		sort(begin(pairs), end(pairs), [](const pair<tuple<int, int>, int> p1, const pair<tuple<int, int>, int> p2) {
-			return p1.second < p2.second;
-		});
-		for (auto &p : pairs) {
-			if (visited.find(p.first) == visited.end()) {
-				return p.first;
+	tuple<int, int> findNext(set<tuple<int,int>> &candidates, map<tuple<int, int>, int> &travelCosts) {
+		int min = INT32_MAX;
+		tuple<int, int> candidate;
+		for (auto &s : candidates) {
+			auto cost = travelCosts[s];
+			if (cost < min) {
+				min = cost;
+				candidate = s;
 			}
 		}
+		return candidate;
 	}
 
 	int Part2(tuple<int, int> target, int depth) {
-		ErosionLevel cavern[21][21];
+		ErosionLevel cavern[851][151];
 		set<tuple<int, int>> regions;
 		map<tuple<int, int>, int> travelCosts;
 		for (size_t x = 0; x <= maxX; x++) {
@@ -126,18 +126,20 @@ namespace Day22 {
 		travelCosts[make_tuple(0, 0)] = 0;
 		set<tuple<int, int>> visited;
 		map<tuple<int, int>, set<Tools>> equipmentList;
+		set<tuple<int, int>> candidates = { make_tuple(0,0) };
 		equipmentList[make_tuple(0, 0)] = { Torch };
 		int x1, y1, x2, y2;
 
 		while (!regions.empty())
 		{
-			auto next = findNext(visited, travelCosts);
+			auto next = findNext(candidates, travelCosts);
 			regions.erase(next);
 			auto neighbors = getNeighbors(next);
 			auto equipments = equipmentList[next];
 			tie(x1, y1) = next;
 			for (auto &neighbor : neighbors) {
 				if (visited.find(neighbor) == visited.end()) {
+					candidates.insert(neighbor);
 					tie(x2, y2) = neighbor;
 					for (auto equipment : equipments) {
 						auto cost = getTravelCost(equipment, cavern[y1][x1], cavern[y2][x2]);
@@ -155,7 +157,11 @@ namespace Day22 {
 					}
 				}
 			}
+			if (next == target) {
+				break;
+			}
 			visited.insert(next);
+			candidates.erase(next);
 		}
 
 		return travelCosts[target];
