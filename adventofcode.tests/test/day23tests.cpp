@@ -37,7 +37,7 @@ public:
 
 	vector<Point> getTokens() {
 		auto result = vector<Point>();
-		auto reg = regex("pos=<(\\d+),(\\d+),(\\d+)>,\\sr=(\\d+)", regex_constants::ECMAScript);
+		auto reg = regex("pos=<(-?\\d+),(-?\\d+),(-?\\d+)>,\\sr=(\\d+)", regex_constants::ECMAScript);
 		for (auto &token : _tokens) {
 			smatch match;
 			if (regex_match(token, match, reg)) {
@@ -49,7 +49,7 @@ public:
 };
 
 TEST_F(day23Fixture, Part1) {
-	SetUp("day23_input.txt");
+	SetUp("day23_part1.txt");
 	auto actual = Day23::Part1(getTokens());
 	EXPECT_EQ(7, actual);
 }
