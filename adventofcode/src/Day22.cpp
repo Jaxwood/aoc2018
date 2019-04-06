@@ -137,9 +137,9 @@ namespace Day22 {
 			for (auto &to : neighbors) {
 				int moveCost; Tools equipedTool;
 				tie(moveCost, equipedTool) = cave.getTravelCost(tool, from, to);
-				if (visited.find(make_tuple(to, equipedTool)) == visited.end()) {
+				auto location = make_tuple(to, equipedTool);
+				if (visited.find(location) == visited.end()) {
 					int totalTravelCost = moveCost + currentTravelCost;
-					auto location = make_tuple(to, equipedTool);
 					auto recordedTravelCost = travelCosts[location];
 					if (recordedTravelCost == 0) {
 						recordedTravelCost = INT32_MAX;
