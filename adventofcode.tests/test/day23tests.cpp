@@ -49,7 +49,7 @@ public:
 };
 
 TEST_F(day23Fixture, Part1) {
-	SetUp("day23_part1.txt");
+	SetUp("day23_input.txt");
 	auto actual = Day23::Part1(getTokens());
 	EXPECT_EQ(7, actual);
 }

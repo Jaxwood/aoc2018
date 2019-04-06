@@ -14,8 +14,8 @@ namespace Day23 {
 		int radius() {
 			return this->r;
 		}
-		int sum() {
-			return this->x + this->y + this->z;
+		bool isInRangeOf(Point point) {
+			return point.radius() >= (abs(this->x - point.x) + abs(this->y - point.y) + abs(this->z - point.z));
 		}
 	};
 	int Part1(std::vector<Point> points);
