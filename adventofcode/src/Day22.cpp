@@ -87,12 +87,12 @@ namespace Day22 {
 		throw exception("should not occuor");
 	}
 
-	tuple<int,Tools> Cave::getTravelCost(Tools tool, tuple<int,int> from, tuple<int,int> to) {
+	tuple<int, Tools> Cave::getTravelCost(Tools tool, tuple<int, int> from, tuple<int, int> to) {
 		int x, y, x1, y1;
 		tie(x, y) = from;
 		tie(x1, y1) = to;
-		auto erosionLevelSource = cavernTypes[(this->calculateErosionLevel(x,y)) % 3];
-		auto erosionLevelTarget = cavernTypes[(this->calculateErosionLevel(x1,y1)) % 3];
+		auto erosionLevelSource = cavernTypes[(this->calculateErosionLevel(x, y)) % 3];
+		auto erosionLevelTarget = cavernTypes[(this->calculateErosionLevel(x1, y1)) % 3];
 		if (toolsForSurface[erosionLevelTarget].find(tool) != toolsForSurface[erosionLevelTarget].end()) {
 			return make_tuple(1, tool);
 		}
@@ -121,26 +121,23 @@ namespace Day22 {
 
 		map<tuple<tuple<int, int>, Tools>, int> travelCosts;
 		priority_queue<Node, vector<Node>, decltype(compare)> queue(compare);
-		set<tuple<int, int>> visited;
+		set<tuple<tuple<int, int>, Tools>> visited;
 		queue.push(make_tuple(make_tuple(0, 0), Torch, 0));
+		int min = INT32_MAX;
 
 		while (true)
 		{
 			int currentTravelCost; tuple<int, int> from; Tools tool;
 			tie(from, tool, currentTravelCost) = queue.top(); queue.pop();
+			visited.insert(make_tuple(from, tool));
 			if (from == target) {
-				auto torchCost = travelCosts[make_tuple(target, Torch)];
-				if (torchCost == 0) torchCost = INT32_MAX;
-				auto climbingGearCost = travelCosts[make_tuple(target, ClimbingGear)];
-				if (climbingGearCost == 0) climbingGearCost = INT32_MAX;
-				climbingGearCost += 7;
-				return torchCost < climbingGearCost ? torchCost : climbingGearCost;
+				break;
 			}
 			auto neighbors = cave.getNeighbors(from);
 			for (auto &to : neighbors) {
-				if (visited.find(to) == visited.end()) {
-					int moveCost; Tools equipedTool;
-					tie(moveCost, equipedTool) = cave.getTravelCost(tool, from, to);
+				int moveCost; Tools equipedTool;
+				tie(moveCost, equipedTool) = cave.getTravelCost(tool, from, to);
+				if (visited.find(make_tuple(to, equipedTool)) == visited.end()) {
 					int totalTravelCost = moveCost + currentTravelCost;
 					auto location = make_tuple(to, equipedTool);
 					auto recordedTravelCost = travelCosts[location];
@@ -151,9 +148,15 @@ namespace Day22 {
 						queue.push(make_tuple(to, equipedTool, totalTravelCost));
 						travelCosts[location] = totalTravelCost;
 					}
+					if (to == target) {
+						auto next = equipedTool == ClimbingGear ? totalTravelCost + 7 : totalTravelCost;
+						if (next < min) {
+							min = next;
+						}
+					}
 				}
 			}
-			visited.insert(from);
 		}
+		return min;
 	}
 }
