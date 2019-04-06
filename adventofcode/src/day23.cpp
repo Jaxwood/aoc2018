@@ -8,7 +8,7 @@ namespace Day23 {
 			return p1.radius() < p2.radius();
 		});
 		auto nanobotInRangeCount = count_if(points.begin(), points.end(), [&maxRadiusPoint](Point &point) {
-			return point.sum() <= maxRadiusPoint.radius();
+			return point.isInRangeOf(maxRadiusPoint);
 		});
 		return nanobotInRangeCount;
 	}
