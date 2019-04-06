@@ -3,8 +3,6 @@
 using namespace std;
 
 namespace Day22 {
-	int maxX = 150;
-	int maxY = 850;
 	map<tuple<int, int>, long long> erosionLevels;
 
 	map<int, ErosionLevel> cavernTypes = {
@@ -13,15 +11,15 @@ namespace Day22 {
 		{ 2, Narrow }
 	};
 
-	map<ErosionLevel, vector<Tools>> toolsForSurface = {
+	map<ErosionLevel, set<Tools>> toolsForSurface = {
 		{ Rocky, { ClimbingGear, Torch } },
 		{ Wet, { ClimbingGear, Neither } },
 		{ Narrow, { Torch, Neither } }
 	};
 
-	long long CalculateErosionLevel(tuple<int, int> target, int depth, size_t x, size_t y) {
+	long long Cave::calculateErosionLevel(size_t x, size_t y) {
 		int targetX, targetY;
-		tie(targetX, targetY) = target;
+		tie(targetX, targetY) = this->target;
 		long long geologicalIndex;
 		if (x == 0 && y == 0) {
 			geologicalIndex = 0;
@@ -36,134 +34,126 @@ namespace Day22 {
 			geologicalIndex = x * 16807;
 		}
 		else {
-			geologicalIndex = erosionLevels[make_tuple(x - 1, y)] * erosionLevels[make_tuple(x, y - 1)];
+			if (erosionLevels[make_tuple(x, y)] != 0) {
+				return erosionLevels[make_tuple(x, y)];
+			}
+			geologicalIndex = calculateErosionLevel(x - 1, y) * calculateErosionLevel(x, y - 1);
 		}
-
-		erosionLevels[make_tuple(x, y)] = (geologicalIndex + depth) % 20183;
+		erosionLevels[make_tuple(x, y)] = (geologicalIndex + this->depth) % 20183;
 		return erosionLevels[make_tuple(x, y)];
 	}
 
 	int Part1(tuple<int, int> target, int depth) {
-		int sum = 0;
-		ErosionLevel cavern[11][11];
-		for (size_t x = 0; x <= 10; x++) {
-			for (size_t y = 0; y <= 10; y++) {
-				auto erosionLevel = CalculateErosionLevel(target, depth, x, y);
-				cavern[y][x] = cavernTypes[erosionLevel % 3];
-				sum += (int)cavern[y][x];
-			}
-		}
-
-		return sum;
+		auto cave = Cave(depth, target);
+		return cave.sum();
 	}
 
-	vector<tuple<int, int>> getNeighbors(tuple<int, int> coord)
+	int Cave::sum() {
+		int total = 0;
+		for (int i = 0; i <= 10; i++) {
+			for (int j = 0; j <= 10; j++) {
+				total += cavernTypes[this->calculateErosionLevel(i, j) % 3];
+			}
+		}
+		return total;
+	}
+
+	vector<tuple<int, int>> Cave::getNeighbors(tuple<int, int> coord)
 	{
 		vector<tuple<int, int>> result;
 		int x, y;
 		tie(x, y) = coord;
 
-		if (x + 1 <= maxX) {
-			result.push_back(make_tuple(x + 1, y));
-		}
-		if (x - 1 >= 0) {
+		result.push_back(make_tuple(x + 1, y));
+		result.push_back(make_tuple(x, y + 1));
+		if (x > 0) {
 			result.push_back(make_tuple(x - 1, y));
 		}
-		if (y + 1 <= maxY) {
-			result.push_back(make_tuple(x, y + 1));
-		}
-		if (y - 1 >= 0) {
+		if (y > 0) {
 			result.push_back(make_tuple(x, y - 1));
+		}
+		if (result.empty()) {
+			throw exception("no neighbors found");
 		}
 		return result;
 	}
 
-	Tools switchTool(Tools tool, vector<Tools> tools) {
+	Tools Cave::switchTool(Tools tool, set<Tools> tools) {
 		for (auto &t : tools) {
-			if (t == tool) {
-				continue;
-			}
-			return t;
-		}
-	}
-
-	bool canUseTool(ErosionLevel erosionLevel, Tools tool) {
-		for (auto &t : toolsForSurface[erosionLevel]) {
-			if (tool == t) return true;
-		}
-		return false;
-	}
-
-	int getTravelCost(Tools tool, ErosionLevel erosionLevelSource, ErosionLevel erosionLevelTarget) {
-		return canUseTool(erosionLevelTarget, tool) ? 1 : 8;
-	}
-
-	tuple<int, int> findNext(set<tuple<int,int>> &candidates, map<tuple<int, int>, int> &travelCosts) {
-		int min = INT32_MAX;
-		tuple<int, int> candidate;
-		for (auto &s : candidates) {
-			auto cost = travelCosts[s];
-			if (cost < min) {
-				min = cost;
-				candidate = s;
+			if (t != tool) {
+				return t;
 			}
 		}
-		return candidate;
+		throw exception("should not occuor");
 	}
+
+	tuple<int,Tools> Cave::getTravelCost(Tools tool, tuple<int,int> from, tuple<int,int> to) {
+		int x, y, x1, y1;
+		tie(x, y) = from;
+		tie(x1, y1) = to;
+		auto erosionLevelSource = cavernTypes[(this->calculateErosionLevel(x,y)) % 3];
+		auto erosionLevelTarget = cavernTypes[(this->calculateErosionLevel(x1,y1)) % 3];
+		if (toolsForSurface[erosionLevelTarget].find(tool) != toolsForSurface[erosionLevelTarget].end()) {
+			return make_tuple(1, tool);
+		}
+		else {
+			return make_tuple(8, this->switchTool(tool, toolsForSurface[erosionLevelSource]));
+		}
+	}
+
+	Cave::Cave(int depth, tuple<int, int> target) {
+		this->depth = depth;
+		this->target = target;
+	}
+
+	typedef tuple<tuple<int, int>, Tools, int> Node;
 
 	int Part2(tuple<int, int> target, int depth) {
-		ErosionLevel cavern[851][151];
-		set<tuple<int, int>> regions;
-		map<tuple<int, int>, int> travelCosts;
-		for (size_t x = 0; x <= maxX; x++) {
-			for (size_t y = 0; y <= maxY; y++) {
-				auto erosionLevel = CalculateErosionLevel(target, depth, x, y);
-				cavern[y][x] = cavernTypes[erosionLevel % 3];
-				regions.insert(make_tuple(x, y));
-				travelCosts[make_tuple(x, y)] = INT32_MAX;
-			}
-		}
-		travelCosts[make_tuple(0, 0)] = 0;
-		set<tuple<int, int>> visited;
-		map<tuple<int, int>, set<Tools>> equipmentList;
-		set<tuple<int, int>> candidates = { make_tuple(0,0) };
-		equipmentList[make_tuple(0, 0)] = { Torch };
-		int x1, y1, x2, y2;
+		auto cave = Cave(depth, target);
+		auto compare = [](const Node &n1, const Node &n2) -> bool {
+			int first, second;
+			Tools t1, t2;
+			tuple<int, int> firstCoord, secondCoord;
+			tie(firstCoord, t1, first) = n1;
+			tie(secondCoord, t2, second) = n2;
+			return first > second;
+		};
 
-		while (!regions.empty())
+		map<tuple<tuple<int, int>, Tools>, int> travelCosts;
+		priority_queue<Node, vector<Node>, decltype(compare)> queue(compare);
+		set<tuple<int, int>> visited;
+		queue.push(make_tuple(make_tuple(0, 0), Torch, 0));
+
+		while (true)
 		{
-			auto next = findNext(candidates, travelCosts);
-			regions.erase(next);
-			auto neighbors = getNeighbors(next);
-			auto equipments = equipmentList[next];
-			tie(x1, y1) = next;
-			for (auto &neighbor : neighbors) {
-				if (visited.find(neighbor) == visited.end()) {
-					candidates.insert(neighbor);
-					tie(x2, y2) = neighbor;
-					for (auto equipment : equipments) {
-						auto cost = getTravelCost(equipment, cavern[y1][x1], cavern[y2][x2]);
-						auto newCost = travelCosts[next] + cost;
-						if (neighbor == target && equipment == ClimbingGear) {
-							newCost += 7;
-						}
-						if (newCost == travelCosts[neighbor]) {
-							equipmentList[neighbor].insert(canUseTool(cavern[y2][x2], equipment) ? equipment : switchTool(equipment, toolsForSurface[cavern[y1][x1]]));
-						}
-						if (newCost < travelCosts[neighbor]) {
-							travelCosts[neighbor] = newCost;
-							equipmentList[neighbor] = { canUseTool(cavern[y2][x2], equipment) ? equipment : switchTool(equipment, toolsForSurface[cavern[y1][x1]]) };
-						}
+			int currentTravelCost; tuple<int, int> from; Tools tool;
+			tie(from, tool, currentTravelCost) = queue.top(); queue.pop();
+			if (from == target) {
+				auto torchCost = travelCosts[make_tuple(target, Torch)];
+				if (torchCost == 0) torchCost = INT32_MAX;
+				auto climbingGearCost = travelCosts[make_tuple(target, ClimbingGear)];
+				if (climbingGearCost == 0) climbingGearCost = INT32_MAX;
+				climbingGearCost += 7;
+				return torchCost < climbingGearCost ? torchCost : climbingGearCost;
+			}
+			auto neighbors = cave.getNeighbors(from);
+			for (auto &to : neighbors) {
+				if (visited.find(to) == visited.end()) {
+					int moveCost; Tools equipedTool;
+					tie(moveCost, equipedTool) = cave.getTravelCost(tool, from, to);
+					int totalTravelCost = moveCost + currentTravelCost;
+					auto location = make_tuple(to, equipedTool);
+					auto recordedTravelCost = travelCosts[location];
+					if (recordedTravelCost == 0) {
+						recordedTravelCost = INT32_MAX;
+					}
+					if (totalTravelCost < recordedTravelCost) {
+						queue.push(make_tuple(to, equipedTool, totalTravelCost));
+						travelCosts[location] = totalTravelCost;
 					}
 				}
 			}
-			if (next == target) {
-				break;
-			}
-			visited.insert(next);
-			candidates.erase(next);
+			visited.insert(from);
 		}
-
-		return travelCosts[target];
 	}
 }
