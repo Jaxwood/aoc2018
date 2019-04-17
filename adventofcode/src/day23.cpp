@@ -9,12 +9,6 @@ namespace Day23 {
 		});
 	}
 
-	int distance(Coordinate coord) {
-		int x, y, z;
-		tie(x, y, z) = coord;
-		return abs(x - 0) + abs(y - 0) + abs(z - 0);
-	}
-
 	int Part1(vector<Point> points) {
 		auto maxRadiusPoint = *max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
 			return p1.radius() < p2.radius();
@@ -22,64 +16,111 @@ namespace Day23 {
 		return nanobotsInRangeCount(points, maxRadiusPoint);
 	}
 
-	int Part2(vector<Point> points) {
-		map<Coordinate, int> nanobotCounts;
+	vector<Cube> Cube::divide() {
+		auto xSize = this->max.xCoord() - this->min.xCoord();
+		auto ySize = this->max.yCoord() - this->min.yCoord();
+		auto zSize = this->max.zCoord() - this->min.zCoord();
 
-		// the the boundaries of the coordinates
-		auto maxX = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
-			return p1.xCoord() < p2.xCoord();
-		})).xCoord();
-		auto minX = (*min_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
-			return p1.xCoord() < p2.xCoord();
-		})).xCoord();
-		auto maxY = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
-			return p1.yCoord() < p2.yCoord();
-		})).yCoord();
-		auto minY = (*min_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
-			return p1.yCoord() < p2.yCoord();
-		})).yCoord();
-		auto maxZ = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
-			return p1.zCoord() < p2.zCoord();
-		})).zCoord();
-		auto minZ = (*min_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
-			return p1.zCoord() < p2.zCoord();
-		})).zCoord();
+		// might cause an edge condition in the end
+		if (xSize % 2 != 0) xSize += 1;
+		if (ySize % 2 != 0) ySize += 1;
+		if (zSize % 2 != 0) zSize += 1;
+		auto xLength = xSize / 2;
+		auto yLength = ySize / 2;
+		auto zLength = zSize / 2;
 
-		// loop through all coordinates and calculate the nanobots in range
-		for (auto x = minX; x <= maxX; x++) {
-			for (auto y = minY; y <= maxY; y++) {
-				for (auto z = minZ; z <= maxZ; z++) {
-					auto coord = make_tuple(x, y, z);
-					auto count = count_if(points.begin(), points.end(), [&coord](Point &other) {
-						return other.isInRangeOf(coord);
-					});
-					nanobotCounts[coord] = count;
-				}
-			}
+		auto q1 = Cube(Point(this->max.xCoord() - xLength, this->max.yCoord() - yLength, this->max.zCoord() - zLength, 0), Point(this->max.xCoord(), this->max.yCoord(), this->max.zCoord(), 0));
+		auto q2 = Cube(Point(this->max.xCoord() - xLength, this->max.yCoord() - (2 * yLength), this->max.zCoord() - zLength, 0), Point(this->max.xCoord(), this->max.yCoord() - yLength, this->max.zCoord(), 0));
+		auto q3 = Cube(Point(this->max.xCoord() - (2 * xLength), this->max.yCoord() - (2 * yLength), this->max.zCoord() - zLength, 0), Point(this->max.xCoord() - xLength, this->max.yCoord() - yLength, this->max.zCoord(), 0));
+		auto q4 = Cube(Point(this->max.xCoord() - (2 * xLength), this->max.yCoord() - yLength, this->max.zCoord() - zLength, 0), Point(this->max.xCoord() - xLength, this->max.yCoord(), this->max.zCoord(), 0));
+		auto q5 = Cube(Point(this->max.xCoord() - xLength, this->max.yCoord() - yLength, this->max.zCoord() - (2 * zLength), 0), Point(this->max.xCoord(), this->max.yCoord(), this->max.zCoord() - zLength, 0));
+		auto q6 = Cube(Point(this->max.xCoord() - xLength, this->max.yCoord() - (2 * yLength), this->max.zCoord() - (2 * zLength), 0), Point(this->max.xCoord(), this->max.yCoord() - yLength, this->max.zCoord() - zLength, 0));
+		auto q7 = Cube(Point(this->max.xCoord() - (2 * xLength), this->max.yCoord() - (2 * yLength), this->max.zCoord() - (2 * zLength), 0), Point(this->max.xCoord() - xLength, this->max.yCoord() - yLength, this->max.zCoord() - zLength, 0));
+		auto q8 = Cube(Point(this->max.xCoord() - (2 * xLength), this->max.yCoord() - yLength, this->max.zCoord() - (2 * zLength), 0), Point(this->max.xCoord() - xLength, this->max.yCoord(), this->max.zCoord() - zLength, 0));
+		return vector<Cube> { q1, q2, q3, q4, q5, q6, q7, q8 };
+	}
+
+	bool Cube::inRange(Point &point) {
+
+		bool insideCube = true;
+		int x, y, z;
+		// x
+		if(point.xCoord() > this->max.xCoord()) {
+			insideCube = false;
+			x = this->max.xCoord();
+		}
+		else if (point.xCoord() < this->min.xCoord()) {
+			insideCube = false;
+			x = this->min.xCoord();
+		}
+		else {
+			x = point.xCoord();
+		}
+		// y
+		if(point.yCoord() > this->max.yCoord()) {
+			insideCube = false;
+			y = this->max.yCoord();
+		}
+		else if (point.yCoord() < this->min.yCoord()) {
+			insideCube = false;
+			y = this->min.yCoord();
+		}
+		else {
+			y = point.yCoord();
+		}
+		// z
+		if(point.zCoord() > this->max.zCoord()) {
+			insideCube = false;
+			z = this->max.zCoord();
+		}
+		else if (point.zCoord() < this->min.zCoord()) {
+			insideCube = false;
+			z = this->min.zCoord();
+		}
+		else {
+			z = point.zCoord();
 		}
 
-		// get the highest nanobot count in range
-		auto maxNanobotInRange = (*max_element(nanobotCounts.begin(), nanobotCounts.end(), [](const pair<Coordinate, const int> p1, pair<Coordinate, int> p2) {
-			return p1.second < p2.second;
-		})).second;
+		return insideCube ? true : point.isInRangeOf(Point(x, y, z, point.radius()));
+	}
 
-		// copy all coordinates that matches the highest count
-		vector<pair<Coordinate, int>> result;
-		auto maxes = copy_if(nanobotCounts.begin(), nanobotCounts.end(), back_inserter(result), [&maxNanobotInRange](const pair<Coordinate,int> coord) {
-			return coord.second == maxNanobotInRange;
-		});
+	int Part2(vector<Point> points) {
+		map<Point, int> nanobotCounts;
 
-		// sort by how close it is to (0,0,0)
-		sort(result.begin(), result.end(), [](pair<Coordinate, int> c1, pair<Coordinate, int> c2) {
-			int x, y, z;
-			tie(x, y, z) = c1.first;
-			auto d1 = abs(x) + abs(y) + abs(z);
-			tie(x, y, z) = c2.first;
-			auto d2 = abs(x) + abs(y) + abs(z);
-			return d1 < d2;
-		});
+		// the the boundaries of the Points
+		auto xMax = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
+			return p1.xCoord() < p2.xCoord();
+		})).xCoord();
+		auto xMin = (*min_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
+			return p1.xCoord() < p2.xCoord();
+		})).xCoord();
+		auto yMax = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
+			return p1.yCoord() < p2.yCoord();
+		})).yCoord();
+		auto yMin = (*min_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
+			return p1.yCoord() < p2.yCoord();
+		})).yCoord();
+		auto zMax = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
+			return p1.zCoord() < p2.zCoord();
+		})).zCoord();
+		auto zMin = (*min_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
+			return p1.zCoord() < p2.zCoord();
+		})).zCoord();
 
-		// get the manhattan distance to the first element in the sorted range
-		return distance(result[0].first);
+		// 1. divide candidate cube into 8 evenly sized cubes
+		auto initialCube = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
+		auto cubes = initialCube.divide();
+
+		// 2. for each cube find bots in range
+		map<Cube, int> botsInRange;
+		for (auto &cube : cubes) {
+			auto count = count_if(begin(points), end(points), [&cube](Point &point){
+				return cube.inRange(point);
+			});
+			botsInRange[cube] = count;
+		}
+		// 3. select cube with most bots and go to step 1
+
+		return 0;
 	}
 }
