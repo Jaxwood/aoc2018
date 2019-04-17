@@ -22,9 +22,9 @@ namespace Day23 {
 		auto zSize = this->max.zCoord() - this->min.zCoord();
 
 		// might cause an edge condition in the end
-		if (xSize % 2 != 0) xSize += 1;
-		if (ySize % 2 != 0) ySize += 1;
-		if (zSize % 2 != 0) zSize += 1;
+		if (xSize % 2 != 0) xSize -= 1;
+		if (ySize % 2 != 0) ySize -= 1;
+		if (zSize % 2 != 0) zSize -= 1;
 		auto xLength = xSize / 2;
 		auto yLength = ySize / 2;
 		auto zLength = zSize / 2;
@@ -84,6 +84,15 @@ namespace Day23 {
 		return insideCube ? true : point.isInRangeOf(Point(x, y, z, point.radius()));
 	}
 
+	bool Cube::hasSpace() {
+		return this->min != this->max;
+	}
+
+	int Cube::distanceToOrigin() {
+		auto origin = Point(0, 0, 0, 0);
+		return this->min.distanceTo(origin);
+	}
+
 	int Part2(vector<Point> points) {
 		map<Point, int> nanobotCounts;
 
@@ -108,19 +117,24 @@ namespace Day23 {
 		})).zCoord();
 
 		// 1. divide candidate cube into 8 evenly sized cubes
-		auto initialCube = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
-		auto cubes = initialCube.divide();
+		auto quadrant = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
+		while (quadrant.hasSpace()) {
+			auto cubes = quadrant.divide();
 
-		// 2. for each cube find bots in range
-		map<Cube, int> botsInRange;
-		for (auto &cube : cubes) {
-			auto count = count_if(begin(points), end(points), [&cube](Point &point){
-				return cube.inRange(point);
-			});
-			botsInRange[cube] = count;
+			// 2. for each cube find bots in range
+			map<Cube, int> botsInRange;
+			for (auto &cube : cubes) {
+				auto count = count_if(begin(points), end(points), [&cube](Point &point) {
+					return cube.inRange(point);
+				});
+				botsInRange[cube] = count;
+			}
+
+			// 3. select cube with most bots and go to step 1
+			quadrant = (*max_element(begin(botsInRange), end(botsInRange), [](const pair<Cube, int> &p1, const pair<Cube, int> &p2) {
+				return p1.second < p2.second;
+			})).first;
 		}
-		// 3. select cube with most bots and go to step 1
-
-		return 0;
+		return quadrant.distanceToOrigin();
 	}
 }
