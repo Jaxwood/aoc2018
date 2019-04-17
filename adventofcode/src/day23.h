@@ -17,8 +17,11 @@ namespace Day23 {
 		int radius() {
 			return this->r;
 		}
+		int distanceTo(Point &point) {
+			return (abs(this->x - point.x) + abs(this->y - point.y) + abs(this->z - point.z));
+		}
 		bool isInRangeOf(Point point) {
-			return point.radius() >= (abs(this->x - point.x) + abs(this->y - point.y) + abs(this->z - point.z));
+			return point.radius() >= this->distanceTo(point);
 		}
 		int xCoord() {
 			return this->x;
@@ -42,7 +45,7 @@ namespace Day23 {
 			return this->r < point.r;
 		}
 		bool operator!=(const Point &point) const {
-			return this->x != point.x && this->y != point.y && this->z != point.z && this->r != point.r;
+			return this->x != point.x || this->y != point.y || this->z != point.z || this->r != point.r;
 		}
 	};
 
@@ -56,6 +59,8 @@ namespace Day23 {
 		}
 		std::vector<Cube> divide();
 		bool inRange(Point &point);
+		bool hasSpace();
+		int distanceToOrigin();
 
 		bool operator<(const Cube &cube) const {
 			if (this->min != cube.min) {
