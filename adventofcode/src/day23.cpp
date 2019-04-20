@@ -120,26 +120,59 @@ namespace Day23 {
 			return p1.zCoord() < p2.zCoord();
 		})).zCoord();
 
-		map<Point, int> nanobotCounts;
-		// 1. divide candidate cube into 8 evenly sized cubes
-		auto quadrant = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
-		while (!quadrant.isPoint()) {
+		auto compare = [](const tuple<Cube,int> &n1, const tuple<Cube,int> &n2) -> bool {
+			int first, second;
+			Cube c1, c2;
+			tie(c1, first) = n1;
+			tie(c2, second) = n2;
+			return first > second;
+		};
+
+		int bestGuess = 0;
+		vector<Cube> bestGuesses;
+		auto bestCube = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
+		priority_queue<tuple<Cube,int>, vector<tuple<Cube,int>>, decltype(compare)> cubesToCheck(compare);
+		cubesToCheck.push(make_tuple(bestCube, points.size()));
+
+		while (!cubesToCheck.empty()) {
+			int total; Cube quadrant;
+			tie(quadrant, total) = cubesToCheck.top(); cubesToCheck.pop();
+			if (total < bestGuess) {
+				continue;
+			}
+			// divide candidate cube into 8 evenly sized cubes
 			auto cubes = quadrant.divide();
 
-			// 2. for each cube find bots in range
-			map<Cube, int> botsInRange;
+			// for each cube find bots in range
 			for (auto &cube : cubes) {
 				auto count = count_if(begin(points), end(points), [&cube](Point &point) {
 					return cube.inRange(point);
 				});
-				botsInRange[cube] = count;
+				// as an optimization the bestGuess can be hardcoded to a high number
+				// to lower the runtime of the algorithm
+				if (!cube.isPoint() && count > bestGuess)
+				{
+					cubesToCheck.push(make_tuple(cube, count));
+				}
+				// store best match
+				if (cube.isPoint() && count > bestGuess) {
+					bestGuess = count;
+					bestCube = cube;
+					bestGuesses.clear();
+				}
+				// store multiple matches
+				if (cube.isPoint() && count == bestGuess) {
+					bestGuesses.push_back(cube);
+				}
 			}
-
-			// 3. select cube with most bots and go to step 1
-			quadrant = (*max_element(begin(botsInRange), end(botsInRange), [](const pair<Cube, int> &p1, const pair<Cube, int> &p2) {
-				return p1.second < p2.second;
-			})).first;
 		}
-		return quadrant.distanceToOrigin();
+		auto shortestDistanceToOrigin = INT32_MAX;
+		for (auto &guess : bestGuesses) {
+			if (guess.distanceToOrigin() < shortestDistanceToOrigin) {
+				shortestDistanceToOrigin = guess.distanceToOrigin();
+				bestCube = guess;
+			}
+		}
+		return bestCube.distanceToOrigin();
 	}
 }
