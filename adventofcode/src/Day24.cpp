@@ -30,11 +30,19 @@ namespace Day24 {
 		return result;
 	}
 
-	int Part1(vector<Army> armies) {
-		return 0;
+	Side toSide(string side) {
+		if (side == "Immune System") {
+			return Defense;
+		}
+		if (side == "Infection") {
+			return Attack;
+		}
+		throw exception("unknown side");
 	}
 
-	void Army::addGroup(Group group) {
-		this->groups.push_back(group);
+	int Part1(vector<Group> armies) {
+		// target selction
+		// attacking
+		return 0;
 	}
 }

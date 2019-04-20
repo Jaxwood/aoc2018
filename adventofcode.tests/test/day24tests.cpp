@@ -50,14 +50,15 @@ public:
 		return splittedStrings;
 	}
 
-	vector<Army> getTokens() {
-		auto result = vector<Army>();
+	vector<Group> getTokens() {
+		auto result = vector<Group>();
 		auto unitReg = regex("^(\\d+) units each with (\\d+) hit points (?:\\(?)(.+)?(?:\\)?)\\s?with an attack that does (\\d+) (\\w+) damage at initiative (\\d+)$", regex_constants::ECMAScript);
 		auto armyTypeReg = regex("(Immune System|Infection):", regex_constants::ECMAScript);
 		auto weaknessReg = regex("\\s?weak to (.*)", regex_constants::ECMAScript);
 		auto immunitiesReg = regex("\\s?immune to (.*)", regex_constants::ECMAScript);
 		auto dmgTypesReg = regex("\\b(slashing|fire|cold|radiation|bludgeoning)\\b");
 		int idx = -1;
+		string type;
 		for (auto &token : _tokens) {
 			smatch match;
 			smatch immunitiesMatch;
@@ -66,8 +67,7 @@ public:
 			vector<string> weaknesses;
 			vector<string> immunities;
 			if (regex_match(token, match, armyTypeReg)) {
-				result.push_back(Army(match[1]));
-				idx++;
+				type = match[1];
 			}
 			if (regex_match(token, match, unitReg)) {
 				string defense = match[3];
@@ -87,8 +87,8 @@ public:
 						}
 					}
 				}
-				auto group = Group(stoi(match[1]), stoi(match[2]), toDamageTypes(immunities), toDamageTypes(weaknesses), stoi(match[4]), toDamageType(match[5]), stoi(match[6]));
-				result[idx].addGroup(group);
+				auto group = Group(toSide(type), stoi(match[1]), stoi(match[2]), toDamageTypes(immunities), toDamageTypes(weaknesses), stoi(match[4]), toDamageType(match[5]), stoi(match[6]));
+				result.push_back(group);
 			}
 		}
 		return result;
