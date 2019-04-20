@@ -52,6 +52,8 @@ namespace Day23 {
 	class Cube {
 		Point min;
 		Point max;
+		bool withinCube(Point &point);
+		Point closestPoint(Point &point);
 	public:
 		Cube(Point min, Point max) {
 			this->min = min;

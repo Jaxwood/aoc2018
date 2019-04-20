@@ -22,9 +22,6 @@ namespace Day23 {
 		auto zSize = this->max.zCoord() - this->min.zCoord();
 
 		// might cause an edge condition in the end
-		if (xSize % 2 != 0) xSize -= 1;
-		if (ySize % 2 != 0) ySize -= 1;
-		if (zSize % 2 != 0) zSize -= 1;
 		auto xLength = xSize / 2;
 		auto yLength = ySize / 2;
 		auto zLength = zSize / 2;
@@ -40,17 +37,23 @@ namespace Day23 {
 		return vector<Cube> { q1, q2, q3, q4, q5, q6, q7, q8 };
 	}
 
-	bool Cube::inRange(Point &point) {
+	bool Cube::withinCube(Point &point) {
+		return
+			point.xCoord() < this->max.xCoord() &&
+			point.yCoord() < this->max.yCoord() &&
+			point.zCoord() < this->max.zCoord() &&
+			point.xCoord() > this->min.xCoord() &&
+			point.yCoord() > this->min.yCoord() &&
+			point.zCoord() > this->min.zCoord();
+	}
 
-		bool insideCube = true;
+	Point Cube::closestPoint(Point &point) {
 		int x, y, z;
 		// x
 		if(point.xCoord() > this->max.xCoord()) {
-			insideCube = false;
 			x = this->max.xCoord();
 		}
 		else if (point.xCoord() < this->min.xCoord()) {
-			insideCube = false;
 			x = this->min.xCoord();
 		}
 		else {
@@ -58,11 +61,9 @@ namespace Day23 {
 		}
 		// y
 		if(point.yCoord() > this->max.yCoord()) {
-			insideCube = false;
 			y = this->max.yCoord();
 		}
 		else if (point.yCoord() < this->min.yCoord()) {
-			insideCube = false;
 			y = this->min.yCoord();
 		}
 		else {
@@ -70,18 +71,23 @@ namespace Day23 {
 		}
 		// z
 		if(point.zCoord() > this->max.zCoord()) {
-			insideCube = false;
 			z = this->max.zCoord();
 		}
 		else if (point.zCoord() < this->min.zCoord()) {
-			insideCube = false;
 			z = this->min.zCoord();
 		}
 		else {
 			z = point.zCoord();
 		}
+		return Point(x, y, z, point.radius());
+	}
 
-		return insideCube ? true : point.isInRangeOf(Point(x, y, z, point.radius()));
+	bool Cube::inRange(Point &point) {
+		if (this->withinCube(point)) {
+			return true;
+		}
+		auto closestPoint = this->closestPoint(point);
+		return closestPoint.isInRangeOf(point);
 	}
 
 	bool Cube::hasSpace() {
@@ -94,8 +100,6 @@ namespace Day23 {
 	}
 
 	int Part2(vector<Point> points) {
-		map<Point, int> nanobotCounts;
-
 		// the the boundaries of the Points
 		auto xMax = (*max_element(points.begin(), points.end(), [](Point &p1, Point &p2) {
 			return p1.xCoord() < p2.xCoord();
@@ -116,6 +120,7 @@ namespace Day23 {
 			return p1.zCoord() < p2.zCoord();
 		})).zCoord();
 
+		map<Point, int> nanobotCounts;
 		// 1. divide candidate cube into 8 evenly sized cubes
 		auto quadrant = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
 		while (quadrant.hasSpace()) {
