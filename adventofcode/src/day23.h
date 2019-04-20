@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <map>
+#include <queue>
 #include <tuple>
 #include <vector>
 namespace Day23 {
@@ -58,6 +59,7 @@ namespace Day23 {
 		bool withinCube(Point &point);
 		Point closestPoint(Point &point);
 	public:
+		Cube() {};
 		Cube(Point min, Point max) {
 			this->min = min;
 			this->max = max;
