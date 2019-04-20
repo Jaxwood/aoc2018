@@ -90,8 +90,8 @@ namespace Day23 {
 		return closestPoint.isInRangeOf(point);
 	}
 
-	bool Cube::hasSpace() {
-		return this->min != this->max;
+	bool Cube::isPoint() {
+		return this->min == this->max;
 	}
 
 	int Cube::distanceToOrigin() {
@@ -123,7 +123,7 @@ namespace Day23 {
 		map<Point, int> nanobotCounts;
 		// 1. divide candidate cube into 8 evenly sized cubes
 		auto quadrant = Cube(Point(xMin, yMin, zMin, 0), Point(xMax, yMax, zMax, 0));
-		while (quadrant.hasSpace()) {
+		while (!quadrant.isPoint()) {
 			auto cubes = quadrant.divide();
 
 			// 2. for each cube find bots in range
