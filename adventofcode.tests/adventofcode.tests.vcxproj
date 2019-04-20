@@ -73,6 +73,7 @@
     <ClCompile Include="test\day20tests.cpp" />
     <ClCompile Include="test\day22tests.cpp" />
     <ClCompile Include="test\day23tests.cpp" />
+    <ClCompile Include="test\day24tests.cpp" />
     <ClCompile Include="test\day2tests.cpp" />
     <ClCompile Include="test\day3tests.cpp" />
     <ClCompile Include="test\day4tests.cpp" />
@@ -251,6 +252,10 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="test\day23_input\day23_part2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day24_input\input.txt" />
+    <CopyFileToFolders Include="test\day24_input\part1.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

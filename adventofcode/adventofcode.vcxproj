@@ -153,6 +153,7 @@
     <ClInclude Include="src\Day11.h" />
     <ClInclude Include="src\Day10.h" />
     <ClInclude Include="src\day23.h" />
+    <ClInclude Include="src\Day24.h" />
     <ClInclude Include="src\Day9.h" />
     <ClInclude Include="src\Day8.h" />
     <ClInclude Include="src\Day7.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="src\Day11.cpp" />
     <ClCompile Include="src\Day10.cpp" />
     <ClCompile Include="src\day23.cpp" />
+    <ClCompile Include="src\Day24.cpp" />
     <ClCompile Include="src\Day9.cpp" />
     <ClCompile Include="src\Day8.cpp" />
     <ClCompile Include="src\Day7.cpp" />
