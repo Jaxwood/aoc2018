@@ -47,6 +47,9 @@ namespace Day23 {
 		bool operator!=(const Point &point) const {
 			return this->x != point.x || this->y != point.y || this->z != point.z || this->r != point.r;
 		}
+		bool operator==(const Point &point) const {
+			return this->x == point.x && this->y == point.y && this->z == point.z && this->r == point.r;
+		}
 	};
 
 	class Cube {
@@ -61,7 +64,7 @@ namespace Day23 {
 		}
 		std::vector<Cube> divide();
 		bool inRange(Point &point);
-		bool hasSpace();
+		bool isPoint();
 		int distanceToOrigin();
 
 		bool operator<(const Cube &cube) const {
@@ -70,6 +73,9 @@ namespace Day23 {
 			}
 
 			return this->max < cube.max;
+		}
+		bool operator==(const Cube &other) const {
+			return this->min == other.min && this->max == other.max;
 		}
 	};
 	int Part1(std::vector<Point> points);
