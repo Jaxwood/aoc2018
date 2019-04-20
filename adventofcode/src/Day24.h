@@ -1,9 +1,12 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
+#include <tuple>
 #include <vector>
 
 namespace Day24 {
+
+	typedef std::tuple<int, int> Index;
 
 	enum DamageType {
 		Fire = 0,
@@ -13,7 +16,13 @@ namespace Day24 {
 		Cold = 4
 	};
 
+	enum Side {
+		Defense = 0,
+		Attack = 1
+	};
+
 	DamageType toDamageType(std::string typeToParse);
+	Side toSide(std::string side);
 	std::set<DamageType> toDamageTypes(std::vector<std::string> typesToParse);
 
 	class Group {
@@ -22,6 +31,7 @@ namespace Day24 {
 		int hitpoints;
 		int damage;
 		int initiative;
+		Side side;
 		DamageType damageType;
 		std::set<DamageType> immunities;
 		std::set<DamageType> weaknesses;
@@ -35,7 +45,8 @@ namespace Day24 {
 			return this->weaknesses.find(group.damageType) != this->weaknesses.end();
 		}
 	public:
-		Group(int unitCount, int hitpoints, std::set<DamageType> immunities, std::set<DamageType> weaknesses, int damage, DamageType damageType, int initiative) {
+		Group(Side side, int unitCount, int hitpoints, std::set<DamageType> immunities, std::set<DamageType> weaknesses, int damage, DamageType damageType, int initiative) {
+			this->side = side;
 			this->unitCount = unitCount;
 			this->hitpoints = hitpoints;
 			this->immunities = immunities;
@@ -65,17 +76,5 @@ namespace Day24 {
 		}
 	};
 
-	class Army {
-	private:
-		std::vector<Group> groups;
-		std::string type;
-	public:
-		Army(std::string type) {
-			this->type = type;
-		}
-
-		void addGroup(Group group);
-	};
-
-	int Part1(std::vector<Army> armies);
+	int Part1(std::vector<Group> armies);
 }
