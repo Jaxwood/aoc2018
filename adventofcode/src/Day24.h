@@ -37,9 +37,7 @@ namespace Day24 {
 		DamageType damageType;
 		std::set<DamageType> immunities;
 		std::set<DamageType> weaknesses;
-		int hitpointPool() {
-			return this->hitpoints * this->unitCount;
-		}
+
 		bool isImmune(Group group) {
 			return this->immunities.find(group.damageType) != this->immunities.end();
 		}
@@ -84,7 +82,7 @@ namespace Day24 {
 		}
 
 		bool isAlive() {
-			return this->hitpointPool() > 0;
+			return this->unitCount > 0;
 		}
 
 		int units() {
@@ -95,7 +93,7 @@ namespace Day24 {
 
 	class AttackPlan {
 	private:
-		std::map<int, int> plan;
+		std::map<std::tuple<int, int>, int> plan;
 		std::vector<Group> groups;
 		bool sideIsAlive(Side side);
 	public:

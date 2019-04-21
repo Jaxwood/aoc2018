@@ -89,10 +89,20 @@ namespace Day24 {
 
 	void AttackPlan::executePlan() {
 		// sort by initiative
+		vector<pair<tuple<int, int>, int>> result;
+		copy(begin(this->plan), end(this->plan), back_inserter(result));
+		sort(begin(result), end(result), [](const pair<tuple<int,int>, int> &p1, const pair<tuple<int,int>, int> &p2){
+			int idx, initiative, idx2, initiative2;
+			tie(idx, initiative) = p1.first;
+			tie(idx2, initiative2) = p2.first;
+			return initiative > initiative2;
+		});
 
 		// execute attack
-		for (auto &p : this->plan) {
-			auto attacker = this->groups[p.first];
+		for (auto &p : result) {
+			int idx, initiative;
+			tie(idx, initiative) = p.first;
+			auto attacker = this->groups[idx];
 			this->groups[p.second].takeDamage(attacker);
 		}
 		this->plan.clear();
@@ -102,17 +112,23 @@ namespace Day24 {
 		set<int> usedIndexes;
 		for (int i = 0; i < this->groups.size(); i++) {
 			auto attacker = this->groups[i];
+			if (!attacker.isAlive()) {
+				continue;
+			}
 			// find candidates
 			vector<tuple<int, Group>> potentialCandidates;
 			for (auto j = 0; j < this->groups.size(); j++) {
 				auto defender = this->groups[j];
+				if (!defender.isAlive()) {
+					continue;
+				}
 				if (attacker.side() != defender.side() && usedIndexes.find(j) == usedIndexes.end()) {
 					potentialCandidates.push_back(make_tuple(j, defender));
 				}
 			}
 			// no candidates found?
 			if (potentialCandidates.size() == 0) {
-				return;
+				continue;
 			}
 			// select target
 			sort(begin(potentialCandidates), end(potentialCandidates), [&attacker](tuple<int, Group> &t1, tuple<int, Group> &t2) {
@@ -132,7 +148,7 @@ namespace Day24 {
 			Group group; int idx;
 			tie(idx, group) = potentialCandidates[0];
 			usedIndexes.insert(idx);
-			this->plan[i] = idx;
+			this->plan[make_tuple(i, attacker.combatInitiative())] = idx;
 		}
 	}
 
