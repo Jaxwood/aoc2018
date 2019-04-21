@@ -48,6 +48,7 @@ namespace Day24 {
 		}
 	public:
 		Group() {}
+
 		Group(Side side, int unitCount, int hitpoints, std::set<DamageType> immunities, std::set<DamageType> weaknesses, int damage, DamageType damageType, int initiative) {
 			this->role = side;
 			this->unitCount = unitCount;
@@ -58,15 +59,19 @@ namespace Day24 {
 			this->damageType = damageType;
 			this->initiative = initiative;
 		}
+
 		int effectivePower() {
 			return this->unitCount * this->damage;
 		}
+
 		Side side() {
 			return this->role;
 		}
+
 		int combatInitiative() {
 			return this->initiative;
 		}
+
 		void takeDamage(Group group) {
 			int amount = group.effectivePower();
 			if (this->isWeak(group)) {
@@ -77,9 +82,11 @@ namespace Day24 {
 			}
 			this->unitCount -= (amount / this->hitpoints);
 		}
+
 		bool isAlive() {
 			return this->hitpointPool() > 0;
 		}
+
 		int units() {
 			return this->unitCount;
 		}

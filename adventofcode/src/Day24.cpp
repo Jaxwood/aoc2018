@@ -76,6 +76,17 @@ namespace Day24 {
 		}
 	}
 
+	int Group::attackDamage(Group &attacker) {
+			int amount = attacker.effectivePower();
+			if (this->isWeak(attacker)) {
+				amount *= 2;
+			}
+			if (this->isImmune(attacker)) {
+				amount = 0;
+			}
+			return amount;
+	}
+
 	void AttackPlan::selectTargets() {
 		set<int> usedIndexes;
 		for (int i = 0; i < this->groups.size(); i++) {
@@ -97,7 +108,7 @@ namespace Day24 {
 				Group g1, g2; int i1, i2;
 				tie(i1, g1) = t1;
 				tie(i2, g2) = t2;
-				return attacker.attackDamage(g1) < attacker.attackDamage(g2);
+				return g1.attackDamage(attacker) < g2.attackDamage(attacker);
 			});
 			Group group; int idx;
 			tie(idx, group) = potentialCandidates[0];
