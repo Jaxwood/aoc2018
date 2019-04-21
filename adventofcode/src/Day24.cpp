@@ -49,6 +49,16 @@ namespace Day24 {
 		});
 	}
 
+	bool AttackPlan::sideHasWon() {
+		auto defense = count_if(begin(this->groups), end(this->groups), [](Group &g) {
+			return g.side() == Defense && g.isAlive();
+		});
+		auto attack = count_if(begin(this->groups), end(this->groups), [](Group &g) {
+			return g.side() == Attack && g.isAlive();
+		});
+		return defense > 0 && attack > 0;
+	}
+
 	int Part1(vector<Group> armies) {
 		auto plan = AttackPlan(armies);
 

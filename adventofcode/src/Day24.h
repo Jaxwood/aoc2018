@@ -32,7 +32,7 @@ namespace Day24 {
 		int hitpoints;
 		int damage;
 		int initiative;
-		Side side;
+		Side role;
 		DamageType damageType;
 		std::set<DamageType> immunities;
 		std::set<DamageType> weaknesses;
@@ -47,7 +47,7 @@ namespace Day24 {
 		}
 	public:
 		Group(Side side, int unitCount, int hitpoints, std::set<DamageType> immunities, std::set<DamageType> weaknesses, int damage, DamageType damageType, int initiative) {
-			this->side = side;
+			this->role = side;
 			this->unitCount = unitCount;
 			this->hitpoints = hitpoints;
 			this->immunities = immunities;
@@ -58,6 +58,9 @@ namespace Day24 {
 		}
 		int effectivePower() {
 			return this->unitCount * this->damage;
+		}
+		Side side() {
+			return this->role;
 		}
 		int combatInitiative() {
 			return this->initiative;
