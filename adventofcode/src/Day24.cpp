@@ -103,6 +103,9 @@ namespace Day24 {
 			int idx, initiative;
 			tie(idx, initiative) = p.first;
 			auto attacker = this->groups[idx];
+			if (!attacker.isAlive()) {
+				continue;
+			}
 			this->groups[p.second].takeDamage(attacker);
 		}
 		this->plan.clear();
@@ -152,8 +155,32 @@ namespace Day24 {
 		}
 	}
 
+	void AttackPlan::boost(int factor) {
+		for_each(begin(this->groups), end(this->groups), [factor](Group &group) {
+			if (group.side() == Defense) {
+				group.boost(factor);
+			}
+		});
+	}
+
 	int Part1(vector<Group> armies) {
 		auto plan = AttackPlan(armies);
+
+		while (plan.sideHasWon()) {
+			// target selection
+			plan.targetOrder();
+			plan.selectTargets();
+
+			// attacking
+			plan.executePlan();
+		}
+
+		return plan.result();
+	}
+
+	int Part2(vector<Group> armies, int factor) {
+		auto plan = AttackPlan(armies);
+		plan.boost(factor);
 
 		while (plan.sideHasWon()) {
 			// target selection

@@ -100,3 +100,9 @@ TEST_F(day24Fixture, Part1) {
 	auto actual = Day24::Part1(getTokens());
 	EXPECT_EQ(5216, actual);
 }
+
+TEST_F(day24Fixture, Part2) {
+	SetUp("part1.txt");
+	auto actual = Day24::Part2(getTokens(), 1570);
+	EXPECT_EQ(51, actual);
+}
