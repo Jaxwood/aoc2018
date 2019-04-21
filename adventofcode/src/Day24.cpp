@@ -40,6 +40,15 @@ namespace Day24 {
 		throw exception("unknown side");
 	}
 
+	void AttackPlan::targetOrder() {
+		sort(begin(this->groups), end(this->groups), [](Group &g1, Group &g2){
+			if (g1.effectivePower() == g2.effectivePower()) {
+				return g1.combatInitiative() < g2.combatInitiative();
+			}
+			return g1.effectivePower() < g2.effectivePower();
+		});
+	}
+
 	int Part1(vector<Group> armies) {
 		auto plan = AttackPlan(armies);
 
