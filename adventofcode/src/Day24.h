@@ -47,6 +47,7 @@ namespace Day24 {
 			return this->weaknesses.find(group.damageType) != this->weaknesses.end();
 		}
 	public:
+		Group() {}
 		Group(Side side, int unitCount, int hitpoints, std::set<DamageType> immunities, std::set<DamageType> weaknesses, int damage, DamageType damageType, int initiative) {
 			this->role = side;
 			this->unitCount = unitCount;
@@ -82,6 +83,7 @@ namespace Day24 {
 		int units() {
 			return this->unitCount;
 		}
+		int attackDamage(Group &group);
 	};
 
 	class AttackPlan {
