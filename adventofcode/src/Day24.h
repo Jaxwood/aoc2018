@@ -108,6 +108,7 @@ namespace Day24 {
 		void executePlan();
 		bool sideHasWon();
 		void boost(int factor);
+		bool immuneSystemWon();
 		int result();
 	};
 

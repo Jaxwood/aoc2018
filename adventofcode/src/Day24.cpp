@@ -126,7 +126,9 @@ namespace Day24 {
 					continue;
 				}
 				if (attacker.side() != defender.side() && usedIndexes.find(j) == usedIndexes.end()) {
-					potentialCandidates.push_back(make_tuple(j, defender));
+					if (defender.attackDamage(attacker) > 0) {
+						potentialCandidates.push_back(make_tuple(j, defender));
+					}
 				}
 			}
 			// no candidates found?
@@ -163,6 +165,10 @@ namespace Day24 {
 		});
 	}
 
+	bool AttackPlan::immuneSystemWon() {
+		return this->sideIsAlive(Defense);
+	}
+
 	int Part1(vector<Group> armies) {
 		auto plan = AttackPlan(armies);
 
@@ -189,6 +195,10 @@ namespace Day24 {
 
 			// attacking
 			plan.executePlan();
+		}
+
+		if (!plan.immuneSystemWon()) {
+			throw exception("immune system did not win");
 		}
 
 		return plan.result();
