@@ -9,7 +9,17 @@ namespace Day25 {
 		tie(e, f, g, h) = p2;
 		return abs(a - e) + abs(b - f) + abs(c - g) + abs(d - h);
 	}
+
 	int Part1(vector<Point> points) {
+		map<Point, vector<Point>> constellations;
+		for (auto i = 0; i < points.size(); i++) {
+			vector<Point> result;
+			auto p1 = points[i];
+			copy_if(begin(points), end(points), back_inserter(result), [p1](Point &p2) {
+				return distance(p1, p2) == 3;
+			});
+			constellations[p1] = result;
+		}
 		return 0;
 	}
 }
