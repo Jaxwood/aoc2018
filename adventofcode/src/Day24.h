@@ -88,6 +88,9 @@ namespace Day24 {
 		int units() {
 			return this->unitCount;
 		}
+		void boost(int factor) {
+			this->damage += factor;
+		}
 		int attackDamage(Group &group);
 	};
 
@@ -104,8 +107,10 @@ namespace Day24 {
 		void selectTargets();
 		void executePlan();
 		bool sideHasWon();
+		void boost(int factor);
 		int result();
 	};
 
 	int Part1(std::vector<Group> armies);
+	int Part2(std::vector<Group> armies, int factor);
 }
