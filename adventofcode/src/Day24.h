@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iterator>
+#include <map>
 #include <set>
 #include <tuple>
 #include <vector>
@@ -74,6 +75,21 @@ namespace Day24 {
 		bool isAlive() {
 			return this->hitpointPool() > 0;
 		}
+	};
+
+	class AttackPlan {
+	private:
+		std::map<int, int> plan;
+		std::vector<Group> groups;
+	public:
+		AttackPlan(std::vector<Group> &groups) {
+			this->groups = groups;
+		}
+		void targetOrder();
+		void selectTargets();
+		void executePlan();
+		bool sideHasWon();
+		int result();
 	};
 
 	int Part1(std::vector<Group> armies);
