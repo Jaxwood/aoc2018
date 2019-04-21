@@ -41,8 +41,17 @@ namespace Day24 {
 	}
 
 	int Part1(vector<Group> armies) {
-		// target selction
-		// attacking
-		return 0;
+		auto plan = AttackPlan(armies);
+
+		while (!plan.sideHasWon()) {
+			// target selection
+			plan.targetOrder();
+			plan.selectTargets();
+
+			// attacking
+			plan.executePlan();
+		}
+
+		return plan.result();
 	}
 }
