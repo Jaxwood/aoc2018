@@ -43,9 +43,9 @@ namespace Day24 {
 	void AttackPlan::targetOrder() {
 		sort(begin(this->groups), end(this->groups), [](Group &g1, Group &g2){
 			if (g1.effectivePower() == g2.effectivePower()) {
-				return g1.combatInitiative() < g2.combatInitiative();
+				return g1.combatInitiative() > g2.combatInitiative();
 			}
-			return g1.effectivePower() < g2.effectivePower();
+			return g1.effectivePower() > g2.effectivePower();
 		});
 	}
 
@@ -60,7 +60,7 @@ namespace Day24 {
 	}
 
 	int AttackPlan::result() {
-		if (!this->sideHasWon()) {
+		if (this->sideHasWon()) {
 			throw exception("no side has won");
 		}
 
@@ -87,15 +87,26 @@ namespace Day24 {
 			return amount;
 	}
 
+	void AttackPlan::executePlan() {
+		// sort by initiative
+
+		// execute attack
+		for (auto &p : this->plan) {
+			auto attacker = this->groups[p.first];
+			this->groups[p.second].takeDamage(attacker);
+		}
+		this->plan.clear();
+	}
+
 	void AttackPlan::selectTargets() {
 		set<int> usedIndexes;
 		for (int i = 0; i < this->groups.size(); i++) {
 			auto attacker = this->groups[i];
 			// find candidates
 			vector<tuple<int, Group>> potentialCandidates;
-			for (auto j = 0; j > this->groups.size(); j++) {
+			for (auto j = 0; j < this->groups.size(); j++) {
 				auto defender = this->groups[j];
-				if (attacker.side() != defender.side() && usedIndexes.find(j) != usedIndexes.end()) {
+				if (attacker.side() != defender.side() && usedIndexes.find(j) == usedIndexes.end()) {
 					potentialCandidates.push_back(make_tuple(j, defender));
 				}
 			}
@@ -108,7 +119,15 @@ namespace Day24 {
 				Group g1, g2; int i1, i2;
 				tie(i1, g1) = t1;
 				tie(i2, g2) = t2;
-				return g1.attackDamage(attacker) < g2.attackDamage(attacker);
+				if (g1.attackDamage(attacker) == g2.attackDamage(attacker)) {
+					if (g1.effectivePower() == g2.effectivePower()) {
+						return g1.combatInitiative() > g2.combatInitiative();
+					}
+					else {
+						g1.effectivePower() > g2.effectivePower();
+					}
+				}
+				return g1.attackDamage(attacker) > g2.attackDamage(attacker);
 			});
 			Group group; int idx;
 			tie(idx, group) = potentialCandidates[0];
@@ -120,7 +139,7 @@ namespace Day24 {
 	int Part1(vector<Group> armies) {
 		auto plan = AttackPlan(armies);
 
-		while (!plan.sideHasWon()) {
+		while (plan.sideHasWon()) {
 			// target selection
 			plan.targetOrder();
 			plan.selectTargets();
