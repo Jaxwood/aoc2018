@@ -257,6 +257,12 @@
     <CopyFileToFolders Include="test\day24_input\input.txt" />
     <CopyFileToFolders Include="test\day24_input\part1.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="test\day25_input\input.txt" />
+    <CopyFileToFolders Include="test\day25_input\part1a.txt" />
+    <CopyFileToFolders Include="test\day25_input\part1b.txt" />
+    <CopyFileToFolders Include="test\day25_input\part1c.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
