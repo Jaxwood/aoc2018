@@ -49,14 +49,31 @@ namespace Day24 {
 		});
 	}
 
+	bool AttackPlan::sideIsAlive(Side side) {
+		return count_if(begin(this->groups), end(this->groups), [side](Group &g) {
+			return g.side() == side && g.isAlive();
+		}) > 0;
+	}
+
 	bool AttackPlan::sideHasWon() {
-		auto defense = count_if(begin(this->groups), end(this->groups), [](Group &g) {
-			return g.side() == Defense && g.isAlive();
-		});
-		auto attack = count_if(begin(this->groups), end(this->groups), [](Group &g) {
-			return g.side() == Attack && g.isAlive();
-		});
-		return defense > 0 && attack > 0;
+		return this->sideIsAlive(Defense) && this->sideIsAlive(Attack);
+	}
+
+	int AttackPlan::result() {
+		if (!this->sideHasWon()) {
+			throw exception("no side has won");
+		}
+
+		if (this->sideIsAlive(Defense)) {
+			return accumulate(begin(this->groups), end(this->groups), 0, [](int acc, Group &g) {
+				return g.isAlive() && g.side() == Defense ? acc += g.units() : acc;
+			});
+		}
+		else {
+			return accumulate(begin(this->groups), end(this->groups), 0, [](int acc, Group &g) {
+				return g.isAlive() && g.side() == Attack ? acc += g.units() : acc;
+			});
+		}
 	}
 
 	int Part1(vector<Group> armies) {
