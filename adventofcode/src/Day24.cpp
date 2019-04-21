@@ -76,6 +76,36 @@ namespace Day24 {
 		}
 	}
 
+	void AttackPlan::selectTargets() {
+		set<int> usedIndexes;
+		for (int i = 0; i < this->groups.size(); i++) {
+			auto attacker = this->groups[i];
+			// find candidates
+			vector<tuple<int, Group>> potentialCandidates;
+			for (auto j = 0; j > this->groups.size(); j++) {
+				auto defender = this->groups[j];
+				if (attacker.side() != defender.side() && usedIndexes.find(j) != usedIndexes.end()) {
+					potentialCandidates.push_back(make_tuple(j, defender));
+				}
+			}
+			// no candidates found?
+			if (potentialCandidates.size() == 0) {
+				return;
+			}
+			// select target
+			sort(begin(potentialCandidates), end(potentialCandidates), [&attacker](tuple<int, Group> &t1, tuple<int, Group> &t2) {
+				Group g1, g2; int i1, i2;
+				tie(i1, g1) = t1;
+				tie(i2, g2) = t2;
+				return attacker.attackDamage(g1) < attacker.attackDamage(g2);
+			});
+			Group group; int idx;
+			tie(idx, group) = potentialCandidates[0];
+			usedIndexes.insert(idx);
+			this->plan[i] = idx;
+		}
+	}
+
 	int Part1(vector<Group> armies) {
 		auto plan = AttackPlan(armies);
 
