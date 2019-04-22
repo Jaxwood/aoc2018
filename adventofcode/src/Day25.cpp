@@ -12,14 +12,42 @@ namespace Day25 {
 
 	int Part1(vector<Point> points) {
 		map<Point, vector<Point>> constellations;
-		for (auto i = 0; i < points.size(); i++) {
+		queue<Point> candidates;
+		for (auto &p1 : points) {
 			vector<Point> result;
-			auto p1 = points[i];
 			copy_if(begin(points), end(points), back_inserter(result), [p1](Point &p2) {
-				return distance(p1, p2) == 3;
+				auto dist = distance(p1, p2);
+				return dist > 0 && dist <= 3;
 			});
 			constellations[p1] = result;
 		}
-		return 0;
+		candidates.push(points[0]);
+		vector<vector<Point>> result = { vector<Point>() };
+		int idx = 0;
+		set<Point> visited;
+		while (!candidates.empty()) {
+			auto p = candidates.front(); candidates.pop();
+			if (visited.find(p) == visited.end()) {
+				result[idx].push_back(p);
+			}
+			visited.insert(p);
+			auto nearby = constellations[p];
+			for (auto &n : nearby) {
+				if (visited.find(n) == visited.end()) {
+					candidates.push(n);
+				}
+			}
+			if (candidates.empty() && visited.size() != constellations.size()) {
+				for (auto &m : constellations) {
+					if (visited.find(m.first) == visited.end()) {
+						candidates.push(m.first);
+						idx++;
+						result.push_back(vector<Point>());
+						break;
+					}
+				}
+			}
+		}
+		return result.size();
 	}
 }
