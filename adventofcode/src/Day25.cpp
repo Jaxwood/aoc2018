@@ -26,6 +26,7 @@ namespace Day25 {
 		int idx = 0;
 		set<Point> visited;
 		while (!candidates.empty()) {
+			// traverse current constellation
 			auto p = candidates.front(); candidates.pop();
 			if (visited.find(p) == visited.end()) {
 				result[idx].push_back(p);
@@ -37,6 +38,7 @@ namespace Day25 {
 					candidates.push(n);
 				}
 			}
+			// get next constellation
 			if (candidates.empty() && visited.size() != constellations.size()) {
 				for (auto &m : constellations) {
 					if (visited.find(m.first) == visited.end()) {
