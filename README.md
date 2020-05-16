@@ -2,4 +2,4 @@
 
 My solutions for **Advent of Code 2018** solved using C++.
 
-I'm __not__ a C++ expert - so this is also a learning experience for me ☺
+![advent of code](2018.gif)
